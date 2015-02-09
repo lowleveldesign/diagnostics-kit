@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Commons", "LowLevelDesign.Diagnostics.Commons\LowLevelDesign.Diagnostics.Commons.csproj", "{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LuceneNetLogStore", "LowLevelDesign.Diagnostics.LuceneNetLogStore\LowLevelDesign.Diagnostics.LuceneNetLogStore.csproj", "{A1A7454D-6114-4340-819F-416E0D696DDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1A7454D-6114-4340-819F-416E0D696DDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1A7454D-6114-4340-819F-416E0D696DDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1A7454D-6114-4340-819F-416E0D696DDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1A7454D-6114-4340-819F-416E0D696DDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -21,5 +21,10 @@ namespace LowLevelDesign.Diagnostics.Commons.LogRecords
         public String Cookies;
 
         public String ClientIP;
+
+        public String ServerIP;
+
+        public short ServerPort;
+
     }
 }

@@ -14,26 +14,24 @@ namespace LowLevelDesign.Diagnostics.Commons.LogRecords
 
         public DateTime TimeUtc;
 
+        public int ProcessId;
+
+        public String ProcessName;
+
+        public int ThreadId;
+
+        public String Server;
+
+        public String ApplicationPath;
+
+        public String SystemUser;
+
+        public String CorrelationId;
+
         public String Message;
 
         public String Exception;
 
         public String FullExceptionInfo;
-
-        public String Server;
-
-        public String ServerIP;
-
-        public short ServerPort;
-
-        public String ApplicationPath;
-
-        public int ProcessId;
-
-        public int ThreadId;
-
-        public String SystemUser;
-
-        public Guid CorrelationId;
     }
 }

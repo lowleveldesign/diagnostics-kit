@@ -7,10 +7,11 @@
     <ProjectGuid>{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LowLevelDesign.Diagnostics.Models</RootNamespace>
-    <AssemblyName>LowLevelDesign.Diagnostics.Models</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>LowLevelDesign.Diagnostics.Commons</RootNamespace>
+    <AssemblyName>LowLevelDesign.Diagnostics.Commons</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,9 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LogStore\ILogStore.cs" />
     <Compile Include="LogRecords\GenericLogRecord.cs" />
+    <Compile Include="LogRecords\PerformanceLogRecord.cs" />
     <Compile Include="LogRecords\WebAppLogRecord.cs" />
+    <Compile Include="LogRecords\WinSvcLogRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="LogStore\SearchResults.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
