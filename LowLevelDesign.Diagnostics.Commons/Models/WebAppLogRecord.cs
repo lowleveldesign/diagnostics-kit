@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LowLevelDesign.Diagnostics.Commons.LogRecords
+namespace LowLevelDesign.Diagnostics.Commons.Models
 {
-    public sealed class WebAppLogRecord : GenericLogRecord
+    [Obsolete]
+    public sealed class WebAppLogRecord : LogRecord
     {
         public String Host;
 

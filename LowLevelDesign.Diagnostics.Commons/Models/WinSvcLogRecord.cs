@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LowLevelDesign.Diagnostics.Commons.LogRecords
+namespace LowLevelDesign.Diagnostics.Commons.Models
 {
+    [Obsolete]
     public sealed class WinSvcLogRecord
     {
         public String ServiceName;

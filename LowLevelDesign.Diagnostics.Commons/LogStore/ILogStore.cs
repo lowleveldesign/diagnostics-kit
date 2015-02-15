@@ -1,4 +1,4 @@
-﻿using LowLevelDesign.Diagnostics.Commons.LogRecords;
+﻿using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +9,6 @@ namespace LowLevelDesign.Diagnostics.Models
 {
     public interface ILogStore
     {
-        void AddLogRecord(GenericLogRecord logrec);
+        void AddLogRecord(LogRecord logrec);
     }
 }

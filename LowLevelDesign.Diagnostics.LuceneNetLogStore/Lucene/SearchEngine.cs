@@ -1,5 +1,4 @@
-﻿using LowLevelDesign.Diagnostics.Commons;
-using LowLevelDesign.Diagnostics.Commons.LogStore;
+﻿using LowLevelDesign.Diagnostics.Commons.LogStore;
 using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -11,7 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
-namespace Rzekoznawca.Commons.Search
+namespace Rzekoznawca.Commons.Search.Lucene
 {
     /// <summary>
     /// Very generic engine based on Lucene.
