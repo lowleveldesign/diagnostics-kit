@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentValidation">
+      <HintPath>..\packages\FluentValidation.5.5.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,12 +43,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LogStore\ILogStore.cs" />
+    <Compile Include="Storage\ILogStore.cs" />
     <Compile Include="Models\LogRecord.cs" />
     <Compile Include="Models\WebAppLogRecord.cs" />
     <Compile Include="Models\WinSvcLogRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LogStore\SearchResults.cs" />
+    <Compile Include="Storage\SearchResults.cs" />
+    <Compile Include="Validators\LogRecordValidator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

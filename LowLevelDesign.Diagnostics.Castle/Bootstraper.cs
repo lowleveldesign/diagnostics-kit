@@ -1,10 +1,18 @@
-﻿using Nancy;
+﻿using FluentValidation;
+using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.Commons.Storage;
+using LowLevelDesign.Diagnostics.Commons.Validators;
+using LowLevelDesign.Diagnostics.LuceneNetLogStore;
+using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Configuration;
 
 namespace LowLevelDesign.Diagnostics.Castle
 {
@@ -16,6 +24,16 @@ namespace LowLevelDesign.Diagnostics.Castle
 
         protected override void ConfigureApplicationContainer(TinyIoCContainer container) {
             // configure application singletons and multinstance classes
+
+            /* LOG STORAGE */
+            var logstorePath = WebConfigurationManager.AppSettings["logstore:path"];
+            if (!Directory.Exists(logstorePath)) {
+                throw new ConfigurationErrorsException(Resource.InvalidLogstorePath);
+            }
+            container.Register<ILogStore, LogStore>(new LogStore(logstorePath, WebConfigurationManager.AppSettings["logstore:log"]));
+
+            /* VALIDATORS */
+            container.Register<IValidator<LogRecord>, LogRecordValidator>();
         }
 
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context) {

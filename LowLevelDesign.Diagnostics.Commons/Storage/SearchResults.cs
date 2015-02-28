@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LowLevelDesign.Diagnostics.Commons.LogStore
+namespace LowLevelDesign.Diagnostics.Commons.Storage
 {
     public sealed class SearchResults<T>
     {

@@ -1,22 +1,25 @@
-﻿using LowLevelDesign.Diagnostics.Commons.LogStore;
+﻿using LowLevelDesign.Diagnostics.Commons.Storage;
 using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
-namespace Rzekoznawca.Commons.Search.Lucene
+namespace LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene
 {
     /// <summary>
     /// Very generic engine based on Lucene.
     /// </summary>
     internal sealed class SearchEngine<T> : IDisposable where T : Analyzer, new()
     {
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         private class IndexSearcherGuard : IDisposable
         {
             private IndexSearcher indexSearcher;
@@ -85,12 +88,14 @@ namespace Rzekoznawca.Commons.Search.Lucene
             }
 
             this.indexPath = indexPath;
-            // in case the index does not exist let's first create an index writer
-            if (!System.IO.Directory.Exists(indexPath)) {
+            try {
+                this.indexSearcherGuard = new IndexSearcherGuard(IndexReader.Open(FSDirectory.Open(indexPath), true));
+            } catch (FileNotFoundException) {
+                logger.Info("There was a problem when creating IndexSearcher - probably the index was removed. We will try to recreate it.");
                 using (var writer = CreateIndexWriter()) {
                 }
+                this.indexSearcherGuard = new IndexSearcherGuard(IndexReader.Open(FSDirectory.Open(indexPath), true));
             }
-            this.indexSearcherGuard = new IndexSearcherGuard(IndexReader.Open(FSDirectory.Open(indexPath), true));
         }
 
         public IEnumerable<Document> FindDocuments(Query query, int top) {

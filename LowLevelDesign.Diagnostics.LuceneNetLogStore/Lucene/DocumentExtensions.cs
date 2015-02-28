@@ -25,6 +25,10 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene
             doc.Add(new NumericField(fieldName, Field.Store.YES, true).SetIntValue(value));
         }
 
+        public static void AddSearchableNumericField(this Document doc, String fieldName, long value) {
+            doc.Add(new NumericField(fieldName, Field.Store.YES, true).SetLongValue(value));
+        }
+
         public static void AddSearchableNumericField(this Document doc, String fieldName, float value) {
             doc.Add(new NumericField(fieldName, Field.Store.YES, true).SetFloatValue(value));
         }
