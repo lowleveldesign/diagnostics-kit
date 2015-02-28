@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestStoragePerformance", "StoragePerformanceTests\TestStoragePerformance.csproj", "{8B589878-B3B7-4C47-8AAF-A3369545ABCC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{27513C5F-3F44-4C64-A52D-DEDF629F6873}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Castle", "LowLevelDesign.Diagnostics.Castle\LowLevelDesign.Diagnostics.Castle.csproj", "{885ABF87-B86B-436D-A787-66CDA246D211}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Commons", "LowLevelDesign.Diagnostics.Commons\LowLevelDesign.Diagnostics.Commons.csproj", "{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}"
@@ -14,6 +12,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LuceneNetLogStore", "LowLevelDesign.Diagnostics.LuceneNetLogStore\LowLevelDesign.Diagnostics.LuceneNetLogStore.csproj", "{A1A7454D-6114-4340-819F-416E0D696DDE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestJsonSerialization", "TestJsonSerialization\TestJsonSerialization.csproj", "{7AE07CCC-A566-454E-B9BC-DFF3C61EA8BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Harvesters", "Harvesters", "{64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.NLog", "Harvesters\LowLevelDesign.Diagnostics.Harvester.NLog\LowLevelDesign.Diagnostics.Harvester.NLog.csproj", "{6F1489DB-0876-4278-ADD2-65086DB6F60A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,8 +43,15 @@ Global
 		{7AE07CCC-A566-454E-B9BC-DFF3C61EA8BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AE07CCC-A566-454E-B9BC-DFF3C61EA8BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AE07CCC-A566-454E-B9BC-DFF3C61EA8BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F1489DB-0876-4278-ADD2-65086DB6F60A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F1489DB-0876-4278-ADD2-65086DB6F60A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F1489DB-0876-4278-ADD2-65086DB6F60A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F1489DB-0876-4278-ADD2-65086DB6F60A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6F1489DB-0876-4278-ADD2-65086DB6F60A} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
 	EndGlobalSection
 EndGlobal

@@ -98,8 +98,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstraper.cs" />
+    <Compile Include="Models\SyncModel.cs" />
     <Compile Include="Modules\CollectModule.cs" />
     <Compile Include="Modules\SearchModule.cs" />
+    <Compile Include="Modules\SyncModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>

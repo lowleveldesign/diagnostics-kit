@@ -7,7 +7,7 @@ using System.Web;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
-    public class SearchModule : NancyModule
+    public sealed class SearchModule : NancyModule
     {
         public SearchModule() {
             Get["/version"] = _ => {

@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}</ProjectGuid>
+    <ProjectGuid>{6F1489DB-0876-4278-ADD2-65086DB6F60A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LowLevelDesign.Diagnostics.Commons</RootNamespace>
-    <AssemblyName>LowLevelDesign.Diagnostics.Commons</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <RootNamespace>LowLevelDesign.Diagnostics.Harvester.NLog</RootNamespace>
+    <AssemblyName>LowLevelDesign.Diagnostics.Harvester.NLog</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentValidation">
-      <HintPath>..\packages\FluentValidation.5.5.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    <Reference Include="NLog">
+      <HintPath>..\..\packages\NLog.3.2.0.0\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,14 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Connectors\HttpCastleConnector.cs" />
-    <Compile Include="Storage\ILogStore.cs" />
-    <Compile Include="Models\LogRecord.cs" />
-    <Compile Include="Models\WebAppLogRecord.cs" />
-    <Compile Include="Models\WinSvcLogRecord.cs" />
+    <Compile Include="DiagnosticsCastleTarget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Storage\SearchResults.cs" />
-    <Compile Include="Validators\LogRecordValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

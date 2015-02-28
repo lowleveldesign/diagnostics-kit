@@ -11,7 +11,7 @@ using System.Web;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
-    public class CollectModule : NancyModule
+    public sealed class CollectModule : NancyModule
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
