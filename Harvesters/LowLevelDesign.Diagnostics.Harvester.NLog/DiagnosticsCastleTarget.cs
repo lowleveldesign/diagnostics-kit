@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using LowLevelDesign.Diagnostics.Commons.Connectors;
+using NLog;
 using NLog.Config;
 using NLog.Targets;
 using System;
@@ -16,7 +17,19 @@ namespace LowLevelDesign.Diagnostics.Harvester.NLog
         [RequiredParameter]
         public String DiagnosticsCastleUrl { get; set; }
 
+
+        private HttpCastleConnector connector;
+        protected override void InitializeTarget() {
+            base.InitializeTarget();
+
+            connector = new HttpCastleConnector(new Uri(DiagnosticsCastleUrl));
+        }
+
         protected override void Write(LogEventInfo logEvent) {
+            // FIXME convert to LogRecord
+
+            //var logrec
+            //connector.SendLogRecord(logrec)
         }
 
         protected override void CloseTarget() {

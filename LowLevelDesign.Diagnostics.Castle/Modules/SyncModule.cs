@@ -1,4 +1,4 @@
-﻿using LowLevelDesign.Diagnostics.Castle.Models;
+﻿using LowLevelDesign.Diagnostics.Commons.Models;
 using Nancy;
 using System;
 using System.Collections.Generic;
@@ -12,10 +12,13 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 var syncModel = new SyncModel {
                     Host = Request.Url.HostName,
                     Port = Request.Url.Port ?? 80,
+                    Path = Request.Url.BasePath
                 };
                 var owinenv = Context.Items["OWIN_REQUEST_ENVIRONMENT"] as IDictionary<String, Object>;
-                if (owinenv != null && owinenv.ContainsKey("server.LocalIpAddress")) {
-                    syncModel.IpAddr = (String)owinenv["server.LocalIpAddress"];
+                if (owinenv != null) {
+                    if (owinenv.ContainsKey("server.LocalIpAddress")) {
+                        syncModel.IpAddr = (String)owinenv["server.LocalIpAddress"];
+                    }
                     int port;
                     if (owinenv.ContainsKey("server.LocalPort") && Int32.TryParse((String)owinenv["server.LocalPort"], out port)) {
                         syncModel.Port = port;
