@@ -10,8 +10,8 @@ using System.Threading;
 
 namespace LowLevelDesign.Diagnostics.Harvester.NLog
 {
-    [Target("DiagnosticsCastle")]
-    public class DiagnosticsCastleTarget : TargetWithLayout
+    [Target("DiagnosticsKit")]
+    public class DiagnosticsKitTarget : TargetWithLayout
     {
         [RequiredParameter]
         public String DiagnosticsCastleUrl { get; set; }

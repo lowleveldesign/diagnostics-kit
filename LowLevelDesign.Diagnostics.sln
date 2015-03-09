@@ -25,6 +25,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleConsoleApp", "Exampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.AspNet", "Harvesters\LowLevelDesign.Diagnostics.Harvester.AspNet\LowLevelDesign.Diagnostics.Harvester.AspNet.csproj", "{2C011C05-DA4B-4745-A95A-44447530DAF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.AspNet.Mvc", "Harvesters\LowLevelDesign.Diagnostics.Harvester.AspNet.Mvc\LowLevelDesign.Diagnostics.Harvester.AspNet.Mvc.csproj", "{A0FF35E0-3969-416D-906A-ACBD94E09A91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.AspNet.WebAPI", "Harvesters\LowLevelDesign.Diagnostics.Harvester.AspNet.WebAPI\LowLevelDesign.Diagnostics.Harvester.AspNet.WebAPI.csproj", "{AF58DE18-7397-44E2-9F1B-544E5A055439}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.Owin", "Harvesters\LowLevelDesign.Diagnostics.Harvester.Owin\LowLevelDesign.Diagnostics.Harvester.Owin.csproj", "{2A25151C-7056-476B-89DE-1A0C3D6A753B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +73,18 @@ Global
 		{2C011C05-DA4B-4745-A95A-44447530DAF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C011C05-DA4B-4745-A95A-44447530DAF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C011C05-DA4B-4745-A95A-44447530DAF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0FF35E0-3969-416D-906A-ACBD94E09A91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0FF35E0-3969-416D-906A-ACBD94E09A91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0FF35E0-3969-416D-906A-ACBD94E09A91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0FF35E0-3969-416D-906A-ACBD94E09A91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF58DE18-7397-44E2-9F1B-544E5A055439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF58DE18-7397-44E2-9F1B-544E5A055439}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF58DE18-7397-44E2-9F1B-544E5A055439}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF58DE18-7397-44E2-9F1B-544E5A055439}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A25151C-7056-476B-89DE-1A0C3D6A753B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A25151C-7056-476B-89DE-1A0C3D6A753B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A25151C-7056-476B-89DE-1A0C3D6A753B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A25151C-7056-476B-89DE-1A0C3D6A753B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,5 +94,8 @@ Global
 		{F24B1FEF-B1C3-4036-A131-DB977D4B5E33} = {1FD68A99-5CF6-4CEE-9E5C-E135AC362D25}
 		{45BF1E31-A3FA-45A5-A464-61707268A110} = {1FD68A99-5CF6-4CEE-9E5C-E135AC362D25}
 		{2C011C05-DA4B-4745-A95A-44447530DAF5} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
+		{A0FF35E0-3969-416D-906A-ACBD94E09A91} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
+		{AF58DE18-7397-44E2-9F1B-544E5A055439} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
+		{2A25151C-7056-476B-89DE-1A0C3D6A753B} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
 	EndGlobalSection
 EndGlobal

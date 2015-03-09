@@ -1,7 +1,9 @@
-﻿using System;
+﻿using LowLevelDesign.Diagnostics.Harvester.AspNet.WebAPI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -13,6 +15,12 @@ namespace ExampleWebApp
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            GlobalConfiguration.Configure(WebApiConfig);
+        }
+
+        private void WebApiConfig(HttpConfiguration config) {
+            config.Filters.Add(new DiagnosticsKitExceptionFilterAttribute());
         }
     }
 }

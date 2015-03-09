@@ -7,7 +7,7 @@ using System.Web.Management;
 
 namespace LowLevelDesign.Diagnostics.Harvester.AspNet
 {
-    public class DiagnosticsCastleWebEventProvider : WebEventProvider
+    public class DiagnosticsKitWebEventProvider : WebEventProvider
     {
         private HttpCastleConnector connector;
 
