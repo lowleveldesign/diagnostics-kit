@@ -20,8 +20,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 var logrec = this.Bind<LogRecord>(new BindingConfig { BodyOnly = true });
                 var validationResult = logrecValidator.Validate(logrec);
                 if (!validationResult.IsValid) {
-                    // FIXME log warning and errors that were detected
-                    return "FAIL";
+                    return "VALIDATION ERROR";
                 }
 
                 // FIXME add task to the tasks queue, for now we do it synchronously

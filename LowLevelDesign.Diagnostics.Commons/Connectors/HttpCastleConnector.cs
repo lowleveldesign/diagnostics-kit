@@ -14,6 +14,11 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
     {
         private readonly SyncModel diagnosticsMasterAddress;
 
+        /// <summary>
+        /// Makes a request to the diagnostics url to gather
+        /// information about the master node.
+        /// </summary>
+        /// <param name="uri"></param>
         public HttpCastleConnector(Uri uri) {
             if (uri == null) {
                 throw new ArgumentException("uri");
@@ -42,9 +47,11 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
         }
 
         private String MakePostRequest(String url, String postData, String host = null) {
-            var request = WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
+            request.Method = "POST";
+            request.ContentType = "application/json";
             if (host != null) {
-                request.Headers["Host"] = host;
+                request.Host = host;
             }
             using (var writer = new StreamWriter(request.GetRequestStream())) {
                 writer.Write(postData);

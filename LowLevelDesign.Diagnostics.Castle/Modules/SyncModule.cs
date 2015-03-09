@@ -18,6 +18,10 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 if (owinenv != null) {
                     if (owinenv.ContainsKey("server.LocalIpAddress")) {
                         syncModel.IpAddr = (String)owinenv["server.LocalIpAddress"];
+                        // HACK: for some reason WebRequest does not accept ::1 as uri
+                        if (String.Equals(syncModel.IpAddr, "::1", StringComparison.Ordinal)) {
+                            syncModel.IpAddr = "127.0.0.1";
+                        }
                     }
                     int port;
                     if (owinenv.ContainsKey("server.LocalPort") && Int32.TryParse((String)owinenv["server.LocalPort"], out port)) {

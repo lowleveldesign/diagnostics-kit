@@ -29,7 +29,7 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
             doc.AddSearchableNumericField("ThreadId", logrec.ThreadId);
             doc.AddSearchableStringField("Server", logrec.Server);
             doc.AddSearchableStringField("ApplicationPath", logrec.ApplicationPath);
-            doc.AddSearchableStringField("ThreadIdentity", logrec.ThreadIdentity);
+            doc.AddSearchableStringField("ThreadIdentity", logrec.Identity);
             doc.AddSearchableStringField("CorrelationId", logrec.CorrelationId);
             doc.AddSearchableStringField("Message", logrec.Message);
 

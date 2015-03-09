@@ -22,6 +22,9 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
             if (Port > 0 && Port != 80) {
                 b.AppendFormat(":{0}", Port);
             }
+            if (!String.IsNullOrEmpty(Path)) {
+                b.Append("/").Append(Path);
+            }
             return b.ToString();
         }
     }

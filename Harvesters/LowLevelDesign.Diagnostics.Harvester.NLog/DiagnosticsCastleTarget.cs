@@ -1,13 +1,12 @@
 ﻿using LowLevelDesign.Diagnostics.Commons.Connectors;
+using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.Commons;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Threading;
 
 namespace LowLevelDesign.Diagnostics.Harvester.NLog
 {
@@ -26,16 +25,36 @@ namespace LowLevelDesign.Diagnostics.Harvester.NLog
         }
 
         protected override void Write(LogEventInfo logEvent) {
-            // FIXME convert to LogRecord
+            var process = Process.GetCurrentProcess();
+            var thread = Thread.CurrentThread;
 
-            //var logrec
-            //connector.SendLogRecord(logrec)
+            var logrec = new LogRecord {
+                TimeUtc = DateTime.UtcNow,
+                LoggerName = logEvent.LoggerName,
+                LogLevel = logEvent.Level.Name,
+                Message = logEvent.Message,
+                Server = Environment.MachineName,
+                ApplicationPath = AppDomain.CurrentDomain.BaseDirectory, // TODO: check if it's a valid approach
+                ProcessId = process.Id,
+                ProcessName = process.ProcessName,
+                ThreadId = thread.ManagedThreadId,
+                Identity = Thread.CurrentPrincipal.Identity.Name
+            };
+
+            if (logEvent.Exception != null) {
+                logrec.ExceptionType = logEvent.Exception.GetType().FullName;
+                logrec.ExceptionMessage = logEvent.Exception.Message;
+                logrec.ExceptionAdditionalInfo = logEvent.Exception.StackTrace.ShortenIfNecessary(5000);
+            }
+
+            connector.SendLogRecord(logrec);
         }
 
         protected override void CloseTarget() {
             base.CloseTarget();
 
-            // close any opened HTTP connection
+            // dispose the connector
+            connector.Dispose();
         }
     }
 }

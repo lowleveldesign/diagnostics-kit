@@ -17,6 +17,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Harvesters", "Harvesters", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.NLog", "Harvesters\LowLevelDesign.Diagnostics.Harvester.NLog\LowLevelDesign.Diagnostics.Harvester.NLog.csproj", "{6F1489DB-0876-4278-ADD2-65086DB6F60A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{1FD68A99-5CF6-4CEE-9E5C-E135AC362D25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleWebApp", "Examples\ExampleWebApp\ExampleWebApp.csproj", "{F24B1FEF-B1C3-4036-A131-DB977D4B5E33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleConsoleApp", "Examples\ExampleConsoleApp\ExampleConsoleApp.csproj", "{45BF1E31-A3FA-45A5-A464-61707268A110}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.AspNet", "Harvesters\LowLevelDesign.Diagnostics.Harvester.AspNet\LowLevelDesign.Diagnostics.Harvester.AspNet.csproj", "{2C011C05-DA4B-4745-A95A-44447530DAF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,11 +55,26 @@ Global
 		{6F1489DB-0876-4278-ADD2-65086DB6F60A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F1489DB-0876-4278-ADD2-65086DB6F60A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F1489DB-0876-4278-ADD2-65086DB6F60A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F24B1FEF-B1C3-4036-A131-DB977D4B5E33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F24B1FEF-B1C3-4036-A131-DB977D4B5E33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F24B1FEF-B1C3-4036-A131-DB977D4B5E33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F24B1FEF-B1C3-4036-A131-DB977D4B5E33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45BF1E31-A3FA-45A5-A464-61707268A110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45BF1E31-A3FA-45A5-A464-61707268A110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45BF1E31-A3FA-45A5-A464-61707268A110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45BF1E31-A3FA-45A5-A464-61707268A110}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C011C05-DA4B-4745-A95A-44447530DAF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C011C05-DA4B-4745-A95A-44447530DAF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C011C05-DA4B-4745-A95A-44447530DAF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C011C05-DA4B-4745-A95A-44447530DAF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6F1489DB-0876-4278-ADD2-65086DB6F60A} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
+		{F24B1FEF-B1C3-4036-A131-DB977D4B5E33} = {1FD68A99-5CF6-4CEE-9E5C-E135AC362D25}
+		{45BF1E31-A3FA-45A5-A464-61707268A110} = {1FD68A99-5CF6-4CEE-9E5C-E135AC362D25}
+		{2C011C05-DA4B-4745-A95A-44447530DAF5} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
 	EndGlobalSection
 EndGlobal

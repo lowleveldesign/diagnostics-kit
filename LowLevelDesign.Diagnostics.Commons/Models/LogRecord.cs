@@ -24,11 +24,17 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
 
         public String ApplicationPath;
 
-        public String ThreadIdentity;
+        public String Identity;
 
         public String CorrelationId;
 
         public String Message;
+
+        public String ExceptionType;
+
+        public String ExceptionMessage;
+
+        public String ExceptionAdditionalInfo;
 
         /// <summary>
         /// Additional field which describe the log being collected, such as for web logs:

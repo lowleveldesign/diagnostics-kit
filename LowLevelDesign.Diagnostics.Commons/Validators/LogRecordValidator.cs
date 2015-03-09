@@ -36,10 +36,14 @@ namespace LowLevelDesign.Diagnostics.Commons.Validators
                 StringComparer.OrdinalIgnoreCase));
             RuleFor(r => r.Message).Length(0, 5000);
             RuleFor(r => r.Server).NotEmpty().Length(1, 1024);
-            RuleFor(r => r.ThreadIdentity).Length(0, 1024);
+            RuleFor(r => r.Identity).Length(0, 1024);
             RuleFor(r => r.TimeUtc).NotEmpty();
-            RuleFor(r => r.ApplicationPath).Length(0, 2048);
+            RuleFor(r => r.ApplicationPath).NotEmpty().Length(0, 2048);
             RuleFor(r => r.CorrelationId).Length(0, 1024);
+
+            RuleFor(r => r.ExceptionType).Length(0, 256);
+            RuleFor(r => r.ExceptionMessage).Length(0, 1024);
+            RuleFor(r => r.ExceptionAdditionalInfo).Length(0, 5000);
 
             RuleForEach(r => r.AdditionalFields).SetValidator(new AdditionalFieldValidator());
             RuleForEach(r => r.PerformanceData).SetValidator(new PerformanceDataValidator());
