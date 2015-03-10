@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LowLevelDesign.Diagnostics.Harvester.AspNet.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,13 +11,10 @@ namespace ExampleWebApp.Controllers
 {
     public class TestController : Controller
     {
-        // GET: Test
+        [DiagnosticsKitHandleError]
         public ActionResult Index()
         {
-            var asm = Assembly.GetExecutingAssembly();
-            var process = Process.GetCurrentProcess();
-
-            return Content("test");
+            throw new Exception("test");
         }
     }
 }

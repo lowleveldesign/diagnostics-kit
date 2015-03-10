@@ -27,7 +27,7 @@ namespace LowLevelDesign.Diagnostics.Harvester.AspNet.Mvc
         }
 
         public override void OnException(ExceptionContext filterContext) {
-            if (filterContext.ExceptionHandled || !filterContext.HttpContext.IsCustomErrorEnabled) {
+            if (filterContext.ExceptionHandled) {
                 return;
             }
             var logrec = new LogRecord {
