@@ -10,9 +10,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
     public sealed class SearchModule : NancyModule
     {
         public SearchModule() {
-            Get["/version"] = _ => {
-                return typeof(LogRecord).Assembly.GetName().Version.ToString();
-            };
+            Get["/version"] = _ => typeof(LogRecord).Assembly.GetName().Version.ToString();
         }
     }
 }

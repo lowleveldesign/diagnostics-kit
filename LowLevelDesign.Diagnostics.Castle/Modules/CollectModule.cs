@@ -4,10 +4,6 @@ using LowLevelDesign.Diagnostics.Commons.Storage;
 using Nancy;
 using Nancy.ModelBinding;
 using NLog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
