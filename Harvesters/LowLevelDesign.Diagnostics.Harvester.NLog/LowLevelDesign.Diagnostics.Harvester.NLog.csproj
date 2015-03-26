@@ -35,9 +35,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\FluentValidation.5.5.0.0\lib\Net40\FluentValidation.dll</HintPath>
     </Reference>
-    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.0.0.5, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.0.0.6, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.0.0.0.5\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
+      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.0.0.0.6\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

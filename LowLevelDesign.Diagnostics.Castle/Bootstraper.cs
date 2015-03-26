@@ -6,12 +6,8 @@ using LowLevelDesign.Diagnostics.LuceneNetLogStore;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Web;
 using System.Web.Configuration;
 
 namespace LowLevelDesign.Diagnostics.Castle

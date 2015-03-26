@@ -1,18 +1,14 @@
 ﻿using LowLevelDesign.Diagnostics.Commons.Models;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.Commons.Connectors
 {
     public sealed class HttpCastleConnector : IDisposable
     {
-        private readonly SyncModel diagnosticsMasterAddress;
+        private readonly Uri diagnosticsMasterAddress;
 
         /// <summary>
         /// Makes a request to the diagnostics url to gather
@@ -26,13 +22,12 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
 
             // make ping request to recognize the master application
             var path = uri.AbsolutePath ?? String.Empty;
-            path += path.Length > 0 && path[path.Length - 1] == '/' ? "ping" : "/ping";
-            diagnosticsMasterAddress = JsonConvert.DeserializeObject<SyncModel>(MakeGetRequest(new Uri(uri, path).ToString()));
+            diagnosticsMasterAddress = uri;
         }
 
         public void SendLogRecord(LogRecord logrec) {
             // connects to master and sends there log record information
-            MakePostRequest(String.Format("{0}/collect", diagnosticsMasterAddress.ToUrl()),
+            MakePostRequest(String.Format("{0}/collect", diagnosticsMasterAddress),
                 JsonConvert.SerializeObject(logrec), diagnosticsMasterAddress.Host);
         }
 
