@@ -99,7 +99,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\LowLevelDesign.Diagnostics.Commons\LowLevelDesign.Diagnostics.Commons.csproj">
+    <ProjectReference Include="..\..\LowLevelDesign.Diagnostics.Commons\LowLevelDesign.Diagnostics.Commons.csproj">
       <Project>{eebc3248-e9c6-4bc3-b46f-bda8909a190c}</Project>
       <Name>LowLevelDesign.Diagnostics.Commons</Name>
     </ProjectReference>

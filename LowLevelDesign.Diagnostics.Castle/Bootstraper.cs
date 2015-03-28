@@ -30,6 +30,8 @@ namespace LowLevelDesign.Diagnostics.Castle
 
             /* VALIDATORS */
             container.Register<IValidator<LogRecord>, LogRecordValidator>();
+
+            /* CONFIGURATION */
         }
 
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context) {

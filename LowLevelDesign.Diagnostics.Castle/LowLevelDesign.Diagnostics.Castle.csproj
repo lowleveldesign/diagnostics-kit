@@ -88,6 +88,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\DiagnosticsConfigurationLocalDb.mdf" />
+    <Content Include="App_Data\DiagnosticsConfigurationLocalDb_log.ldf">
+      <DependentUpon>DiagnosticsConfigurationLocalDb.mdf</DependentUpon>
+    </Content>
     <Content Include="errors.txt" />
     <Content Include="packages.config" />
     <None Include="Web.Debug.config">
@@ -102,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstraper.cs" />
+    <Compile Include="Config\ConfigurationManager.cs" />
     <Compile Include="Modules\CollectModule.cs" />
     <Compile Include="Modules\SearchModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -117,7 +122,7 @@
       <Project>{eebc3248-e9c6-4bc3-b46f-bda8909a190c}</Project>
       <Name>LowLevelDesign.Diagnostics.Commons</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LowLevelDesign.Diagnostics.LuceneNetLogStore\LowLevelDesign.Diagnostics.LuceneNetLogStore.csproj">
+    <ProjectReference Include="..\LogStores\LowLevelDesign.Diagnostics.LuceneNetLogStore\LowLevelDesign.Diagnostics.LuceneNetLogStore.csproj">
       <Project>{a1a7454d-6114-4340-819f-416e0d696dde}</Project>
       <Name>LowLevelDesign.Diagnostics.LuceneNetLogStore</Name>
     </ProjectReference>

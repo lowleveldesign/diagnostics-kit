@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestStoragePerformance", "StoragePerformanceTests\TestStoragePerformance.csproj", "{8B589878-B3B7-4C47-8AAF-A3369545ABCC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestStoragePerformance", "Tests\StoragePerformanceTests\TestStoragePerformance.csproj", "{8B589878-B3B7-4C47-8AAF-A3369545ABCC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Castle", "LowLevelDesign.Diagnostics.Castle\LowLevelDesign.Diagnostics.Castle.csproj", "{885ABF87-B86B-436D-A787-66CDA246D211}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Commons", "LowLevelDesign.Diagnostics.Commons\LowLevelDesign.Diagnostics.Commons.csproj", "{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LuceneNetLogStore", "LowLevelDesign.Diagnostics.LuceneNetLogStore\LowLevelDesign.Diagnostics.LuceneNetLogStore.csproj", "{A1A7454D-6114-4340-819F-416E0D696DDE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LuceneNetLogStore", "LogStores\LowLevelDesign.Diagnostics.LuceneNetLogStore\LowLevelDesign.Diagnostics.LuceneNetLogStore.csproj", "{A1A7454D-6114-4340-819F-416E0D696DDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestJsonSerialization", "TestJsonSerialization\TestJsonSerialization.csproj", "{7AE07CCC-A566-454E-B9BC-DFF3C61EA8BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestJsonSerialization", "Tests\TestJsonSerialization\TestJsonSerialization.csproj", "{7AE07CCC-A566-454E-B9BC-DFF3C61EA8BD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Harvesters", "Harvesters", "{64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}"
 EndProject
@@ -31,7 +31,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.Owin", "Harvesters\LowLevelDesign.Diagnostics.Harvester.Owin\LowLevelDesign.Diagnostics.Harvester.Owin.csproj", "{2A25151C-7056-476B-89DE-1A0C3D6A753B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.log4net", "LowLevelDesign.Diagnostics.Harvester.log4net\LowLevelDesign.Diagnostics.Harvester.log4net.csproj", "{301050C2-E774-4D78-96B7-5E712A3F6CF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.log4net", "Harvesters\LowLevelDesign.Diagnostics.Harvester.log4net\LowLevelDesign.Diagnostics.Harvester.log4net.csproj", "{301050C2-E774-4D78-96B7-5E712A3F6CF8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LogStores", "LogStores", "{AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3F8A9C23-D49F-41DC-A935-F2898E13707B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -96,6 +100,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{8B589878-B3B7-4C47-8AAF-A3369545ABCC} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
+		{A1A7454D-6114-4340-819F-416E0D696DDE} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
+		{7AE07CCC-A566-454E-B9BC-DFF3C61EA8BD} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{6F1489DB-0876-4278-ADD2-65086DB6F60A} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
 		{F24B1FEF-B1C3-4036-A131-DB977D4B5E33} = {1FD68A99-5CF6-4CEE-9E5C-E135AC362D25}
 		{45BF1E31-A3FA-45A5-A464-61707268A110} = {1FD68A99-5CF6-4CEE-9E5C-E135AC362D25}

@@ -61,7 +61,7 @@
       <Project>{6f1489db-0876-4278-add2-65086db6f60a}</Project>
       <Name>LowLevelDesign.Diagnostics.Harvester.NLog</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\LowLevelDesign.Diagnostics.Harvester.log4net\LowLevelDesign.Diagnostics.Harvester.log4net.csproj">
+    <ProjectReference Include="..\..\Harvesters\LowLevelDesign.Diagnostics.Harvester.log4net\LowLevelDesign.Diagnostics.Harvester.log4net.csproj">
       <Project>{301050c2-e774-4d78-96b7-5e712a3f6cf8}</Project>
       <Name>LowLevelDesign.Diagnostics.Harvester.log4net</Name>
     </ProjectReference>
