@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Commons.Storage;
 using LowLevelDesign.Diagnostics.Commons.Validators;
@@ -32,6 +33,7 @@ namespace LowLevelDesign.Diagnostics.Castle
             container.Register<IValidator<LogRecord>, LogRecordValidator>();
 
             /* CONFIGURATION */
+            container.Register<IAppConfigurationManager, AppConfigurationManager>();
         }
 
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context) {

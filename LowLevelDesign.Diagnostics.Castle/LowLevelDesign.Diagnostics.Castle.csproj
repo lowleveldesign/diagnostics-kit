@@ -39,6 +39,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper">
+      <HintPath>..\packages\Dapper.1.39\lib\net45\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="FluentValidation, Version=5.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentValidation.5.5.0.0\lib\Net40\FluentValidation.dll</HintPath>
@@ -73,6 +76,7 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -106,7 +110,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstraper.cs" />
-    <Compile Include="Config\ConfigurationManager.cs" />
+    <Compile Include="Config\AppConfigurationManager.cs" />
+    <Compile Include="Config\IAppConfigurationManager.cs" />
+    <Compile Include="Models\Application.cs" />
     <Compile Include="Modules\CollectModule.cs" />
     <Compile Include="Modules\SearchModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -127,9 +133,7 @@
       <Name>LowLevelDesign.Diagnostics.LuceneNetLogStore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
