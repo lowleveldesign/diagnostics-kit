@@ -2,9 +2,11 @@
 using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +16,8 @@ namespace LowLevelDesign.Diagnostics.Harvester.AspNet.WebAPI
 {
     public sealed class DiagnosticsKitExceptionFilterAttribute : ExceptionFilterAttribute
     {
+        private const int maxHttpDataLength = 1024;
+
         private static readonly HttpCastleConnector connector;
         private static readonly Process process;
 
@@ -28,17 +32,43 @@ namespace LowLevelDesign.Diagnostics.Harvester.AspNet.WebAPI
             process = Process.GetCurrentProcess();
         }
 
+        private String ExtractHeaders(StringBuilder buffer, HttpHeaders headers) {
+            if (headers == null) {
+                return String.Empty;
+            }
+
+            buffer.Clear();
+            try {
+                foreach (var header in headers) {
+                    buffer.AppendFormat("{0}={1}", header.Key, header.Value.FirstOrDefault()).AppendLine();
+                }
+            } catch (ArgumentOutOfRangeException) { /* it's normal if we exceed http data limit */ }
+
+            return buffer.ToString();
+        }
+
         public override void OnException(HttpActionExecutedContext context)
         {
+            const String duplicateKey = "__llddiag_alreadyserved";
+            if (context.Request.Properties.ContainsKey(duplicateKey)) {
+                return;
+            }
+            context.Request.Properties.Add(duplicateKey, true);
+
+            var request = context.Request;
+            var ex = context.Exception;
+
+            var buffer = new StringBuilder(maxHttpDataLength, maxHttpDataLength);
+
             var logrec = new LogRecord {
                 ApplicationPath = AppDomain.CurrentDomain.BaseDirectory,
-                ExceptionType = context.Exception.GetType().FullName,
-                ExceptionMessage = context.Exception.Message,
-                ExceptionAdditionalInfo = context.Exception.StackTrace,
+                ExceptionType = ex.GetType().FullName,
+                ExceptionMessage = ex.Message,
+                ExceptionAdditionalInfo = ex.StackTrace,
                 Identity = Thread.CurrentPrincipal.Identity.Name,
                 LoggerName = String.Format("WebAPI.{0}.{1}", context.ActionContext.ActionDescriptor.ControllerDescriptor.ControllerName, 
                                                 context.ActionContext.ActionDescriptor.ActionName),
-                LogLevel = "Error",
+                LogLevel = LogRecord.ELogLevel.Error,
                 Message = null,
                 ProcessId = process.Id,
                 ProcessName = process.ProcessName,
@@ -46,11 +76,18 @@ namespace LowLevelDesign.Diagnostics.Harvester.AspNet.WebAPI
                 ThreadId = Thread.CurrentThread.ManagedThreadId,
                 TimeUtc = DateTime.UtcNow,
                 AdditionalFields = new Dictionary<String, Object> {
-                    { "Url", context.Request.RequestUri.AbsoluteUri },
-                    { "Host", context.Request.Headers.Host },
-                    { "HttpStatusCode", context.Response.StatusCode },
+                    { "Url", request.RequestUri.AbsoluteUri },
+                    { "Host", request.Headers.Host },
+                    { "RequestData", ExtractHeaders(buffer, request.Headers) },
                 }
             };
+
+            var response = context.Response;
+            if (response != null) {
+                logrec.AdditionalFields.Add("HttpStatusCode", response.StatusCode);
+                logrec.AdditionalFields.Add("ResponseData", ExtractHeaders(buffer, response.Headers));
+            }
+
             connector.SendLogRecord(logrec);
         }
     }

@@ -65,6 +65,10 @@
       <Project>{301050c2-e774-4d78-96b7-5e712a3f6cf8}</Project>
       <Name>LowLevelDesign.Diagnostics.Harvester.log4net</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Harvesters\LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics\LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics.csproj">
+      <Project>{cfcdfb73-6b60-47e8-8dd1-fa1a0597ed0e}</Project>
+      <Name>LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

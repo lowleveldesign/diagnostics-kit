@@ -139,6 +139,10 @@
       <Project>{af58de18-7397-44e2-9f1b-544e5a055439}</Project>
       <Name>LowLevelDesign.Diagnostics.Harvester.AspNet.WebAPI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Harvesters\LowLevelDesign.Diagnostics.Harvester.AspNet\LowLevelDesign.Diagnostics.Harvester.AspNet.csproj">
+      <Project>{2c011c05-da4b-4745-a95a-44447530daf5}</Project>
+      <Name>LowLevelDesign.Diagnostics.Harvester.AspNet</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

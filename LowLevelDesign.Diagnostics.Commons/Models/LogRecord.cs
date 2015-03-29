@@ -8,9 +8,19 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
 {
     public class LogRecord
     {
+        public enum ELogLevel
+        {
+            Trace = 0,
+            Debug,
+            Info,
+            Warning,
+            Error,
+            Critical
+        }
+
         public String LoggerName;
 
-        public String LogLevel;
+        public ELogLevel LogLevel;
 
         public DateTime TimeUtc;
 

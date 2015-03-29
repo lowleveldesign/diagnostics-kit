@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LowLevelDesign.Diagnostics.Harvester.Owin")]
+[assembly: AssemblyTitle("LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("LowLevelDesign.Diagnostics.Harvester.Owin")]
+[assembly: AssemblyProduct("LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e0a289c8-606e-48ae-bdea-56ef40b3641f")]
+[assembly: Guid("5b0454de-21a9-49f6-9f54-67e36960f0f3")]
 
 // Version information for an assembly consists of the following four values:
 //

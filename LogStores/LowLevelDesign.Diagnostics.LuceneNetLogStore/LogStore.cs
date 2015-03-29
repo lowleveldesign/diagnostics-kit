@@ -22,7 +22,7 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
             var doc = new Document();
 
             doc.AddSearchableStringField("LoggerName", logrec.LoggerName);
-            doc.AddSearchableStringField("LogLevel", logrec.LogLevel);
+            doc.AddSearchableNumericField("LogLevel", (int)logrec.LogLevel);
             doc.AddSearchableDateTimeField("TimeUtc", logrec.TimeUtc);
             doc.AddSearchableNumericField("ProcessId", logrec.ProcessId);
             doc.AddSearchableStringField("ProcessName", logrec.ProcessName);

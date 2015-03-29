@@ -10,5 +10,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
         public String Name { get; set; }
 
         public String Path { get; set; }
+
+        public bool IsExcluded { get; set; }
     }
 }

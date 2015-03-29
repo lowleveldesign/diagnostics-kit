@@ -46,10 +46,10 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
                 var tran = conn.BeginTransaction();
                 try {
                     // try to update the record
-                    var rec = await conn.ExecuteAsync("update Applications set Name = @Name where Path = @Path", app, tran);
+                    var rec = await conn.ExecuteAsync("update Applications set Name = @Name, IsExcluded = @IsExcluded where Path = @Path", app, tran);
                     if (rec == 0) {
                         // no application found - we need to insert it
-                        await conn.ExecuteAsync("insert into Applications (Name, Path) values (@Name, @Path)", app, tran);
+                        await conn.ExecuteAsync("insert into Applications (Name, Path, IsExcluded) values (@Name, @Path, @IsExcluded)", app, tran);
                     }
                     tran.Commit();
                 } catch {
@@ -87,7 +87,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
             using (var conn = CreateConnection()) {
                 await conn.OpenAsync();
 
-                await conn.ExecuteAsync("delete from Applications where Path = @path", new { path });
+                await conn.ExecuteAsync("update Applications set IsExcluded = 1 where Path = @path", new { path });
             }
 
             cache.Set(path, null, new CacheItemPolicy {

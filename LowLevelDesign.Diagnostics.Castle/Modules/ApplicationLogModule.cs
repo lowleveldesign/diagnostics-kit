@@ -7,10 +7,9 @@ using System.Web;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
-    public sealed class SearchModule : NancyModule
+    public sealed class ApplicationLogModule : NancyModule
     {
-        public SearchModule() {
-            Get["/version"] = _ => typeof(LogRecord).Assembly.GetName().Version.ToString();
+        public ApplicationLogModule() {
         }
     }
 }

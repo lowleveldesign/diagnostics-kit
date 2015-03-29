@@ -7,6 +7,7 @@ using NLog.Targets;
 using System;
 using System.Diagnostics;
 using System.Threading;
+using NLog.Common;
 
 namespace LowLevelDesign.Diagnostics.Harvester.NLog
 {
@@ -16,8 +17,9 @@ namespace LowLevelDesign.Diagnostics.Harvester.NLog
         [RequiredParameter]
         public String DiagnosticsCastleUrl { get; set; }
 
-
+        private readonly Process process = Process.GetCurrentProcess();
         private HttpCastleConnector connector;
+
         protected override void InitializeTarget() {
             base.InitializeTarget();
 
@@ -25,13 +27,12 @@ namespace LowLevelDesign.Diagnostics.Harvester.NLog
         }
 
         protected override void Write(LogEventInfo logEvent) {
-            var process = Process.GetCurrentProcess();
             var thread = Thread.CurrentThread;
 
             var logrec = new LogRecord {
                 TimeUtc = DateTime.UtcNow,
                 LoggerName = logEvent.LoggerName,
-                LogLevel = logEvent.Level.Name,
+                LogLevel = ConvertToLogRecordLevel(logEvent.Level),
                 Message = logEvent.Message,
                 Server = Environment.MachineName,
                 ApplicationPath = AppDomain.CurrentDomain.BaseDirectory, // TODO: check if it's a valid approach
@@ -48,6 +49,27 @@ namespace LowLevelDesign.Diagnostics.Harvester.NLog
             }
 
             connector.SendLogRecord(logrec);
+        }
+
+        private static LogRecord.ELogLevel ConvertToLogRecordLevel(LogLevel lvl) {
+            if (lvl != null) {
+                if (lvl >= LogLevel.Fatal) {
+                    return LogRecord.ELogLevel.Critical;
+                }
+                if (lvl >= LogLevel.Error) {
+                    return LogRecord.ELogLevel.Error;
+                }
+                if (lvl >= LogLevel.Warn) {
+                    return LogRecord.ELogLevel.Warning;
+                }
+                if (lvl >= LogLevel.Info) {
+                    return LogRecord.ELogLevel.Info;
+                }
+                if (lvl >= LogLevel.Debug) {
+                    return LogRecord.ELogLevel.Debug;
+                }
+            }
+            return LogRecord.ELogLevel.Trace;
         }
 
         protected override void CloseTarget() {

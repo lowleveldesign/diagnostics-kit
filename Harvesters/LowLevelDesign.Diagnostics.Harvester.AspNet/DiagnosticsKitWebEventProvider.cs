@@ -3,20 +3,28 @@ using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Configuration;
+using System.Web.Configuration;
 using System.Web.Management;
 
 namespace LowLevelDesign.Diagnostics.Harvester.AspNet
 {
     public class DiagnosticsKitWebEventProvider : WebEventProvider
     {
-        private HttpCastleConnector connector;
+        private static readonly HttpCastleConnector connector;
+
+        static DiagnosticsKitWebEventProvider() {
+            var diagurl = WebConfigurationManager.AppSettings["lowleveldesign.diagnostics.url"];
+            Uri uri;
+            if (!Uri.TryCreate(diagurl, UriKind.Absolute, out uri)) {
+                throw new ConfigurationErrorsException("Please check lowleveldesign.diagnostics.url key in the appSettings - its value should contain an url " + 
+                    "pointing to the diagnostics main application (Castle).");
+            }
+            connector = new HttpCastleConnector(uri);
+        }
 
         public override void Initialize(String name, NameValueCollection config) {
             base.Initialize(name, config);
-
-            // read diagnostics url and create a connector
-            var url = config.Get("diagnosticsCastleUrl");
-            connector = new HttpCastleConnector(new Uri(url));
         }
 
         public override void Flush() {
@@ -40,12 +48,12 @@ namespace LowLevelDesign.Diagnostics.Harvester.AspNet
                 this.AddWebRequestInformationDataFields(logrec, ((WebAuditEvent)raisedEvent).RequestInformation);
             }
             if (raisedEvent is WebRequestErrorEvent) {
-                logrec.LogLevel = "Error";
+                logrec.LogLevel = LogRecord.ELogLevel.Error;
                 this.AddWebRequestInformationDataFields(logrec, ((WebRequestErrorEvent)raisedEvent).RequestInformation);
                 this.AddWebThreadInformationDataFields(logrec, ((WebRequestErrorEvent)raisedEvent).ThreadInformation);
             }
             if (raisedEvent is WebErrorEvent) {
-                logrec.LogLevel = "Error";
+                logrec.LogLevel = LogRecord.ELogLevel.Error;
                 this.AddWebRequestInformationDataFields(logrec, ((WebErrorEvent)raisedEvent).RequestInformation);
                 this.AddWebThreadInformationDataFields(logrec, ((WebErrorEvent)raisedEvent).ThreadInformation);
             }
@@ -56,7 +64,7 @@ namespace LowLevelDesign.Diagnostics.Harvester.AspNet
                 logrec.AdditionalFields.Add("UserToSignIn", ((WebAuthenticationFailureAuditEvent)raisedEvent).NameToAuthenticate);
             }
             if (raisedEvent is WebViewStateFailureAuditEvent) {
-                logrec.LogLevel = "Error";
+                logrec.LogLevel = LogRecord.ELogLevel.Error;
                 this.AddExceptionDataFields(logrec, ((WebViewStateFailureAuditEvent)raisedEvent).ViewStateException);
             }
 
@@ -70,7 +78,7 @@ namespace LowLevelDesign.Diagnostics.Harvester.AspNet
             logrec.Server = applicationInformation.MachineName;
             logrec.TimeUtc = raisedEvent.EventTimeUtc;
             logrec.Message = raisedEvent.Message;
-            logrec.LogLevel = "Info";
+            logrec.LogLevel = LogRecord.ELogLevel.Info;
             logrec.LoggerName = String.Format("ASP.NET Health: {0}.{1}", raisedEvent.EventCode, raisedEvent.EventDetailCode);
         }
 

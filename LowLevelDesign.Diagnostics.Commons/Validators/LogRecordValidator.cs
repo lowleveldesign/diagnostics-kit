@@ -32,8 +32,6 @@ namespace LowLevelDesign.Diagnostics.Commons.Validators
 
         public LogRecordValidator() {
             RuleFor(r => r.LoggerName).NotEmpty().Length(1, 1024);
-            RuleFor(r => r.LogLevel).NotEmpty().Must(lvl => new[] { "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "CRITICAL" }.Contains(lvl,
-                StringComparer.OrdinalIgnoreCase));
             RuleFor(r => r.Message).Length(0, 5000);
             RuleFor(r => r.Server).NotEmpty().Length(1, 1024);
             RuleFor(r => r.Identity).Length(0, 1024);

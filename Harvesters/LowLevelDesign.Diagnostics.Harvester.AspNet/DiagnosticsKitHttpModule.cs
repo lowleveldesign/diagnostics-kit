@@ -8,26 +8,32 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Web;
-using System.Web.Mvc;
+using System.Web.Configuration;
 
-namespace LowLevelDesign.Diagnostics.Harvester.AspNet.Mvc
+namespace LowLevelDesign.Diagnostics.Harvester.AspNet
 {
-    public sealed class DiagnosticsKitHandleErrorAttribute : HandleErrorAttribute
+    public class DiagnosticsKitHttpModule : IHttpModule
     {
         private const int maxHttpDataLength = 1024;
 
         private static readonly HttpCastleConnector connector;
-        private static readonly Process process;
+        private static readonly Process process = Process.GetCurrentProcess();
 
-        static DiagnosticsKitHandleErrorAttribute() {
-            var diagurl = ConfigurationManager.AppSettings["lowleveldesign.diagnostics.url"];
+        static DiagnosticsKitHttpModule() {
+            var diagurl = WebConfigurationManager.AppSettings["lowleveldesign.diagnostics.url"];
             Uri uri;
             if (!Uri.TryCreate(diagurl, UriKind.Absolute, out uri)) {
-                throw new ConfigurationErrorsException("Please check lowleveldesign.diagnostics.url key in the appSettings - its value should contain an url " +
+                throw new ConfigurationErrorsException("Please check lowleveldesign.diagnostics.url key in the appSettings - its value should contain an url " + 
                     "pointing to the diagnostics main application (Castle).");
             }
             connector = new HttpCastleConnector(uri);
-            process = Process.GetCurrentProcess();
+        }
+
+        public void Dispose() {
+        }
+
+        public void Init(HttpApplication context) {
+            context.Error += context_Error;
         }
 
         private String ExtractHeaders(StringBuilder buffer, NameValueCollection headers) {
@@ -41,28 +47,24 @@ namespace LowLevelDesign.Diagnostics.Harvester.AspNet.Mvc
             return buffer.ToString();
         }
 
-        public override void OnException(ExceptionContext filterContext) {
-            if (filterContext.ExceptionHandled) {
-                return;
-            }
+        void context_Error(object sender, EventArgs e) {
+            var ctx = HttpContext.Current;
+            var request = ctx.Request;
+            var response = ctx.Response;
+            var ex = ctx.Server.GetLastError();
+            
             const String duplicateKey = "__llddiag_alreadyserved";
-            if (filterContext.HttpContext.Items.Contains(duplicateKey)) {
+            if (ctx.Items.Contains(duplicateKey)) {
                 return;
             }
-            filterContext.HttpContext.Items.Add(duplicateKey, true);
+            ctx.Items.Add(duplicateKey, true);
 
-            var request = filterContext.HttpContext.Request;
-            var response = filterContext.HttpContext.Response;
-            var ex = filterContext.Exception;
 
             var buffer = new StringBuilder(maxHttpDataLength, maxHttpDataLength);
 
             var logrec = new LogRecord {
-                ExceptionType = ex.GetType().FullName,
-                ExceptionMessage = ex.Message,
-                ExceptionAdditionalInfo = ex.StackTrace,
                 Identity = Thread.CurrentPrincipal.Identity.Name,
-                LoggerName = String.Format("MVC.{0}.{1}", filterContext.RouteData.Values["controller"], filterContext.RouteData.Values["action"]),
+                LoggerName = "ASP.NET",
                 LogLevel = LogRecord.ELogLevel.Error,
                 ProcessId = process.Id,
                 ProcessName = process.ProcessName,
@@ -82,6 +84,12 @@ namespace LowLevelDesign.Diagnostics.Harvester.AspNet.Mvc
                 logrec.ApplicationPath = HttpRuntime.AppDomainAppPath;
             } catch {
                 logrec.ApplicationPath = AppDomain.CurrentDomain.BaseDirectory;
+            }
+
+            if (ex != null) {
+                logrec.ExceptionType = ex.GetType().FullName;
+                logrec.ExceptionMessage = ex.Message;
+                logrec.ExceptionAdditionalInfo = ex.StackTrace;
             }
 
             connector.SendLogRecord(logrec);

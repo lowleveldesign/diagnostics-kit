@@ -113,8 +113,11 @@
     <Compile Include="Config\AppConfigurationManager.cs" />
     <Compile Include="Config\IAppConfigurationManager.cs" />
     <Compile Include="Models\Application.cs" />
+    <Compile Include="Models\LogSearchCriteria.cs" />
+    <Compile Include="Modules\ApplicationGridModule.cs" />
     <Compile Include="Modules\CollectModule.cs" />
-    <Compile Include="Modules\SearchModule.cs" />
+    <Compile Include="Modules\ApplicationLogModule.cs" />
+    <Compile Include="Modules\InfoModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
