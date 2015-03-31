@@ -12,5 +12,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
         public String Path { get; set; }
 
         public bool IsExcluded { get; set; }
+
+        public String TabKey { get; set; }
     }
 }

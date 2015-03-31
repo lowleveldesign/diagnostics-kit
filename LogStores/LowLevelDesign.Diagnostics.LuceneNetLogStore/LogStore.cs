@@ -5,11 +5,16 @@ using Lucene.Net.Documents;
 using System;
 using LowLevelDesign.Diagnostics.Commons.Storage;
 using NLog;
+using System.Collections.Generic;
 
 namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
 {
     public class LogStore : ILogStore
     {
+        readonly static ISet<String> searchableAdditionalFields = new HashSet<String> {
+            "Host", "LoggedUser", "Url", "Referer", "ClientIP", "RequestData", "ResponseData", "ServiceName", "ServiceDisplayName"
+        };
+
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private readonly SearchEngine<LogRecordAnalyzer> searchEngine;
@@ -21,34 +26,34 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
         public void AddLogRecord(LogRecord logrec) {
             var doc = new Document();
 
-            doc.AddSearchableStringField("LoggerName", logrec.LoggerName);
-            doc.AddSearchableNumericField("LogLevel", (int)logrec.LogLevel);
-            doc.AddSearchableDateTimeField("TimeUtc", logrec.TimeUtc);
-            doc.AddSearchableNumericField("ProcessId", logrec.ProcessId);
-            doc.AddSearchableStringField("ProcessName", logrec.ProcessName);
-            doc.AddSearchableNumericField("ThreadId", logrec.ThreadId);
-            doc.AddSearchableStringField("Server", logrec.Server);
-            doc.AddSearchableStringField("ApplicationPath", logrec.ApplicationPath);
-            doc.AddSearchableStringField("ThreadIdentity", logrec.Identity);
-            doc.AddSearchableStringField("CorrelationId", logrec.CorrelationId);
-            doc.AddSearchableStringField("Message", logrec.Message);
+            doc.AddField("LoggerName", logrec.LoggerName, true);
+            doc.AddField("LogLevel", (int)logrec.LogLevel, true);
+            doc.AddField("TimeUtc", logrec.TimeUtc, true);
+            doc.AddField("ProcessId", logrec.ProcessId, false);
+            doc.AddField("ProcessName", logrec.ProcessName, false);
+            doc.AddField("ThreadId", logrec.ThreadId, false);
+            doc.AddField("Server", logrec.Server, true);
+            doc.AddField("ApplicationPath", logrec.ApplicationPath, false);
+            doc.AddField("Identity", logrec.Identity, true);
+            doc.AddField("CorrelationId", logrec.CorrelationId, true);
+            doc.AddField("Message", logrec.Message, true);
 
             // iterate through the additional fields and store them according to the value types
             if (logrec.AdditionalFields != null) {
                 foreach (var f in logrec.AdditionalFields) {
                     if (f.Value != null) {
                         if (typeof(int).Equals(f.Value.GetType())) {
-                            doc.AddSearchableNumericField(f.Key, (int)f.Value);
+                            doc.AddField(f.Key, (int)f.Value, searchableAdditionalFields.Contains(f.Key));
                         } else if (typeof(long).Equals(f.Value.GetType())) {
-                            doc.AddSearchableNumericField(f.Key, (long)f.Value);
+                            doc.AddField(f.Key, (long)f.Value, searchableAdditionalFields.Contains(f.Key));
                         } else if (typeof(float).Equals(f.Value.GetType())) {
-                            doc.AddSearchableNumericField(f.Key, (float)f.Value);
+                            doc.AddField(f.Key, (float)f.Value, searchableAdditionalFields.Contains(f.Key));
                         } else if (typeof(double).Equals(f.Value.GetType())) {
-                            doc.AddSearchableNumericField(f.Key, (double)f.Value);
+                            doc.AddField(f.Key, (double)f.Value, searchableAdditionalFields.Contains(f.Key));
                         } else if (typeof(DateTime).Equals(f.Value.GetType())) {
-                            doc.AddSearchableDateTimeField(f.Key, (DateTime)f.Value);
+                            doc.AddField(f.Key, (DateTime)f.Value, searchableAdditionalFields.Contains(f.Key));
                         } else if (typeof(String).Equals(f.Value.GetType())) {
-                            doc.AddSearchableStringField(f.Key, (String)f.Value);
+                            doc.AddField(f.Key, (String)f.Value, searchableAdditionalFields.Contains(f.Key));
                         } else {
                             logger.Warn("Field {0} from additional fields won't be saved because its type: {1} is not supported.", f.Key, f.Value);
                         }

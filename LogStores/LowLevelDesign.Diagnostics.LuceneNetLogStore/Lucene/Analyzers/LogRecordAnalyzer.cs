@@ -17,6 +17,35 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene.Analyzers
             // FIXME LoggerName should be split by dots
             // some specific rules for ProcessName and ApplicationPath, ThreadIdentity
             // and maybe CorrelationId - think what it should be
+
+
+            /*
+             * Whole words (eventually n-gram):
+             * - Server
+             * - Host
+             * - LoggedUser
+             * - ClientIP
+             * - Identity
+             * - CorrelationId
+             * 
+             * Dot separated tokenizing (maybe n-gram):
+             * - LoggerName
+             * - ExceptionType
+             * - ServiceName
+             * 
+             * Url tokenizing:
+             * - Url
+             * - Referer
+             * 
+             * Standard (or localized analyzer):
+             * - Message
+             * - ExceptionMessage
+             * - ExceptionAdditionalInfo
+             * - RequestData
+             * - ResponseData
+             * - ServiceDisplayName
+             */
+
             return new ASCIIFoldingFilter(new LowerCaseFilter(new LetterOrDigitTokenizer(reader)));
         }
 
