@@ -6,6 +6,8 @@ using System;
 using LowLevelDesign.Diagnostics.Commons.Storage;
 using NLog;
 using System.Collections.Generic;
+using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Standard;
 
 namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
 {
@@ -17,10 +19,31 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
 
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly SearchEngine<LogRecordAnalyzer> searchEngine;
+        private readonly SearchEngine searchEngine;
 
         public LogStore(String indexPath, String logPath = null) {
-            this.searchEngine = new SearchEngine<LogRecordAnalyzer>(indexPath, logPath);
+            this.searchEngine = new SearchEngine(indexPath, CreateAnalyzer, logPath);
+        }
+
+        private void AddFieldsAnalyzer(PerFieldAnalyzerWrapper analyzer, Analyzer fanalyzer, String[] fields) {
+            foreach (var f in fields) {
+                analyzer.AddAnalyzer(f, fanalyzer);
+            }
+        }
+
+        private Analyzer CreateAnalyzer() {
+            var analyzer = new PerFieldAnalyzerWrapper(new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30));
+
+            AddFieldsAnalyzer(analyzer, new KeywordAnalyzer(), new[] { "Server", "Host", "LoggedUser", 
+                "ClientIP", "Identity", "CorrelationId" });
+            AddFieldsAnalyzer(analyzer, new DottedNameAnalyzer(), new[] { "LoggerName", "ExceptionType", "ServiceName" });
+            // FIXME: something better for urls
+            AddFieldsAnalyzer(analyzer, new KeywordAnalyzer(), new[] { "Url", "Referer" });
+
+            /* Other fields, such as: Message, ExceptionMessage, ExceptionAdditionalInfo,
+             * RequestData, ResponseData, ServiceDisplayName will be parsed with the StandardAnalyzer */
+
+            return analyzer;
         }
 
         public void AddLogRecord(LogRecord logrec) {

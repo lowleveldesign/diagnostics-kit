@@ -16,7 +16,7 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene
     /// <summary>
     /// Very generic engine based on Lucene.
     /// </summary>
-    internal sealed class SearchEngine<T> : IDisposable where T : Analyzer, new()
+    internal sealed class SearchEngine : IDisposable 
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -80,13 +80,15 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene
 
         private readonly IndexSearcherGuard indexSearcherGuard;
         private readonly StreamWriter logWriter;
+        private readonly Func<Analyzer> analyzerBuilder;
 
-        public SearchEngine(String indexPath, String logPath = null) {
+        public SearchEngine(String indexPath, Func<Analyzer> analyzerBuilder, String logPath = null) {
             if (logPath != null) {
                 logWriter = new StreamWriter(logPath);
                 logWriter.AutoFlush = true;
             }
 
+            this.analyzerBuilder = analyzerBuilder;
             this.indexPath = indexPath;
             try {
                 this.indexSearcherGuard = new IndexSearcherGuard(IndexReader.Open(FSDirectory.Open(indexPath), true));
@@ -143,7 +145,7 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene
 
         private IndexWriter CreateIndexWriter() {
             var iw = new IndexWriter(FSDirectory.Open(new DirectoryInfo(indexPath), new SimpleFSLockFactory()),
-                                            new T(), IndexWriter.MaxFieldLength.UNLIMITED);
+                                            analyzerBuilder(), IndexWriter.MaxFieldLength.UNLIMITED);
             // enable logging if set
             if (logWriter != null) {
                 iw.SetInfoStream(logWriter);
