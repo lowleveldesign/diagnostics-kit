@@ -22,7 +22,7 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
         private readonly SearchEngine searchEngine;
 
         public LogStore(String indexPath, String logPath = null) {
-            this.searchEngine = new SearchEngine(indexPath, CreateAnalyzer, logPath);
+            searchEngine = new SearchEngine(indexPath, CreateAnalyzer, logPath);
         }
 
         private void AddFieldsAnalyzer(PerFieldAnalyzerWrapper analyzer, Analyzer fanalyzer, String[] fields) {
