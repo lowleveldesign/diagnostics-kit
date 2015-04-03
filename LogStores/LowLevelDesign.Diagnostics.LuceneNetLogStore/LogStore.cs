@@ -17,33 +17,10 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
             "Host", "LoggedUser", "Url", "Referer", "ClientIP", "RequestData", "ResponseData", "ServiceName", "ServiceDisplayName"
         };
 
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
-
-        private readonly SearchEngine searchEngine;
-
-        public LogStore(String indexPath, String logPath = null) {
-            searchEngine = new SearchEngine(indexPath, CreateAnalyzer, logPath);
-        }
-
-        private void AddFieldsAnalyzer(PerFieldAnalyzerWrapper analyzer, Analyzer fanalyzer, String[] fields) {
-            foreach (var f in fields) {
-                analyzer.AddAnalyzer(f, fanalyzer);
-            }
-        }
-
-        private Analyzer CreateAnalyzer() {
-            var analyzer = new PerFieldAnalyzerWrapper(new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30));
-
-            AddFieldsAnalyzer(analyzer, new KeywordAnalyzer(), new[] { "Server", "Host", "LoggedUser", 
-                "ClientIP", "Identity", "CorrelationId" });
-            AddFieldsAnalyzer(analyzer, new DottedNameAnalyzer(), new[] { "LoggerName", "ExceptionType", "ServiceName" });
-            // FIXME: something better for urls
-            AddFieldsAnalyzer(analyzer, new KeywordAnalyzer(), new[] { "Url", "Referer" });
-
-            /* Other fields, such as: Message, ExceptionMessage, ExceptionAdditionalInfo,
-             * RequestData, ResponseData, ServiceDisplayName will be parsed with the StandardAnalyzer */
-
-            return analyzer;
+        public void AddLogRecords(IEnumerable<LogRecord> logrecs)
+        {
+            // FIXME implement :)
+            throw new NotImplementedException();
         }
 
         public void AddLogRecord(LogRecord logrec) {
@@ -92,6 +69,35 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
             }
 
             searchEngine.SaveDocumentInIndex(doc);
+        }
+
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        private readonly SearchEngine searchEngine;
+
+        public LogStore(String indexPath, String logPath = null) {
+            searchEngine = new SearchEngine(indexPath, CreateAnalyzer, logPath);
+        }
+
+        private void AddFieldsAnalyzer(PerFieldAnalyzerWrapper analyzer, Analyzer fanalyzer, String[] fields) {
+            foreach (var f in fields) {
+                analyzer.AddAnalyzer(f, fanalyzer);
+            }
+        }
+
+        private Analyzer CreateAnalyzer() {
+            var analyzer = new PerFieldAnalyzerWrapper(new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30));
+
+            AddFieldsAnalyzer(analyzer, new KeywordAnalyzer(), new[] { "Server", "Host", "LoggedUser", 
+                "ClientIP", "Identity", "CorrelationId" });
+            AddFieldsAnalyzer(analyzer, new DottedNameAnalyzer(), new[] { "LoggerName", "ExceptionType", "ServiceName" });
+            // FIXME: something better for urls
+            AddFieldsAnalyzer(analyzer, new KeywordAnalyzer(), new[] { "Url", "Referer" });
+
+            /* Other fields, such as: Message, ExceptionMessage, ExceptionAdditionalInfo,
+             * RequestData, ResponseData, ServiceDisplayName will be parsed with the StandardAnalyzer */
+
+            return analyzer;
         }
     }
 }

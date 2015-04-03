@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LowLevelDesign.Diagnostics.Commons.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace TestJsonSerialization
 {
     public class Program
     {
-        public static void Main(String[] args) {
+        public static void Main(String[] args)
+        {
             var d = new Dictionary<String, Object>();
 
             d.Add("ProcessId", 123);
@@ -23,9 +25,19 @@ namespace TestJsonSerialization
 
             var o = JsonConvert.DeserializeObject<Dictionary<String, Object>>(s);
 
-            foreach (var k in o) {
+            foreach (var k in o)
+            {
                 Console.WriteLine("key: '{0}', value: {1} of type: {2}", k.Key, k.Value, k.Value.GetType());
             }
+
+            var lr = new LogRecord
+            {
+                LoggerName = "TestLogger",
+                ApplicationPath = "c:\\test",
+                PerformanceData = new Dictionary<String, float> { { "CPU", 10.0f }, { "Memory", 120.0f } }
+            };
+
+            Console.WriteLine(JsonConvert.SerializeObject(lr, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using LowLevelDesign.Diagnostics.Commons.Models;
 
 namespace LowLevelDesign.Diagnostics.Commons.Storage
@@ -8,8 +9,12 @@ namespace LowLevelDesign.Diagnostics.Commons.Storage
     {
         void AddLogRecord(LogRecord logrec);
 
+        void AddLogRecords(IEnumerable<LogRecord> logrecs);
+
         // void DeleteLogRecords(DateTime olderThanDateUtc);
 
-        // FIXME: search logs
+        // IEnumerable<LogRecord> SearchPerfLogs
+
+        // IEnumerable<LogRecord> SearchLogs
     }
 }
