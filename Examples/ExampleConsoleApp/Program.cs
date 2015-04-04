@@ -19,6 +19,8 @@ namespace ExampleConsoleApp
             log4net.Config.XmlConfigurator.Configure();
 
             logger.Info("test");
+            logger.Info("test2");
+            logger.Info("test3");
             logger2.Info("test-log4net");
             logger3.TraceEvent(TraceEventType.Information, 0, "test-system.diagnostics-tracesource");
             Trace.WriteLine("### test-system.diagnostics-trace");

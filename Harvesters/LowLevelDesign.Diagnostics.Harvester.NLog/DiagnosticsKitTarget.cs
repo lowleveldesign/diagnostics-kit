@@ -6,6 +6,7 @@ using NLog.Config;
 using NLog.Targets;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using NLog.Common;
 
@@ -26,7 +27,33 @@ namespace LowLevelDesign.Diagnostics.Harvester.NLog
             connector = new HttpCastleConnector(new Uri(DiagnosticsCastleUrl));
         }
 
+        protected override void Write(AsyncLogEventInfo logEvent) {
+            base.Write(logEvent);
+        }
+
+        protected override void Write(AsyncLogEventInfo[] logEvents) {
+            try {
+                foreach (var lev in logEvents) {
+                    lev.Continuation(null);
+                }
+                connector.SendLogRecords(logEvents.Select(lev => ConvertLogEventToLogRecord(lev.LogEvent)));
+            } catch (StackOverflowException) {
+                throw;
+            } catch (ThreadAbortException) {
+                throw;
+            } catch (OutOfMemoryException) {
+                throw;
+            } catch (Exception ex) {
+                // swallow all other exceptions
+                Trace.TraceError("Exception occured while trying to send a log records batch: {0}", ex);
+            }
+        }
+
         protected override void Write(LogEventInfo logEvent) {
+            connector.SendLogRecord(ConvertLogEventToLogRecord(logEvent));
+        }
+
+        private LogRecord ConvertLogEventToLogRecord(LogEventInfo logEvent) {
             var thread = Thread.CurrentThread;
 
             var logrec = new LogRecord {
@@ -47,8 +74,7 @@ namespace LowLevelDesign.Diagnostics.Harvester.NLog
                 logrec.ExceptionMessage = logEvent.Exception.Message;
                 logrec.ExceptionAdditionalInfo = logEvent.Exception.StackTrace.ShortenIfNecessary(5000);
             }
-
-            connector.SendLogRecord(logrec);
+            return logrec;
         }
 
         private static LogRecord.ELogLevel ConvertToLogRecordLevel(LogLevel lvl) {

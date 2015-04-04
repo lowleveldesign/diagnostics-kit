@@ -1,6 +1,7 @@
 ﻿using LowLevelDesign.Diagnostics.Commons.Models;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
@@ -8,7 +9,10 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
 {
     public sealed class HttpCastleConnector : IDisposable
     {
-        private readonly Uri diagnosticsMasterAddress;
+        private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {
+            NullValueHandling = NullValueHandling.Ignore
+        };
+        private readonly Uri diagnosticsAddress;
 
         /// <summary>
         /// Makes a request to the diagnostics url to gather
@@ -20,34 +24,39 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
                 throw new ArgumentException("uri");
             }
 
-            // make ping request to recognize the master application
             var path = uri.AbsolutePath ?? String.Empty;
-            diagnosticsMasterAddress = uri;
+            diagnosticsAddress = uri;
         }
 
+        /// <summary>
+        /// Sends a log record to the diagnostics castle.
+        /// </summary>
+        /// <param name="logrec"></param>
         public void SendLogRecord(LogRecord logrec) {
-            // connects to master and sends there log record information
-            MakePostRequest(String.Format("{0}/collect", diagnosticsMasterAddress),
-                JsonConvert.SerializeObject(logrec), diagnosticsMasterAddress.Host);
+            MakePostRequest(String.Format("{0}/collect", diagnosticsAddress),
+                JsonConvert.SerializeObject(logrec, Formatting.None, jsonSettings));
         }
 
-        private String MakeGetRequest(String url, String host = null) {
+        /// <summary>
+        /// Sends a batch of log records to the diagnostics castle.
+        /// </summary>
+        /// <param name="logrecs"></param>
+        public void SendLogRecords(IEnumerable<LogRecord> logrecs) {
+            MakePostRequest(String.Format("{0}/collectall", diagnosticsAddress),
+                JsonConvert.SerializeObject(logrecs, Formatting.None, jsonSettings));
+        }
+
+        private String MakeGetRequest(String url) {
             var request = WebRequest.Create(url);
-            if (host != null) {
-                request.Headers["Host"] = host;
-            }
             using (var reader = new StreamReader(request.GetResponse().GetResponseStream())) {
                 return reader.ReadToEnd();
             }
         }
 
-        private String MakePostRequest(String url, String postData, String host = null) {
+        private String MakePostRequest(String url, String postData) {
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
             request.ContentType = "application/json";
-            if (host != null) {
-                request.Host = host;
-            }
             using (var writer = new StreamWriter(request.GetRequestStream())) {
                 writer.Write(postData);
             }

@@ -6,6 +6,7 @@ using LowLevelDesign.Diagnostics.Commons.Validators;
 using LowLevelDesign.Diagnostics.LuceneNetLogStore;
 using Nancy;
 using Nancy.Bootstrapper;
+using Nancy.Diagnostics;
 using Nancy.TinyIoc;
 using System.Configuration;
 using System.IO;
@@ -17,6 +18,8 @@ namespace LowLevelDesign.Diagnostics.Castle
     {
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines) {
             // configure application hooks
+
+            // FIXME for release builds: DiagnosticsHook.Disable(pipelines);
         }
 
         protected override void ConfigureApplicationContainer(TinyIoCContainer container) {
@@ -38,6 +41,10 @@ namespace LowLevelDesign.Diagnostics.Castle
 
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context) {
             // configure request-lifetime objects
+        }
+
+        protected override Nancy.Diagnostics.DiagnosticsConfiguration DiagnosticsConfiguration {
+            get { return new DiagnosticsConfiguration { Password = "n4ncyBoard" }; }
         }
     }
 }

@@ -5,6 +5,7 @@ using LowLevelDesign.Diagnostics.Commons.Connectors;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 
 namespace LowLevelDesign.Diagnostics.Harvester.log4net
@@ -22,11 +23,15 @@ namespace LowLevelDesign.Diagnostics.Harvester.log4net
         }
 
         protected override void Append(LoggingEvent[] loggingEvents) {
-            // FIXME we should make one request to the castle
-            base.Append(loggingEvents);
+            var logrecs = loggingEvents.Select(ConvertLogEventToLogRecord);
+            connector.SendLogRecords(logrecs);
         }
 
         protected override void Append(LoggingEvent loggingEvent) {
+            connector.SendLogRecord(ConvertLogEventToLogRecord(loggingEvent));
+        }
+
+        private LogRecord ConvertLogEventToLogRecord(LoggingEvent loggingEvent) {
             var thread = Thread.CurrentThread;
 
             var logrec = new LogRecord {
@@ -48,7 +53,7 @@ namespace LowLevelDesign.Diagnostics.Harvester.log4net
                 logrec.ExceptionAdditionalInfo = loggingEvent.ExceptionObject.StackTrace.ShortenIfNecessary(5000);
             }
 
-            connector.SendLogRecord(logrec);
+            return logrec;
         }
 
         private static LogRecord.ELogLevel ConvertToLogRecordLevel(Level lvl) {

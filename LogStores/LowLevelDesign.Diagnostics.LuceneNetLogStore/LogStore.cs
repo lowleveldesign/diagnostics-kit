@@ -19,8 +19,9 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
 
         public void AddLogRecords(IEnumerable<LogRecord> logrecs)
         {
-            // FIXME implement :)
-            throw new NotImplementedException();
+            foreach (var logrec in logrecs) {
+                AddLogRecord(logrec);
+            }
         }
 
         public void AddLogRecord(LogRecord logrec) {
@@ -98,6 +99,15 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
              * RequestData, ResponseData, ServiceDisplayName will be parsed with the StandardAnalyzer */
 
             return analyzer;
+        }
+
+
+        public IEnumerable<LogRecord> SearchLogs(LogSearchCriteria searchCriteria) {
+            throw new NotImplementedException(); // FIXME we need to implement searching in Lucene index
+        }
+
+        public void Initialize() {
+            // FIXME we should make log store initialization here
         }
     }
 }

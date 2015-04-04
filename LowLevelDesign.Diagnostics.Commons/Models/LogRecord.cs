@@ -47,11 +47,11 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
         /// Additional field which describe the log being collected, such as for web logs:
         /// url, referer or exception data.
         /// </summary>
-        public Dictionary<String, Object> AdditionalFields { get; set; }
+        public IDictionary<String, Object> AdditionalFields { get; set; }
 
         /// <summary>
         /// This field will be used only for logs generated from Performance Counters data.
         /// </summary>
-        public Dictionary<String, float> PerformanceData { get; set; }
+        public IDictionary<String, float> PerformanceData { get; set; }
     }
 }
