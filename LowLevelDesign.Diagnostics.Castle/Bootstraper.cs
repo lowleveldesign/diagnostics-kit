@@ -26,6 +26,7 @@ namespace LowLevelDesign.Diagnostics.Castle
             // configure application singletons and multinstance classes
 
             /* LOG STORAGE */
+            // FIXME we should inject here the configured logstore
             var logstorePath = WebConfigurationManager.AppSettings["logstore:path"];
             if (!Directory.Exists(logstorePath)) {
                 throw new ConfigurationErrorsException(Resource.InvalidLogstorePath);
