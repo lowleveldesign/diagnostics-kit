@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLuceneNetAnalysis", "Tests\TestLuceneNetAnalysis\TestLuceneNetAnalysis.csproj", "{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlLogStore", "LogStores\MySqlLogStore\MySqlLogStore.csproj", "{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.MySqlLogStore", "LogStores\LowLevelDesign.Diagnostics.MySqlLogStore\LowLevelDesign.Diagnostics.MySqlLogStore.csproj", "{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
