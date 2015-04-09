@@ -39,8 +39,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLuceneNetAnalysis", "Tests\TestLuceneNetAnalysis\TestLuceneNetAnalysis.csproj", "{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.MySqlLogStore", "LogStores\LowLevelDesign.Diagnostics.MySqlLogStore\LowLevelDesign.Diagnostics.MySqlLogStore.csproj", "{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,10 +101,6 @@ Global
 		{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,6 +118,5 @@ Global
 		{301050C2-E774-4D78-96B7-5E712A3F6CF8} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
 		{CFCDFB73-6B60-47E8-8DD1-FA1A0597ED0E} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
 		{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
-		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 	EndGlobalSection
 EndGlobal
