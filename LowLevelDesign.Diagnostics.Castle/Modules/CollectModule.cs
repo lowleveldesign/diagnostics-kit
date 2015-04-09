@@ -19,7 +19,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public CollectModule(ILogStore logstore, IValidator<LogRecord> logrecValidator) {
-            Post["/collect"] = _ => {
+            Post["/collect", true] = async (x, ct) => {
                 var logrec = this.Bind<LogRecord>(new BindingConfig { BodyOnly = true });
                 var validationResult = logrecValidator.Validate(logrec);
                 if (!validationResult.IsValid) {
@@ -27,11 +27,11 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 }
 
                 // FIXME add task to the tasks queue, for now we do it synchronously
-                logstore.AddLogRecord(logrec);
+                await logstore.AddLogRecord(logrec);
 
                 return "OK";
             };
-            Post["/collectall"] = _ =>
+            Post["/collectall", true] = async (x, ct) =>
             {
                 var logrecs = this.Bind<LogRecord[]>(new BindingConfig { BodyOnly = true });
 
@@ -54,7 +54,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     }
                 }
 
-                logstore.AddLogRecords(logsToSave);
+                await logstore.AddLogRecords(logsToSave);
 
                 return logsToSave.Count == logrecs.Length ? "OK" : "OK, BUT VALIDATION ERRORS OCCURED";
             };

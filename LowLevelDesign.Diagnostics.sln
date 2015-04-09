@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Commons", "LowLevelDesign.Diagnostics.Commons\LowLevelDesign.Diagnostics.Commons.csproj", "{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LuceneNetLogStore", "LogStores\LowLevelDesign.Diagnostics.LuceneNetLogStore\LowLevelDesign.Diagnostics.LuceneNetLogStore.csproj", "{A1A7454D-6114-4340-819F-416E0D696DDE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.LuceneNet", "LogStores\LowLevelDesign.Diagnostics.LogStore.LuceneNet\LowLevelDesign.Diagnostics.LogStore.LuceneNet.csproj", "{A1A7454D-6114-4340-819F-416E0D696DDE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestJsonSerialization", "Tests\TestJsonSerialization\TestJsonSerialization.csproj", "{7AE07CCC-A566-454E-B9BC-DFF3C61EA8BD}"
 EndProject

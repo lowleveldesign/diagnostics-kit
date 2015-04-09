@@ -3,11 +3,11 @@ using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Commons.Storage;
 using LowLevelDesign.Diagnostics.Commons.Validators;
-using LowLevelDesign.Diagnostics.LuceneNetLogStore;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Diagnostics;
 using Nancy.TinyIoc;
+using System;
 using System.Configuration;
 using System.IO;
 using System.Web.Configuration;
@@ -23,15 +23,18 @@ namespace LowLevelDesign.Diagnostics.Castle
         }
 
         protected override void ConfigureApplicationContainer(TinyIoCContainer container) {
-            // configure application singletons and multinstance classes
-
             /* LOG STORAGE */
-            // FIXME we should inject here the configured logstore
-            var logstorePath = WebConfigurationManager.AppSettings["logstore:path"];
-            if (!Directory.Exists(logstorePath)) {
-                throw new ConfigurationErrorsException(Resource.InvalidLogstorePath);
+            var logstoreType = WebConfigurationManager.AppSettings["diag:logstore"];
+            try {
+                var t = Type.GetType(logstoreType);
+                var logstore = (ILogStore)Activator.CreateInstance(t);
+                container.Register<ILogStore>(logstore);
+            } catch (Exception ex) {
+                throw new ConfigurationErrorsException(String.Format(
+                    "LogStore of type: '{0}' could not be initialized. Make sure you specified a valid type in the appsettings diag:logstore key. Error: {1}",
+                    logstoreType, ex));
             }
-            container.Register<ILogStore, LogStore>(new LogStore(logstorePath, WebConfigurationManager.AppSettings["logstore:log"]));
+
 
             /* VALIDATORS */
             container.Register<IValidator<LogRecord>, LogRecordValidator>();

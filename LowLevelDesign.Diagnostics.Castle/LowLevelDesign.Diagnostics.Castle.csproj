@@ -107,7 +107,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstraper.cs" />
@@ -132,9 +134,9 @@
       <Project>{eebc3248-e9c6-4bc3-b46f-bda8909a190c}</Project>
       <Name>LowLevelDesign.Diagnostics.Commons</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LogStores\LowLevelDesign.Diagnostics.LuceneNetLogStore\LowLevelDesign.Diagnostics.LuceneNetLogStore.csproj">
+    <ProjectReference Include="..\LogStores\LowLevelDesign.Diagnostics.LogStore.LuceneNet\LowLevelDesign.Diagnostics.LogStore.LuceneNet.csproj">
       <Project>{a1a7454d-6114-4340-819f-416e0d696dde}</Project>
-      <Name>LowLevelDesign.Diagnostics.LuceneNetLogStore</Name>
+      <Name>LowLevelDesign.Diagnostics.LogStore.LuceneNet</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

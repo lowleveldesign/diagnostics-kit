@@ -2,52 +2,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using LowLevelDesign.Diagnostics.Commons.Models;
+using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.Commons.Storage
 {
     public interface ILogStore
     {
         /// <summary>
-        /// Returns a list of available settings for a given log store.
-        /// </summary>
-        IDictionary<String, String> GetAvailableGlobalSettings();
-
-        /// <summary>
-        /// Returns a list of available application settings for
-        /// a given log store.
-        /// </summary>
-        IDictionary<String, String> GetAvailableApplicationSettings();
-
-        /// <summary>
-        /// Initializes the store - creates the necessary structures 
-        /// required to store the logs etc. If exception is thrown here
-        /// the Diagnostics Board will report it and won't start
-        /// </summary>
-        void Configure(IDictionary<String, String> settings);
-
-        /// <summary>
         /// Adds one log record to the store.
         /// </summary>
         /// <param name="logrec"></param>
-        void AddLogRecord(LogRecord logrec);
+        Task AddLogRecord(LogRecord logrec);
 
         /// <summary>
         /// Adds a batch of records to the store.
         /// </summary>
         /// <param name="logrecs"></param>
-        void AddLogRecords(IEnumerable<LogRecord> logrecs);
+        Task AddLogRecords(IEnumerable<LogRecord> logrecs);
 
         /// <summary>
         /// Retrieves logs from the store based on the passed search criteria.
         /// </summary>
         /// <param name="searchCriteria"></param>
         /// <returns></returns>
-        IEnumerable<LogRecord> SearchLogs(LogSearchCriteria searchCriteria);
+        Task<IEnumerable<LogRecord>> SearchLogs(LogSearchCriteria searchCriteria);
 
         /// <summary>
-        /// Performance storage maintenance - according to the configuration. 
-        /// Some storage allow different options for maintenance.
+        /// Performs storage maintenance - removes old logs, compacts the 
+        /// storage etc. You need to specify a global time for which we need 
+        /// to keep the logs and you may adjust it per application. Applications
+        /// are identified via their paths.
         /// </summary>
-        void Maintain();
+        Task Maintain(TimeSpan logsKeepTime, IDictionary<String, DateTime> logsKeepTimePerApplication = null);
     }
 }

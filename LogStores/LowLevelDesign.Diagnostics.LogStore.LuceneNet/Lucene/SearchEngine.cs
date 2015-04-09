@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
-namespace LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene
+namespace LowLevelDesign.Diagnostics.LogStore.LuceneNet.Lucene
 {
     /// <summary>
     /// Very generic engine based on Lucene.

@@ -3,7 +3,7 @@ using Lucene.Net.Analysis.Ext;
 using System;
 using System.IO;
 
-namespace LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene.Analyzers
+namespace LowLevelDesign.Diagnostics.LogStore.LuceneNet.Lucene.Analyzers
 {
     internal sealed class DottedNameAnalyzer : Analyzer
     {

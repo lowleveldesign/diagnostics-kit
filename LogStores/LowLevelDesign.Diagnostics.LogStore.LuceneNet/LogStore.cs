@@ -1,6 +1,6 @@
 ﻿using LowLevelDesign.Diagnostics.Commons.Models;
-using LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene.Analyzers;
-using LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene;
+using LowLevelDesign.Diagnostics.LogStore.LuceneNet.Lucene.Analyzers;
+using LowLevelDesign.Diagnostics.LogStore.LuceneNet.Lucene;
 using Lucene.Net.Documents;
 using System;
 using LowLevelDesign.Diagnostics.Commons.Storage;
@@ -8,23 +8,24 @@ using NLog;
 using System.Collections.Generic;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
+using System.Threading.Tasks;
 
-namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
+namespace LowLevelDesign.Diagnostics.LogStore.LuceneNet
 {
-    public class LogStore : ILogStore
+    public class LuceneNetLogStore : ILogStore
     {
         readonly static ISet<String> searchableAdditionalFields = new HashSet<String> {
             "Host", "LoggedUser", "Url", "Referer", "ClientIP", "RequestData", "ResponseData", "ServiceName", "ServiceDisplayName"
         };
 
-        public void AddLogRecords(IEnumerable<LogRecord> logrecs)
+        public async Task AddLogRecords(IEnumerable<LogRecord> logrecs)
         {
             foreach (var logrec in logrecs) {
-                AddLogRecord(logrec);
+                await AddLogRecord(logrec);
             }
         }
 
-        public void AddLogRecord(LogRecord logrec) {
+        public async Task AddLogRecord(LogRecord logrec) {
             var doc = new Document();
 
             doc.AddField("LoggerName", logrec.LoggerName, true);
@@ -76,10 +77,9 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
 
         private readonly SearchEngine searchEngine;
 
-        public LogStore() {
-            // FIXME fill indexPath and logPath from configuration
-            String indexPath = null; String logPath = null;
-            searchEngine = new SearchEngine(indexPath, CreateAnalyzer, logPath);
+        public LuceneNetLogStore() {
+            var logPath = LogStoreConfiguration.LuceneNetConfigSection.LogEnabled ? LogStoreConfiguration.LuceneNetConfigSection.LogPath : null;
+            searchEngine = new SearchEngine(LogStoreConfiguration.LuceneNetConfigSection.IndexPath, CreateAnalyzer, logPath);
         }
 
         private void AddFieldsAnalyzer(PerFieldAnalyzerWrapper analyzer, Analyzer fanalyzer, String[] fields) {
@@ -104,12 +104,13 @@ namespace LowLevelDesign.Diagnostics.LuceneNetLogStore
         }
 
 
-        public IEnumerable<LogRecord> SearchLogs(LogSearchCriteria searchCriteria) {
+        public async Task<IEnumerable<LogRecord>> SearchLogs(LogSearchCriteria searchCriteria) {
             throw new NotImplementedException(); // FIXME we need to implement searching in Lucene index
         }
 
-        public void Initialize() {
-            // FIXME we should make log store initialization here
+
+        public async Task Maintain(TimeSpan logsKeepTime, IDictionary<string, DateTime> logsKeepTimePerApplication = null) {
+            throw new NotImplementedException();
         }
     }
 }

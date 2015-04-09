@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LowLevelDesign.Diagnostics.LuceneNetLogStore.Lucene
+namespace LowLevelDesign.Diagnostics.LogStore.LuceneNet.Lucene
 {
     internal static class DocumentExtensions
     {
