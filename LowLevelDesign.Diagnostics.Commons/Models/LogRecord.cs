@@ -5,7 +5,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
 {
     public class LogRecord
     {
-        public enum ELogLevel
+        public enum ELogLevel : short
         {
             Trace = 0,
             Debug,
