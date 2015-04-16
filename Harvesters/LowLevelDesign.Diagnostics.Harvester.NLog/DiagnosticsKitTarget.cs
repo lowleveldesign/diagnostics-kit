@@ -72,7 +72,7 @@ namespace LowLevelDesign.Diagnostics.Harvester.NLog
             if (logEvent.Exception != null) {
                 logrec.ExceptionType = logEvent.Exception.GetType().FullName;
                 logrec.ExceptionMessage = logEvent.Exception.Message;
-                logrec.ExceptionAdditionalInfo = logEvent.Exception.StackTrace.ShortenIfNecessary(5000);
+                logrec.ExceptionAdditionalInfo = logEvent.Exception.StackTrace.ShortenIfNecessary(7000);
             }
             return logrec;
         }
