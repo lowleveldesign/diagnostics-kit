@@ -33,6 +33,6 @@ namespace LowLevelDesign.Diagnostics.Commons.Storage
         /// to keep the logs and you may adjust it per application. Applications
         /// are identified via their paths.
         /// </summary>
-        Task Maintain(TimeSpan logsKeepTime, IDictionary<String, DateTime> logsKeepTimePerApplication = null);
+        Task Maintain(TimeSpan logsKeepTime, IDictionary<String, TimeSpan> logsKeepTimePerApplication = null);
     }
 }

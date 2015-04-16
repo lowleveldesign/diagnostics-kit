@@ -17,9 +17,11 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
 
         public String Logger { get; set; }
 
-        public LogRecord.ELogLevel LevelFrom { get; set; }
+        public LogRecord.ELogLevel[] Levels { get; set; }
 
-        public LogRecord.ELogLevel LevelTo { get; set; }
+        public String ApplicationPath { get; set; }
+
+        public String Server { get; set; }
 
         public String Keywords { get; set; }
     }
