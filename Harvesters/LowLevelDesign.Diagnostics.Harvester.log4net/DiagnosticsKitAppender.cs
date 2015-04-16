@@ -50,7 +50,7 @@ namespace LowLevelDesign.Diagnostics.Harvester.log4net
             if (loggingEvent.ExceptionObject != null) {
                 logrec.ExceptionType = loggingEvent.ExceptionObject.GetType().FullName;
                 logrec.ExceptionMessage = loggingEvent.ExceptionObject.Message;
-                logrec.ExceptionAdditionalInfo = loggingEvent.ExceptionObject.StackTrace.ShortenIfNecessary(5000);
+                logrec.ExceptionAdditionalInfo = loggingEvent.ExceptionObject.StackTrace.ShortenIfNecessary(7000);
             }
 
             return logrec;
