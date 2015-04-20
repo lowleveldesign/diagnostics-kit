@@ -104,12 +104,17 @@ namespace LowLevelDesign.Diagnostics.LogStore.LuceneNet
         }
 
 
-        public async Task<IEnumerable<LogRecord>> SearchLogs(LogSearchCriteria searchCriteria) {
+        public async Task<LogSearchResults> FilterLogs(LogSearchCriteria searchCriteria) {
             throw new NotImplementedException(); // FIXME we need to implement searching in Lucene index
         }
 
+        public async Task<IEnumerable<LastApplicationStatus>> GetApplicationStatuses(DateTime lastDateTimeUtcToQuery)
+        {
+            throw new NotImplementedException();
+        }
 
-        public async Task Maintain(TimeSpan logsKeepTime, IDictionary<string, DateTime> logsKeepTimePerApplication = null) {
+
+        public async Task Maintain(TimeSpan logsKeepTime, IDictionary<string, TimeSpan> logsKeepTimePerApplication = null) {
             throw new NotImplementedException();
         }
     }

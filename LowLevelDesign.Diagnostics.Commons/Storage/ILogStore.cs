@@ -25,7 +25,15 @@ namespace LowLevelDesign.Diagnostics.Commons.Storage
         /// </summary>
         /// <param name="searchCriteria"></param>
         /// <returns></returns>
-        Task<IEnumerable<LogRecord>> SearchLogs(LogSearchCriteria searchCriteria);
+        Task<LogSearchResults> FilterLogs(LogSearchCriteria searchCriteria);
+
+        /// <summary>
+        /// Gets application statuses - this method is used by the grid
+        /// to quickly display the status of the application farm.
+        /// </summary>
+        /// <param name="lastDateTimeToQuery">Last date to filter the logs</param>
+        /// <returns></returns>
+        Task<IEnumerable<LastApplicationStatus>> GetApplicationStatuses(DateTime lastDateTimeUtcToQuery);
 
         /// <summary>
         /// Performs storage maintenance - removes old logs, compacts the 
