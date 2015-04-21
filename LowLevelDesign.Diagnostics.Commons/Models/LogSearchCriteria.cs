@@ -1,8 +1,4 @@
-﻿using LowLevelDesign.Diagnostics.Commons.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
 
 namespace LowLevelDesign.Diagnostics.Commons.Models
 {
@@ -24,5 +20,9 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
         public String Server { get; set; }
 
         public String Keywords { get; set; }
+
+        public int Limit { get; set; }
+
+        public int Offset { get; set; }
     }
 }
