@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using System.Threading.Tasks;
@@ -31,7 +30,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Storage
         /// Gets application statuses - this method is used by the grid
         /// to quickly display the status of the application farm.
         /// </summary>
-        /// <param name="lastDateTimeToQuery">Last date to filter the logs</param>
+        /// <param name="lastDateTimeUtcToQuery">Last date to filter the logs</param>
         /// <returns></returns>
         Task<IEnumerable<LastApplicationStatus>> GetApplicationStatuses(DateTime lastDateTimeUtcToQuery);
 
