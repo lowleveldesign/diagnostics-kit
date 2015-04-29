@@ -1,9 +1,11 @@
-﻿using LowLevelDesign.Diagnostics.Commons.Models;
+﻿using System.IO;
+using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.LuceneNet.Lucene.Analyzers;
 using LowLevelDesign.Diagnostics.LogStore.LuceneNet.Lucene;
 using Lucene.Net.Documents;
 using System;
 using LowLevelDesign.Diagnostics.Commons.Storage;
+using Lucene.Net.Store;
 using NLog;
 using System.Collections.Generic;
 using Lucene.Net.Analysis;
@@ -79,7 +81,16 @@ namespace LowLevelDesign.Diagnostics.LogStore.LuceneNet
 
         public LuceneNetLogStore() {
             var logPath = LogStoreConfiguration.LuceneNetConfigSection.LogEnabled ? LogStoreConfiguration.LuceneNetConfigSection.LogPath : null;
-            searchEngine = new SearchEngine(LogStoreConfiguration.LuceneNetConfigSection.IndexPath, CreateAnalyzer, logPath);
+            var indexPath = LogStoreConfiguration.LuceneNetConfigSection.IndexPath;
+            if (!System.IO.Directory.Exists(indexPath))
+            {
+                System.IO.Directory.CreateDirectory(indexPath);
+            }
+            if (logPath != null && !System.IO.Directory.Exists(Path.GetDirectoryName(logPath)))
+            {
+                System.IO.Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            }
+            searchEngine = new SearchEngine(indexPath, CreateAnalyzer, logPath);
         }
 
         private void AddFieldsAnalyzer(PerFieldAnalyzerWrapper analyzer, Analyzer fanalyzer, String[] fields) {

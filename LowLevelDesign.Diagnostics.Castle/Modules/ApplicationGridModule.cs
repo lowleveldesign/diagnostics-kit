@@ -1,4 +1,5 @@
-﻿using Nancy;
+﻿using LowLevelDesign.Diagnostics.Commons.Storage;
+using Nancy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +9,10 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public class ApplicationGridModule : NancyModule
     {
-        public ApplicationGridModule() {
-
+        public ApplicationGridModule(ILogStore logStore) {
+            Get["/"] = _ => {
+                return View["application-grid.html"];
+            };
         }
     }
 }

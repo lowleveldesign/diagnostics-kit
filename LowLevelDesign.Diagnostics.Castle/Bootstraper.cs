@@ -28,7 +28,7 @@ namespace LowLevelDesign.Diagnostics.Castle
             try {
                 var t = Type.GetType(logstoreType);
                 var logstore = (ILogStore)Activator.CreateInstance(t);
-                container.Register<ILogStore>(logstore);
+                container.Register(logstore);
             } catch (Exception ex) {
                 throw new ConfigurationErrorsException(String.Format(
                     "LogStore of type: '{0}' could not be initialized. Make sure you specified a valid type in the appsettings diag:logstore key. Error: {1}",
