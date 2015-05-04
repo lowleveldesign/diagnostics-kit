@@ -99,10 +99,10 @@
     </Content>
     <Content Include="errors.txt" />
     <Content Include="packages.config" />
-    <Content Include="Static\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Static\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Static\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Static\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -111,9 +111,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Static\css\bootstrap.min.css" />
-    <Content Include="Static\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Static\js\bootstrap.min.js" />
+    <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\js\bootstrap.min.js" />
+    <Content Include="Views\application-grid.html" />
     <Content Include="Views\master.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
