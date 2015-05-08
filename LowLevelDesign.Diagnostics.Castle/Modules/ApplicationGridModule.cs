@@ -10,7 +10,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
     public class ApplicationGridModule : NancyModule
     {
         public ApplicationGridModule(ILogStore logStore) {
-            Get["/"] = _ => {
+            Get["/", true] = async (x, ct) => {
+                var appStats = await logStore.GetApplicationStatuses(DateTime.UtcNow.AddMinutes(-2));
+
                 return View["application-grid.html"];
             };
         }

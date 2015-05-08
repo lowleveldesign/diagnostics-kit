@@ -28,7 +28,8 @@ namespace LowLevelDesign.Diagnostics.Commons.Storage
 
         /// <summary>
         /// Gets application statuses - this method is used by the grid
-        /// to quickly display the status of the application farm.
+        /// to quickly display the status of the application farm. There should be
+        /// only one application status returned per application path.
         /// </summary>
         /// <param name="lastDateTimeUtcToQuery">Last date to filter the logs</param>
         /// <returns></returns>
