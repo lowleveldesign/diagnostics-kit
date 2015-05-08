@@ -120,7 +120,7 @@
     <Compile Include="Config\AppConfigurationManager.cs" />
     <Compile Include="Config\IAppConfigurationManager.cs" />
     <Compile Include="Models\Application.cs" />
-    <Compile Include="Models\ApplicationTab.cs" />
+    <Compile Include="Models\ApplicationGrid.cs" />
     <Compile Include="Modules\ApplicationGridModule.cs" />
     <Compile Include="Modules\CollectModule.cs" />
     <Compile Include="Modules\ApplicationLogModule.cs" />

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.Castle.Config
 {
-    interface IAppConfigurationManager
+    public interface IAppConfigurationManager
     {
         /// <summary>
         /// Adds or updates application in the cache and in the configuration database.
