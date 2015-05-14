@@ -26,6 +26,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     return "VALIDATION ERROR";
                 }
 
+                // FIXME add new application to the configuration as excluded (it could be later renamed or unexcluded)
+
+
                 // FIXME add task to the tasks queue, for now we do it synchronously
                 await logstore.AddLogRecord(logrec);
 

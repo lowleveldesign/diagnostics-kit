@@ -1,9 +1,13 @@
 ﻿using Dapper;
 using LowLevelDesign.Diagnostics.Castle.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Configuration;
 using System.Data.Common;
+using System.IO;
 using System.Runtime.Caching;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Configuration;
 
@@ -13,6 +17,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
     {
         private const int appCacheExpirationInMinutes = 20;
 
+        private static readonly ConcurrentDictionary<String, byte[]> applicationMd5Hashes = new ConcurrentDictionary<String, byte[]>();
         private static readonly MemoryCache cache;
         private static readonly DbProviderFactory dbProviderFactory;
         private static readonly String dbConnString;
@@ -36,11 +41,30 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
             return conn;
         }
 
-        public async Task AddOrUpdateApp(Application app) {
+        private byte[] GetApplicationHash(String applicationPath)
+        {
+            byte[] apphash;
+            if (!applicationMd5Hashes.TryGetValue(applicationPath, out apphash))
+            {
+                using (var md5 = MD5.Create())
+                {
+                    apphash = md5.ComputeHash(Encoding.UTF8.GetBytes(applicationPath));
+                    applicationMd5Hashes.TryAdd(applicationPath, apphash);
+                }
+            }
+            return apphash;
+        }
+
+        public async Task AddOrUpdateAppAsync(Application app) {
             if (app == null || app.Path == null) {
                 throw new ArgumentException("app is null or app.Path is null");
             }
             app.Path = app.Path.ToLowerInvariant();
+            var pathHash = GetApplicationHash(app.Path);
+            if (String.IsNullOrEmpty(app.Name)) {
+                // if name is not provided we need to assign a default one
+                app.Name = Path.GetFileName(app.Path.TrimEnd(Path.DirectorySeparatorChar));
+            }
 
             using (var conn = CreateConnection()) {
                 await conn.OpenAsync();
@@ -48,10 +72,14 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
                 var tran = conn.BeginTransaction();
                 try {
                     // try to update the record
-                    var rec = await conn.ExecuteAsync("update Applications set Name = @Name, IsExcluded = @IsExcluded, TabKey = @TabKey where Path = @Path", app, tran);
+                    var rec = await conn.ExecuteAsync("update Applications set Name = @Name, IsExcluded = @IsExcluded where PathHash = @PathHash", new {
+                        app.Name, app.IsExcluded, PathHash = pathHash
+                    }, tran);
                     if (rec == 0) {
                         // no application found - we need to insert it
-                        await conn.ExecuteAsync("insert into Applications (Name, Path, IsExcluded, TabKey) values (@Name, @Path, @IsExcluded, @TabKey)", app, tran);
+                        await conn.ExecuteAsync("insert into Applications (Name, Path, PathHash, IsExcluded) values (@Name, @Path, @PathHash, @IsExcluded)", new {
+                            app.Name, app.Path, app.IsExcluded, PathHash = pathHash
+                        }, tran);
                     }
                     tran.Commit();
                 } catch {
@@ -67,11 +95,12 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
             }
         }
 
-        public async Task<Application> FindApp(String path) {
+        public async Task<Application> FindAppAsync(String path) {
             if (path == null) {
                 throw new ArgumentException("path is null");
             }
             path = path.ToLowerInvariant();
+            var hash = GetApplicationHash(path);
 
             if (cache.Contains(path)) {
                 return cache[path] as Application;
@@ -106,21 +135,26 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
             }
         }
 
-        public async Task RemoveApp(String path) {
+        public async Task RemoveAppAsync(String path) {
             if (path == null) {
                 throw new ArgumentException("path is null");
             }
-            path = path.ToLowerInvariant();
+            var pathHash = GetApplicationHash(path.ToLowerInvariant());
 
             using (var conn = CreateConnection()) {
                 await conn.OpenAsync();
 
-                await conn.ExecuteAsync("update Applications set IsExcluded = 1 where Path = @path", new { path });
+                await conn.ExecuteAsync("update Applications set IsExcluded = 1 where PathHash = @pathHash", new { pathHash });
             }
 
-            cache.Set(path, new Application { Path = path, IsExcluded = true }, new CacheItemPolicy {
-                AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(appCacheExpirationInMinutes + rand.Next(10))
-            });
+            // only if the app was cached, update it
+            if (cache.Contains(path)) {
+                var app = cache[path] as Application;
+                app.IsExcluded = false;
+                cache.Set(path, app, new CacheItemPolicy { 
+                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(appCacheExpirationInMinutes + rand.Next(10))
+                });
+            }
         }
     }
 }
