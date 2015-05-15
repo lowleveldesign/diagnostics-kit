@@ -1,0 +1,24 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+
+@model LowLevelDesign.Diagnostics.Castle.Models.ApplicationGridModel
+
+<div class="panel panel-default">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Panel heading</div>
+
+    <!-- Table -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Application</th>
+                @foreach (var srv in Model.Servers) {
+                    <th>@srv</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            </tr>
+        </tbody>
+    </table>
+</div>

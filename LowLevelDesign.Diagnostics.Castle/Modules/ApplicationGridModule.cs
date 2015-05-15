@@ -28,7 +28,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     }
                 }
 
-                return View["application-grid.html", new ApplicationGridModel {
+                return View["ApplicationGrid.cshtml", new ApplicationGridModel {
                     Servers = servers.ToArray(),
                     ApplicationStatuses = extendedAppStats.Values.ToArray()
                 }];

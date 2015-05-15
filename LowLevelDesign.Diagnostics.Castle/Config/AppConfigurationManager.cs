@@ -15,7 +15,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
 {
     public class AppConfigurationManager : IAppConfigurationManager
     {
-        private const int appCacheExpirationInMinutes = 20;
+        private const int appCacheExpirationInMinutes = 10;
 
         private static readonly ConcurrentDictionary<String, byte[]> applicationMd5Hashes = new ConcurrentDictionary<String, byte[]>();
         private static readonly MemoryCache cache;
