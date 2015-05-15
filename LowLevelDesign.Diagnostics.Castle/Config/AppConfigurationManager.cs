@@ -44,10 +44,8 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
         private byte[] GetApplicationHash(String applicationPath)
         {
             byte[] apphash;
-            if (!applicationMd5Hashes.TryGetValue(applicationPath, out apphash))
-            {
-                using (var md5 = MD5.Create())
-                {
+            if (!applicationMd5Hashes.TryGetValue(applicationPath, out apphash)) {
+                using (var md5 = MD5.Create()) {
                     apphash = md5.ComputeHash(Encoding.UTF8.GetBytes(applicationPath));
                     applicationMd5Hashes.TryAdd(applicationPath, apphash);
                 }
