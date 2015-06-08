@@ -1,5 +1,8 @@
 ﻿using Dapper;
 using LowLevelDesign.Diagnostics.Castle.Models;
+using LowLevelDesign.Diagnostics.Commons;
+using LowLevelDesign.Diagnostics.Commons.Config;
+using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Configuration;
@@ -13,7 +16,7 @@ using System.Web.Configuration;
 
 namespace LowLevelDesign.Diagnostics.Castle.Config
 {
-    public class AppConfigurationManager : IAppConfigurationManager
+    public class DefaultAppConfigurationManager : IAppConfigurationManager
     {
         private const int appCacheExpirationInMinutes = 10;
 
@@ -23,7 +26,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
         private static readonly String dbConnString;
         private readonly Random rand = new Random();
 
-        static AppConfigurationManager() {
+        static DefaultAppConfigurationManager() {
             var configDbConnString = WebConfigurationManager.ConnectionStrings["configdb"];
             if (configDbConnString == null) {
                 throw new ConfigurationErrorsException("'configdb' connection string is missing. Please add it to the web.config file.");

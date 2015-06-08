@@ -72,6 +72,10 @@
       <Project>{885abf87-b86b-436d-a787-66cda246d211}</Project>
       <Name>LowLevelDesign.Diagnostics.Castle</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\LowLevelDesign.Diagnostics.Commons\LowLevelDesign.Diagnostics.Commons.csproj">
+      <Project>{eebc3248-e9c6-4bc3-b46f-bda8909a190c}</Project>
+      <Name>LowLevelDesign.Diagnostics.Commons</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

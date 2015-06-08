@@ -126,9 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstraper.cs" />
-    <Compile Include="Config\AppConfigurationManager.cs" />
-    <Compile Include="Config\IAppConfigurationManager.cs" />
-    <Compile Include="Models\Application.cs" />
+    <Compile Include="Config\DefaultAppConfigurationManager.cs" />
     <Compile Include="Models\ApplicationGridModels.cs" />
     <Compile Include="Modules\ApplicationGridModule.cs" />
     <Compile Include="Modules\CollectModule.cs" />

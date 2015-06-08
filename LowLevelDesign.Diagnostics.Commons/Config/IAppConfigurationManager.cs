@@ -1,8 +1,8 @@
-﻿using LowLevelDesign.Diagnostics.Castle.Models;
+﻿using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
 using System.Threading.Tasks;
 
-namespace LowLevelDesign.Diagnostics.Castle.Config
+namespace LowLevelDesign.Diagnostics.Commons.Config
 {
     public interface IAppConfigurationManager
     {

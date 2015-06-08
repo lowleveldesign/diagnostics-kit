@@ -7,8 +7,9 @@ using Nancy;
 using Nancy.ModelBinding;
 using Newtonsoft.Json;
 using NLog;
-using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Castle.Models;
+using LowLevelDesign.Diagnostics.Commons;
+using LowLevelDesign.Diagnostics.Commons.Config;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
