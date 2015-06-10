@@ -132,6 +132,7 @@
     <Compile Include="Modules\CollectModule.cs" />
     <Compile Include="Modules\ApplicationLogModule.cs" />
     <Compile Include="Modules\InfoModule.cs" />
+    <Compile Include="Modules\MaintenanceModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>

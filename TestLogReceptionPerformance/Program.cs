@@ -52,7 +52,7 @@ namespace TestLogReceptionPerformance
                         Parallel.For(0, numberOfLogs / batchSize, opt, (i) => {
                             var recs = new LogRecord[batchSize];
                             for (int j = 0; j < batchSize; j++) {
-                                recs[j] = GenerateRandomLogRecord(i);
+                                recs[j] = GenerateRandomLogRecord();
                             }
                             try {
                                 var sw = new Stopwatch();
@@ -72,7 +72,7 @@ namespace TestLogReceptionPerformance
                             try {
                                 var sw = new Stopwatch();
                                 sw.Start();
-                                connector.SendLogRecord(GenerateRandomLogRecord(i));
+                                connector.SendLogRecord(GenerateRandomLogRecord());
                                 sw.Stop();
 
                                 Interlocked.Add(ref ticks, sw.ElapsedTicks);
@@ -111,22 +111,25 @@ namespace TestLogReceptionPerformance
             @"C:\testapp1\", @"c:\testapp2\", @"c:\testapp3\",
             @"\\share1", @"\\share2"
         };
+        readonly static String[] servers = new[] {
+            "SRV1", "SRV2", "SRV3"
+        };
 
-        static LogRecord GenerateRandomLogRecord(int i)
+        static LogRecord GenerateRandomLogRecord()
         {
             var rnd = new Random();
 
             var logrec = new LogRecord {
                 TimeUtc = DateTime.UtcNow,
-                LoggerName = loggerNames[i % loggerNames.Length],
-                LogLevel = (LogRecord.ELogLevel)(i % 6),
-                Message = messages[i % messages.Length],
-                Server = Environment.MachineName,
-                ApplicationPath = paths[i % paths.Length],
-                ProcessId = processIds[i % processIds.Length],
-                ProcessName = processNames[i % processNames.Length],
+                LoggerName = loggerNames[rnd.Next() % loggerNames.Length],
+                LogLevel = (LogRecord.ELogLevel)(rnd.Next() % 6),
+                Message = messages[rnd.Next() % messages.Length],
+                Server = servers[rnd.Next() % servers.Length],
+                ApplicationPath = paths[rnd.Next() % paths.Length],
+                ProcessId = processIds[rnd.Next() % processIds.Length],
+                ProcessName = processNames[rnd.Next() % processNames.Length],
                 ThreadId = 0,
-                Identity = identities[i % identities.Length],
+                Identity = identities[rnd.Next() % identities.Length],
                 PerformanceData = new Dictionary<String, float> {
                     { "CPU", (float)(rnd.NextDouble() * 100.0) },
                     { "Memory", (float)(rnd.NextDouble() * 10000.0) }
