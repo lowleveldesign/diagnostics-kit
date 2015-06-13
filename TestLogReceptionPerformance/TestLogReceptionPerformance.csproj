@@ -36,8 +36,8 @@
       <HintPath>..\packages\FluentValidation.5.5.0.0\lib\Net40\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.0.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LowLevelDesign.Diagnostics.Commons.0.0.10.0\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
+    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.0.12.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LowLevelDesign.Diagnostics.Commons.0.0.12.0\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">

@@ -1,5 +1,6 @@
 ﻿using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.Commons.Config
@@ -28,5 +29,11 @@ namespace LowLevelDesign.Diagnostics.Commons.Config
         /// <param name="path">A path to the application - it's used as an application identifier.</param>
         /// <returns></returns>
         Task RemoveAppAsync(string path);
+
+        /// <summary>
+        /// Retruns a sorted list of applications for which we have already received logs.
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<Application>> GetAppsAsync();
     }
 }

@@ -1,0 +1,52 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<IEnumerable<Application>>
+
+@section style {
+    <link href="~/Content/css/bootstrap-switch.min.css" rel="stylesheet">
+}
+
+@section scripts {
+    <script src="~/Content/js/bootstrap-switch.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("input[type='checkbox']").bootstrapSwitch();
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="col-sm-2"></div>
+    <div class="panel panel-default col-sm-8">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Applications</div>
+        <div class="panel-body">
+            <span>
+                Applications for which we have received logs. You may here decide for which of them logs
+                should be collected and how should they be maintained.
+            </span>
+            <!-- Table -->
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Enabled</th>
+                        <th>Application path</th>
+                        <th>Application name</th>
+                        <th>Logs keep time (days)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var app in Model) {
+                        <tr>
+                            <td><input type="checkbox" value="@app.IsExcluded" data-size="mini" data-on-text="YES" 
+                                       data-off-text="NO" data-on-color="success" /></td>
+                            <td>@app.Path</td>
+                            <td>@app.Name FIXME: change</td>
+                            <td>@app.DaysToKeepLogs FIXME:change</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

@@ -39,7 +39,8 @@ namespace LowLevelDesign.Diagnostics.Commons.Storage
         /// Performs storage maintenance - removes old logs, compacts the 
         /// storage etc. You need to specify a global time for which we need 
         /// to keep the logs and you may adjust it per application. Applications
-        /// are identified via their paths.
+        /// are identified by their paths. Additionaly where timespan for an application
+        /// is equal to zero, its logs won't be deleted.
         /// </summary>
         Task Maintain(TimeSpan logsKeepTime, IDictionary<String, TimeSpan> logsKeepTimePerApplication = null);
     }

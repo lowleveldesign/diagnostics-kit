@@ -157,5 +157,12 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
                 });
             }
         }
+
+
+        public Task<System.Collections.Generic.IEnumerable<Application>> GetAppsAsync()
+        {
+            // FIXME
+            throw new NotImplementedException();
+        }
     }
 }

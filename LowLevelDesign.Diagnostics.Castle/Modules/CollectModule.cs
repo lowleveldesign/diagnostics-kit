@@ -10,11 +10,13 @@ using NLog;
 using LowLevelDesign.Diagnostics.Castle.Models;
 using LowLevelDesign.Diagnostics.Commons;
 using LowLevelDesign.Diagnostics.Commons.Config;
+using System.Web.Configuration;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public sealed class CollectModule : NancyModule
     {
+        private static readonly byte DefaultNoOfDaysToKeepLogs = Byte.Parse(WebConfigurationManager.AppSettings["diag:defaultNoOfDaysToKeepLogs"] ?? "2");
         private static readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings {
             NullValueHandling = NullValueHandling.Ignore
         };
@@ -30,12 +32,23 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 }
 
                 // add new application to the configuration as excluded (it could be later renamed or unexcluded)
-                if (await config.FindAppAsync(logrec.ApplicationPath) == null) {
-                    await config.AddOrUpdateAppAsync(new Application { IsExcluded = true, Path = logrec.ApplicationPath });
+                var app = await config.FindAppAsync(logrec.ApplicationPath);
+                if (app == null) {
+                    app = new Application {
+                        IsExcluded = true,
+                        Path = logrec.ApplicationPath,
+                        DaysToKeepLogs = DefaultNoOfDaysToKeepLogs
+                    };
+                    await config.AddOrUpdateAppAsync(app);
                 }
 
-                // FIXME add task to the tasks queue, for now we do it synchronously
-                await logstore.AddLogRecord(logrec);
+                // we should collect logs only for applications which are not excluded
+                if (!app.IsExcluded) {
+                    // FIXME add task to the tasks queue, for now we do it synchronously
+                    await logstore.AddLogRecord(logrec);
+                } else {
+                    logger.Debug("Log record for the application '{0}' was not stored as the application is excluded.");
+                }
 
                 return "OK";
             };
@@ -47,11 +60,22 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     var validationResult = logrecValidator.Validate(logrec);
                     if (validationResult.IsValid) {
                         // add new application to the configuration as excluded (it could be later renamed or unexcluded)
-                        if (await config.FindAppAsync(logrec.ApplicationPath) == null) {
-                            await config.AddOrUpdateAppAsync(new Application { IsExcluded = true, Path = logrec.ApplicationPath });
+                        var app = await config.FindAppAsync(logrec.ApplicationPath);
+                        if (app == null) {
+                            app = new Application {
+                                IsExcluded = true,
+                                Path = logrec.ApplicationPath,
+                                DaysToKeepLogs = DefaultNoOfDaysToKeepLogs
+                            };
+                            await config.AddOrUpdateAppAsync(app);
                         }
 
-                        logsToSave.Add(logrec);
+                        // we should collect logs only for applications which are not excluded
+                        if (!app.IsExcluded) {
+                            logsToSave.Add(logrec);
+                        } else {
+                            logger.Debug("Log record for the application '{0}' was not stored as the application is excluded.");
+                        }
                     } else {
                         if (logger.IsWarnEnabled) {
                             logger.Warn("Validation error(s) occured when saving a logrecord: {0}, errors: {1}",
@@ -64,7 +88,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 // FIXME add task to the tasks queue, for now we do it synchronously
                 await logstore.AddLogRecords(logsToSave);
 
-                return logsToSave.Count == logrecs.Length ? "OK" : "OK, BUT VALIDATION ERRORS OCCURED";
+                return "OK";
             };
         }
     }
