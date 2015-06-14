@@ -1,6 +1,4 @@
 ﻿using Dapper;
-using LowLevelDesign.Diagnostics.Castle.Models;
-using LowLevelDesign.Diagnostics.Commons;
 using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
@@ -12,7 +10,6 @@ using System.Runtime.Caching;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Configuration;
 
 namespace LowLevelDesign.Diagnostics.Castle.Config
 {
@@ -27,7 +24,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
         private readonly Random rand = new Random();
 
         static DefaultAppConfigurationManager() {
-            var configDbConnString = WebConfigurationManager.ConnectionStrings["configdb"];
+            var configDbConnString = ConfigurationManager.ConnectionStrings["configdb"];
             if (configDbConnString == null) {
                 throw new ConfigurationErrorsException("'configdb' connection string is missing. Please add it to the web.config file.");
             }
@@ -136,7 +133,17 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
             }
         }
 
-        public async Task RemoveAppAsync(String path) {
+        public Task<System.Collections.Generic.IEnumerable<Application>> GetAppsAsync()
+        {
+            // FIXME
+            throw new NotImplementedException();
+        }
+
+
+        public Task UpdateAppPropertiesAsync(Application app, string[] propertiesToUpdate)
+        {
+            /*
+             * 
             if (path == null) {
                 throw new ArgumentException("path is null");
             }
@@ -156,12 +163,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
                     AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(appCacheExpirationInMinutes + rand.Next(10))
                 });
             }
-        }
-
-
-        public Task<System.Collections.Generic.IEnumerable<Application>> GetAppsAsync()
-        {
-            // FIXME
+             */
             throw new NotImplementedException();
         }
     }

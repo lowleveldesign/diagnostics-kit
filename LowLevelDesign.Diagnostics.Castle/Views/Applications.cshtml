@@ -8,21 +8,101 @@
     <script src="~/Content/js/bootstrap-switch.min.js"></script>
 
     <script type="text/javascript">
+        function findApplicationRow(path) {
+            return $('table tr').filter(function (ind) {
+                return $(this).attr('data-path') == path;
+            })
+        }
+
         $(function () {
-            $("input[type='checkbox']").bootstrapSwitch();
+            /* application exclusion */
+            $("input[type='checkbox']").bootstrapSwitch().on('switchChange.bootstrapSwitch', function (event, state) {
+                var ctrl = $(this);
+                var path = $(this).attr('data-apppath');
+                $.post('conf/appexclusion', { Path: path, IsExcluded: !state }, function (data) {
+                }).fail(function () {
+                    $('#globalAlert').removeClass('hidden');
+                });
+            });
+            /* application name */
+            $("a[name='appname']").on('click', function () {
+                $("#appnameModal input[name='apppath']").val($(this).attr('data-apppath'));
+                $('#appname').val($(this).text());
+                // remove any previous validation failures
+                $('#appnameFormGroup').removeClass('has-error');
+                $('#appnameModal div.alert').addClass('hidden');
+                // show modal
+                $('#appnameModal').modal();
+            });
+            $("#btnSaveAppname").on('click', function () {
+                var apppath = $("#appnameModal input[name='apppath']").val();
+                var newname = $('#appname').val();
+
+                $.post('conf/appname', { Path: apppath, Name: newname }, function (data) {
+                    if (data == 'ERR_INVALID') {
+                        $('#appnameFormGroup').addClass('has-error')
+                    } else if (data == 'OK') {
+                        $('#appnameModal').modal('hide');
+                        // finally we need to update the value in the grid
+                        $("a[name='appname']", findApplicationRow(apppath)).text(newname);
+                    }
+                }).fail(function () {
+                    $('#appnameModal div.alert').removeClass('hidden');
+                });
+            });
+            /* application logs maintenance */
+            $("a[name='appmaintain']").on('click', function () {
+                $("#appMaintenanceModal input[name='apppath']").val($(this).attr('data-apppath'));
+                $('#appDaysLogs').val($(this).attr('data-value'));
+                // remove any previous validation failures
+                $('#appDaysLogsFormGroup').removeClass('has-error');
+                $('#appMaintenanceModal div.alert').addClass('hidden');
+                // show modal
+                $('#appMaintenanceModal').modal();
+            });
+            $('#btnSaveAppMaintenance').on('click', function () {
+                var apppath = $("#appMaintenanceModal input[name='apppath']").val();
+                var v = parseInt($('#appDaysLogs').val());
+                if (isNaN(v) || v < 0 || v > 255) {
+                    $('#appDaysLogsFormGroup').addClass('has-error');
+                    return;
+                }
+
+                $.post('conf/appmaintenance', { Path: apppath, DaysToKeepLogs: v }, function (data) {
+                    if (data == 'ERR_INVALID') {
+                        $('#appDaysLogsFormGroup').addClass('has-error');
+                    } else if (data == 'OK') {
+                        $('#appMaintenanceModal').modal('hide');
+                        // finally we need to update the value in the grid
+                        $("a[name='appmaintain']", findApplicationRow(apppath)).attr('data-value', v);
+                        if (v == 0) {
+                            $("a[name='appmaintain']", findApplicationRow(apppath)).text("Forever");
+                        } else if (v == 1) {
+                            $("a[name='appmaintain']", findApplicationRow(apppath)).text("1 day");
+                        } else {
+                            $("a[name='appmaintain']", findApplicationRow(apppath)).text(v + " days");
+                        }
+                    }
+                }).fail(function () {
+                    $('#appMaintenanceModal div.alert').removeClass('hidden');
+                });
+            });
         });
     </script>
 }
 
 <div class="row">
-    <div class="col-sm-2"></div>
-    <div class="panel panel-default col-sm-8">
-        <!-- Default panel contents -->
+    <div class="panel panel-default">
         <div class="panel-heading">Applications</div>
         <div class="panel-body">
+            <div id="globalAlert" class="alert alert-danger alert-dismissible hidden" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                There was <strong>a network problem</strong> while trying to update the application info. Please try again and if the problem
+                persists contact the application administrator.
+            </div>
             <span>
                 Applications for which we have received logs. You may here decide for which of them logs
-                should be collected and how should they be maintained.
+                should be collected and how should they be maintained. <strong>Click on an item to change its value.</strong>
             </span>
             <!-- Table -->
             <table class="table table-striped table-bordered">
@@ -31,17 +111,36 @@
                         <th>Enabled</th>
                         <th>Application path</th>
                         <th>Application name</th>
-                        <th>Logs keep time (days)</th>
+                        <th>Logs keep time</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var app in Model) {
-                        <tr>
-                            <td><input type="checkbox" value="@app.IsExcluded" data-size="mini" data-on-text="YES" 
-                                       data-off-text="NO" data-on-color="success" /></td>
+                        <tr data-path="@app.Path">
+                            <td>
+                                <input type="checkbox" data-apppath="@app.Path" data-size="mini" data-on-text="YES"
+                                       data-off-text="NO" data-on-color="success" checked="@(!app.IsExcluded)" />
+                            </td>
                             <td>@app.Path</td>
-                            <td>@app.Name FIXME: change</td>
-                            <td>@app.DaysToKeepLogs FIXME:change</td>
+                            <td><a name="appname" href="#" title="click to change" data-apppath="@app.Path">@app.Name</a></td>
+                            <td>
+                                <a name="appmaintain" href="#" data-apppath="@app.Path" data-value="@app.DaysToKeepLogs" title="click to change">
+                                    @if (app.DaysToKeepLogs.HasValue) {
+                                        switch (app.DaysToKeepLogs.Value) {
+                                            case 0:
+                                                <text>Forever</text>
+                                                break;
+                                            case 1:
+                                            <text>1 day</text>
+                                                break;
+                                            default:
+                                            <text>@app.DaysToKeepLogs days</text>
+                                                break;
+
+                                        }
+                                    }
+                                </a>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -50,3 +149,57 @@
     </div>
 </div>
 
+<div id="appnameModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Change the application name</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger alert-dismissible hidden" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    There was <strong>a network problem</strong> while trying to update the application info. Please try again and if the problem
+                    persists contact the application administrator.
+                </div>
+                <div id="appnameFormGroup" class="form-group">
+                    <input type="hidden" name="apppath" />
+                    <label class="control-label" for="appname">New application name</label>
+                    <input class="form-control" id="appname" placeholder="Enter a new application name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="btnSaveAppname" type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="appMaintenanceModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Set the log maintainance for the application</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger alert-dismissible hidden" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    There was <strong>a network problem</strong> while trying to update the application info. Please try again and if the problem
+                    persists contact the application administrator.
+                </div>
+                <div id="appDaysLogsFormGroup" class="form-group">
+                    <input type="hidden" name="apppath" />
+                    <label class="control-label" for="appDaysLogs">Number of days to keep logs (0 if logs should not be deleted)</label>
+                    <input type="number" class="form-control" id="appDaysLogs" placeholder="Enter a number from 0 to 255">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="btnSaveAppMaintenance" type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

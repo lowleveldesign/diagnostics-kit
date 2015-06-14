@@ -23,12 +23,10 @@ namespace LowLevelDesign.Diagnostics.Commons.Config
         Task<Application> FindAppAsync(string path);
 
         /// <summary>
-        /// Removes application from the cache and the configuration database - it won't
-        /// be monitored any longer.
+        /// Updates selected properties for an app. Path must be provided 
+        /// in the app object.
         /// </summary>
-        /// <param name="path">A path to the application - it's used as an application identifier.</param>
-        /// <returns></returns>
-        Task RemoveAppAsync(string path);
+        Task UpdateAppPropertiesAsync(Application app, String[] propertiesToUpdate);
 
         /// <summary>
         /// Retruns a sorted list of applications for which we have already received logs.

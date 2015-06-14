@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
+using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Commons.Storage;
 using Nancy;
 using Nancy.ModelBinding;
 using Newtonsoft.Json;
 using NLog;
-using LowLevelDesign.Diagnostics.Castle.Models;
-using LowLevelDesign.Diagnostics.Commons;
-using LowLevelDesign.Diagnostics.Commons.Config;
-using System.Web.Configuration;
+using System;
+using System.Collections.Generic;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public sealed class CollectModule : NancyModule
     {
-        private static readonly byte DefaultNoOfDaysToKeepLogs = Byte.Parse(WebConfigurationManager.AppSettings["diag:defaultNoOfDaysToKeepLogs"] ?? "2");
         private static readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings {
             NullValueHandling = NullValueHandling.Ignore
         };
@@ -36,8 +32,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 if (app == null) {
                     app = new Application {
                         IsExcluded = true,
-                        Path = logrec.ApplicationPath,
-                        DaysToKeepLogs = DefaultNoOfDaysToKeepLogs
+                        Path = logrec.ApplicationPath
                     };
                     await config.AddOrUpdateAppAsync(app);
                 }
@@ -64,8 +59,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         if (app == null) {
                             app = new Application {
                                 IsExcluded = true,
-                                Path = logrec.ApplicationPath,
-                                DaysToKeepLogs = DefaultNoOfDaysToKeepLogs
+                                Path = logrec.ApplicationPath
                             };
                             await config.AddOrUpdateAppAsync(app);
                         }

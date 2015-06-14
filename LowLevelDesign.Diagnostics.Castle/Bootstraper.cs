@@ -11,7 +11,6 @@ using Nancy.TinyIoc;
 using System;
 using System.Configuration;
 using System.IO;
-using System.Web.Configuration;
 
 namespace LowLevelDesign.Diagnostics.Castle
 {
@@ -25,7 +24,7 @@ namespace LowLevelDesign.Diagnostics.Castle
 
         protected override void ConfigureApplicationContainer(TinyIoCContainer container) {
             /* LOG STORAGE */
-            var logstoreType = WebConfigurationManager.AppSettings["diag:logstore"];
+            var logstoreType = ConfigurationManager.AppSettings["diag:logstore"];
             try {
                 var t = Type.GetType(logstoreType);
                 var logstore = (ILogStore)Activator.CreateInstance(t);
@@ -39,9 +38,10 @@ namespace LowLevelDesign.Diagnostics.Castle
 
             /* VALIDATORS */
             container.Register<IValidator<LogRecord>, LogRecordValidator>();
+            container.Register<IValidator<Application>, ApplicationValidator>();
 
             /* CONFIGURATION */
-            var confMgr = WebConfigurationManager.AppSettings["diag:confmgr"];
+            var confMgr = ConfigurationManager.AppSettings["diag:confmgr"];
             Type confMgrType;
             if (String.IsNullOrEmpty(confMgr)) {
                 confMgrType = typeof(DefaultAppConfigurationManager);

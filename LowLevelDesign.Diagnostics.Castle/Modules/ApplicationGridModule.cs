@@ -1,18 +1,23 @@
 ﻿using LowLevelDesign.Diagnostics.Castle.Models;
 using LowLevelDesign.Diagnostics.Commons.Storage;
 using Nancy;
+using Nancy.ModelBinding;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using LowLevelDesign.Diagnostics.Commons;
 using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.Castle.Config;
+using FluentValidation;
+using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public class ApplicationGridModule : NancyModule
     {
-        public ApplicationGridModule(IAppConfigurationManager appconf, ILogStore logStore) {
+        public ApplicationGridModule(IAppConfigurationManager appconf, ILogStore logStore, IValidator<Application> appvalidator)
+        {
             Get["/", true] = async (x, ct) => {
                 var appstats = await logStore.GetApplicationStatuses(DateTime.UtcNow.AddMinutes(-2));
 
@@ -40,8 +45,32 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
             Get["/apps", true] = async (x, ct) => {
                 // gets applications for which we have received the logs
-                return View["Applications", await appconf.GetAppsAsync()];
+                return View["Applications", (await appconf.GetAppsAsync()).Select(app => {
+                    app.DaysToKeepLogs = app.DaysToKeepLogs ?? AppSettingsWrapper.DefaultNoOfDaysToKeepLogs;
+                    return app;
+                })];
             };
+            Post["conf/appname", true] = async (x, ct) => {
+                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "Name");
+            };
+            Post["conf/appmaintenance", true] = async (x, ct) => {
+                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "DaysToKeepLogs");
+            };
+            Post["conf/appexclusion", true] = async (x, ct) => {
+                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "IsExcluded");
+            };
+        }
+
+        private static async Task<String> UpdateAppPropertyAsync(IAppConfigurationManager appconf,
+            IValidator<Application> validator, Application app, String property)
+        {
+            var validationResult = validator.Validate(app, "Hash", property);
+            if (!validationResult.IsValid) {
+                return "ERR_INVALID";
+            }
+            await appconf.UpdateAppPropertiesAsync(app, new[] { property });
+
+            return "OK";
         }
     }
 }

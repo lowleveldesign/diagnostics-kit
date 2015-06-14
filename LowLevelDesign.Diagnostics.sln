@@ -43,7 +43,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Castle.Tests", "Tests\LowLevelDesign.Diagnostics.Castle.Tests\LowLevelDesign.Diagnostics.Castle.Tests.csproj", "{F68F72F7-D341-4252-BBBF-A2FB31FA0DB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLogReceptionPerformance", "TestLogReceptionPerformance\TestLogReceptionPerformance.csproj", "{2F328F9B-9540-4B42-9FA6-4FE59AF328FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLogReceptionPerformance", "Tests\TestLogReceptionPerformance\TestLogReceptionPerformance.csproj", "{2F328F9B-9540-4B42-9FA6-4FE59AF328FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

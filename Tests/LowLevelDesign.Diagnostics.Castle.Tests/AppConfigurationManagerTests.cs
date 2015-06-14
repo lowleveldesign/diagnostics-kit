@@ -51,7 +51,8 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.Equal(expectedApp.IsExcluded, app.IsExcluded);
             Assert.Equal(expectedApp.Name, app.Name);
 
-            await conf.RemoveAppAsync(expectedApp.Path);
+            app.IsExcluded = true;
+            await conf.UpdateAppPropertiesAsync(app, new [] { "IsExcluded" });
 
             app = await conf.FindAppAsync(expectedApp.Path);
 
