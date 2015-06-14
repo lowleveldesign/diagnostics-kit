@@ -10,7 +10,10 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
     public sealed class HttpCastleConnector : IDisposable
     {
         private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {
-            NullValueHandling = NullValueHandling.Ignore
+            NullValueHandling = NullValueHandling.Ignore,
+            /* HACK: for some reason the ISO format did not work with the collector. It converted
+             * this value to local time, completely skipping timezone settings. */
+            DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
         };
         private readonly Uri diagnosticsAddress;
 
