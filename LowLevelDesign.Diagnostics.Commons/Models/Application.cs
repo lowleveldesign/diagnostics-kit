@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 namespace LowLevelDesign.Diagnostics.Commons.Models
@@ -14,5 +15,29 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
         public bool IsExcluded { get; set; }
 
         public byte? DaysToKeepLogs { get; set; }
+
+        private String enckey;
+        public String GetBase64EncodedKey()
+        {
+            if (enckey == null) {
+                if (Path == null) {
+                    return null;
+                }
+                var bytes = Encoding.UTF8.GetBytes(Path);
+                enckey = Convert.ToBase64String(bytes).Replace("=", String.Empty)
+                    .Replace('+', '-').Replace('/', '_');
+            }
+            return enckey;
+        }
+
+        public static String GetPathFromBase64Key(String base64)
+        {
+            if (base64 == null) {
+                return null;
+            }
+            base64 = base64.Replace('_', '/').Replace('-', '+')
+                .PadRight(base64.Length + (4 - base64.Length % 4) % 4, '=');
+            return Encoding.UTF8.GetString(Convert.FromBase64String(base64));
+        }
     }
 }

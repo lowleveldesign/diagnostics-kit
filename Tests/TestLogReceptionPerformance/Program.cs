@@ -37,6 +37,7 @@ namespace TestLogReceptionPerformance
                 Console.WriteLine("ERROR: Missing diagnostics url.");
                 Console.WriteLine();
                 p.WriteOptionDescriptions(Console.Out);
+                return;
             }
 
             int errorsCnt = 0;

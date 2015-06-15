@@ -10,6 +10,8 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
     {
         public String[] Servers { get; set; }
 
+        public IDictionary<String, Application> Applications { get; set; }
+
         public IDictionary<String, IDictionary<String, LastApplicationStatus>> ApplicationStatuses { get; set; }
     }
 }

@@ -20,5 +20,17 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
         public DateTime? LastErrorTimeUtc { get; set; }
 
         public DateTime? LastUpdateTimeUtc { get; set; }
+
+        public String LastErrorTypeName
+        {
+            get
+            {
+                if (LastErrorType == null) {
+                    return null;
+                }
+                var ind = LastErrorType.LastIndexOf('.');
+                return ind == -1 ? LastErrorType : LastErrorType.Substring(ind);
+            }
+        }
     }
 }

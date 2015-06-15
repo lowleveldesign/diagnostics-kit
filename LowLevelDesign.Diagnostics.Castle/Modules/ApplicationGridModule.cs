@@ -19,19 +19,25 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
         public ApplicationGridModule(IAppConfigurationManager appconf, ILogStore logStore, IValidator<Application> appvalidator)
         {
             Get["/", true] = async (x, ct) => {
-                var appstats = await logStore.GetApplicationStatuses(DateTime.UtcNow.AddMinutes(-2));
+                var appstats = await logStore.GetApplicationStatuses(DateTime.UtcNow.AddMinutes(-15));
 
                 var servers = new SortedSet<String>();
-                var extendedAppStats = new SortedDictionary<String, IDictionary<String, LastApplicationStatus>>(StringComparer.Ordinal);
+                var apps = new Dictionary<String, Application>();
+                var extendedAppStats = new SortedDictionary<String, IDictionary<String, LastApplicationStatus>>();
                 foreach (var appstat in appstats) {
                     servers.Add(appstat.Server);
 
                     var app = await appconf.FindAppAsync(appstat.ApplicationPath);
+
                     if (app != null && !app.IsExcluded) {
+                        String key = String.Format("{0}:{1}", app.Name, app.Path);
+                        if (!apps.ContainsKey(key)) {
+                            apps.Add(key, app);
+                        }
                         IDictionary<String, LastApplicationStatus> srvstat;
-                        if (!extendedAppStats.TryGetValue(app.Name, out srvstat)) {
-                            srvstat = new Dictionary<String, LastApplicationStatus>(StringComparer.Ordinal);
-                            extendedAppStats.Add(app.Name, srvstat);
+                        if (!extendedAppStats.TryGetValue(key, out srvstat)) {
+                            srvstat = new Dictionary<String, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase);
+                            extendedAppStats.Add(key, srvstat);
                         }
                         srvstat.Add(appstat.Server, appstat);
                     }
@@ -39,6 +45,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
                 return View["ApplicationGrid.cshtml", new ApplicationGridModel {
                     Servers = servers.ToArray(),
+                    Applications = apps,
                     ApplicationStatuses = extendedAppStats
                 }];
             };
