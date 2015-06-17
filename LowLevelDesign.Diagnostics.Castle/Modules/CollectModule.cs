@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using LowLevelDesign.Diagnostics.Castle.Logs;
 using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Commons.Storage;
@@ -18,7 +19,8 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
         };
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public CollectModule(IAppConfigurationManager config, ILogStore logstore, IValidator<LogRecord> logrecValidator)
+        public CollectModule(IAppConfigurationManager config, IValidator<LogRecord> logrecValidator,
+            ILogStore logstore, ILogMaintenance logmaintain)
         {
             Post["/collect", true] = async (x, ct) => {
                 var logrec = this.Bind<LogRecord>(new BindingConfig { BodyOnly = true });
@@ -26,6 +28,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 if (!validationResult.IsValid) {
                     return "VALIDATION ERROR";
                 }
+
+                // make sure that we have partitions to store the coming logs
+                await logmaintain.PerformMaintenanceIfNecessaryAsync();
 
                 // add new application to the configuration as excluded (it could be later renamed or unexcluded)
                 var app = await config.FindAppAsync(logrec.ApplicationPath);

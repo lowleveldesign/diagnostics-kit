@@ -8,6 +8,8 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
 {
     public class ApplicationGridModel
     {
+        public DateTime LastUpdateTime { get; set; }
+
         public String[] Servers { get; set; }
 
         public IDictionary<String, Application> Applications { get; set; }

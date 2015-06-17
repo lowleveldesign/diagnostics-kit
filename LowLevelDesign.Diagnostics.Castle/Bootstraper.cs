@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LowLevelDesign.Diagnostics.Castle.Config;
+using LowLevelDesign.Diagnostics.Castle.Logs;
 using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Commons.Storage;
@@ -17,9 +18,9 @@ namespace LowLevelDesign.Diagnostics.Castle
     public class Bootstraper : DefaultNancyBootstrapper
     {
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines) {
-            // configure application hooks
-
-            // FIXME for release builds: DiagnosticsHook.Disable(pipelines);
+#if !DEBUG
+            DiagnosticsHook.Disable(pipelines);
+#endif
         }
 
         protected override void ConfigureApplicationContainer(TinyIoCContainer container) {
@@ -35,6 +36,8 @@ namespace LowLevelDesign.Diagnostics.Castle
                     logstoreType, ex));
             }
 
+            /* LOGS MAINTENANCE */
+            container.Register<ILogMaintenance, LogMaintenance>();
 
             /* VALIDATORS */
             container.Register<IValidator<LogRecord>, LogRecordValidator>();

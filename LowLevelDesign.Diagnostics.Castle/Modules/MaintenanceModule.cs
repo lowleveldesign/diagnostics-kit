@@ -1,4 +1,5 @@
 ﻿using LowLevelDesign.Diagnostics.Castle.Config;
+using LowLevelDesign.Diagnostics.Castle.Logs;
 using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Storage;
 using Nancy;
@@ -10,14 +11,10 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
     public class MaintenanceModule : NancyModule
     {
 
-        public MaintenanceModule(ILogStore logStore, IAppConfigurationManager config)
+        public MaintenanceModule(ILogMaintenance logmaintain)
         {
             Get["/maintain", true] = async (x, ct) => {
-                var appmaintenance = (await config.GetAppsAsync()).Where(app => app.DaysToKeepLogs.HasValue).ToDictionary(
-                    app => app.Path, app => TimeSpan.FromDays(app.DaysToKeepLogs.Value));
-                
-                await logStore.Maintain(TimeSpan.FromDays(AppSettingsWrapper.DefaultNoOfDaysToKeepLogs), appmaintenance);
-
+                await logmaintain.PerformMaintenanceIfNecessaryAsync(true);
                 return "DONE";
             };
         }

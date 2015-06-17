@@ -2,7 +2,7 @@
 
 <div class="panel panel-default">
     <!-- Default panel contents -->
-    <div class="panel-heading">Applications Grid</div>
+    <div class="panel-heading">Applications Grid <small>(last update at: @Model.LastUpdateTime.ToString("HH:mm:ss"))</small></div>
     <div class="panel-body">
         @if (Model.ApplicationStatuses.Count == 0) {
             <span>
@@ -32,7 +32,7 @@
                 @foreach (var appstat in Model.ApplicationStatuses) {
                     var app = Model.Applications[appstat.Key];
                     <tr>
-                        <td>@app.Name</td>
+                        <td><a href="~/logs/@app.GetBase64EncodedKey()" title="Show application logs">@app.Name</a></td>
                         @foreach (var srv in Model.Servers) {
                             if (appstat.Value.ContainsKey(srv)) {
                                 var srvstat = appstat.Value[srv];

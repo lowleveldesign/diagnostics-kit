@@ -123,6 +123,7 @@
     <Compile Include="Bootstraper.cs" />
     <Compile Include="Config\AppSettingsWrapper.cs" />
     <Compile Include="Config\DefaultAppConfigurationManager.cs" />
+    <Compile Include="Logs\LogMaintenance.cs" />
     <Compile Include="Models\ApplicationGridModels.cs" />
     <Compile Include="Modules\ApplicationGridModule.cs" />
     <Compile Include="Modules\CollectModule.cs" />
