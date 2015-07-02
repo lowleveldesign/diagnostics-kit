@@ -122,6 +122,7 @@
     <Compile Include="Config\DefaultAppConfigurationManager.cs" />
     <Compile Include="Logs\LogMaintenance.cs" />
     <Compile Include="Models\ApplicationGridModels.cs" />
+    <Compile Include="Models\ApplicationLogModels.cs" />
     <Compile Include="Modules\ApplicationGridModule.cs" />
     <Compile Include="Modules\CollectModule.cs" />
     <Compile Include="Modules\ApplicationLogModule.cs" />
