@@ -1,0 +1,94 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ApplicationLogFilterModel>
+
+@section style {
+    <style type="text/css">
+        .form-inline .form-group {
+            margin: 5px 3px;
+        }
+    </style>
+}
+
+<div class="panel panel-default">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Showing logs of the <strong title="@Model.ApplicationPath">@Model.ApplicationName</strong> application from 
+        <strong>@(Model.Server == null ? "all servers" : Model.Server)</strong></div>
+    <div class="panel-body">
+        <form class="form-inline" method="post">
+            <input name="ApplicationPath" value="@Model.ApplicationPath" type="hidden" />
+            <input name="ApplicationName" value="@Model.ApplicationName" type="hidden" />
+            <input name="Server" value="@Model.Server" type="hidden" />
+            <div class="form-group">
+                <label for="DateFrom" class="control-label">Date from:</label>
+                <input id="DateFrom" name="DateFrom" type="text" class="form-control" value="@Model.DateFrom" />
+                <label for="DateTo" class="control-label">to:</label>
+                <input id="DateTo" name="DateTo" type="text" class="form-control" value="@Model.DateTo" />
+            </div>
+            <div class="form-group">
+                <label for="LevelFrom">Level from:</label>
+                <select id="LevelFrom" name="LevelFrom" class="form-control">
+                    @foreach (var opt in Model.Levels) {
+                        if (opt.Item1 == Model.LevelFrom) {
+                            <option selected="selected" value="@opt.Item1">@opt.Item2</option>
+                        } else {
+                            <option value="@opt.Item1">@opt.Item2</option>
+                        }
+                    }
+                </select>
+                <label for="LevelTo">to:</label>
+                <select id="LevelTo" name="LevelTo" class="form-control">
+                    @foreach (var opt in Model.Levels) {
+                        if (opt.Item1 == Model.LevelTo) {
+                            <option selected="selected" value="@opt.Item1">@opt.Item2</option>
+                        } else {
+                            <option value="@opt.Item1">@opt.Item2</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Logger" class="control-label">Logger:</label>
+                <input id="Logger" name="Logger" type="text" class="form-control" style="width: 300px" value="@Model.Logger" />
+            </div>
+            <div class="form-group">
+
+                <label for="Keywords" class="control-label">Keywords:</label>
+                <input id="Keywords" name="Keywords" type="text" class="form-control" style="width: 400px" value="@Model.Keywords" />
+            </div>
+            <button type="submit" class="btn btn-default">Filter</button>
+        </form>
+    </div>
+
+    @if (ViewBag.Logs != null) {
+        var result = (ApplicationLogSearchResults)ViewBag.Logs;
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Log level</th>
+                    <th>Logger</th>
+                    <th>Message</th>
+                    <th>expand</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in result.FoundItems) {
+                    <tr>
+                        <td>@l.TimeUtc.ToLocalTime()</td>
+                        <td>@l.LogLevel.ToString()</td>
+                        <td>@l.LoggerName</td>
+                        <td>@l.Message</td>
+                        <td></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div>
+            @if (result.Offset > 0) {
+                <a href="FIXME">&lt;&lt; Newer</a>
+            }
+            @if (result.Limit <= result.FoundItems.Length) {
+                <a href="FIXME">&gt;&gt; Older</a>
+            }
+        </div>
+    }
+</div>
