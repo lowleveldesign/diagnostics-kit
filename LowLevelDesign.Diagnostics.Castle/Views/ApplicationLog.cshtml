@@ -5,13 +5,83 @@
         .form-inline .form-group {
             margin: 5px 3px;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('.lnk_message').on('click', function () {
+                $(this).parent().parent().next('tr.tr_message:first').toggleClass('hidden');
+                return false;
+            });
+            $('.lnk_exception').on('click', function () {
+                $(this).closest('tr').nextAll('tr.tr_exception:first').toggleClass('hidden');
+                return false;
+            });
+            $('.lnk_perf').on('click', function () {
+                $(this).closest('tr').nextAll('tr.tr_perf:first').toggleClass('hidden');
+                return false;
+            });
+            $('.lnk_more').on('click', function () {
+                $(this).closest('tr').nextAll('tr.tr_more:first').toggleClass('hidden');
+                return false;
+            });
+
+            $('#lnk_collapseall').on('click', function () {
+                $('tr.tr_message').addClass('hidden');
+                $('tr.tr_exception').addClass('hidden');
+                $('tr.tr_perf').addClass('hidden');
+                $('tr.tr_more').addClass('hidden');
+                return false;
+            });
+            $('#lnk_expandall').on('click', function () {
+                $('tr.tr_message').removeClass('hidden');
+                $('tr.tr_exception').removeClass('hidden');
+                $('tr.tr_perf').removeClass('hidden');
+                $('tr.tr_more').removeClass('hidden');
+                return false;
+            });
+            $('#lnk_expandmessages').on('click', function () {
+                $('tr.tr_message').removeClass('hidden');
+                return false;
+            });
+            $('#lnk_expandexceptions').on('click', function () {
+                $('tr.tr_exception').removeClass('hidden');
+                return false;
+            });
+        });
+    </script>
+}
+
+@functions {
+    String GetBootstrapClassForLog(LogRecord.ELogLevel level)
+    {
+        switch (level)
+        {
+            case LogRecord.ELogLevel.Warning:
+                return "warning";
+            case LogRecord.ELogLevel.Error:
+            case LogRecord.ELogLevel.Critical:
+                return "danger";
+            case LogRecord.ELogLevel.Info:
+                return "info";
+            default:
+                return String.Empty;
+        }
+    }
 }
 
 <div class="panel panel-default">
     <!-- Default panel contents -->
-    <div class="panel-heading">Showing logs of the <strong title="@Model.ApplicationPath">@Model.ApplicationName</strong> application from 
-        <strong>@(Model.Server == null ? "all servers" : Model.Server)</strong></div>
+    <div class="panel-heading">
+        Showing logs of the <strong title="@Model.ApplicationPath">@Model.ApplicationName</strong> application from
+        <strong>@(Model.Server == null ? "all servers" : Model.Server)</strong>
+    </div>
     <div class="panel-body">
         <form class="form-inline" method="post">
             <input name="ApplicationPath" value="@Model.ApplicationPath" type="hidden" />
@@ -60,6 +130,13 @@
 
     @if (ViewBag.Logs != null) {
         var result = (ApplicationLogSearchResults)ViewBag.Logs;
+        int i = 0;
+        <ul class="nav nav-pills">
+            <li role="presentation" class="dropdown"><a id="lnk_collapseall" href="#">Collapse all</a></li>
+            <li role="presentation" class="dropdown"><a id="lnk_expandall" href="#">Expand all</a></li>
+            <li role="presentation" class="dropdown"><a id="lnk_expandmessages" href="#">Expand messages</a></li>
+            <li role="presentation" class="dropdown"><a id="lnk_expandexceptions" href="#">Expand exceptions</a></li>
+        </ul>
         <table class="table">
             <thead>
                 <tr>
@@ -67,17 +144,69 @@
                     <th>Log level</th>
                     <th>Logger</th>
                     <th>Message</th>
-                    <th>expand</th>
+                    <th>Exeption</th>
+                    <th>Performance</th>
+                    <th>Additional data</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var l in result.FoundItems) {
+                    var bootstrapClass = GetBootstrapClassForLog(l.LogLevel);
                     <tr>
-                        <td>@l.TimeUtc.ToLocalTime()</td>
-                        <td>@l.LogLevel.ToString()</td>
-                        <td>@l.LoggerName</td>
-                        <td>@l.Message</td>
-                        <td></td>
+                        <td class="@bootstrapClass"><strong>@l.TimeUtc.ToLocalTime()</strong></td>
+                        <td class="@bootstrapClass">@l.LogLevel.ToString()</td>
+                        <td>@l.LoggerName.ShortenAndDotIfNecessary(20)</td>
+                        <td><a href="#" class="lnk_message" title="Click to expand">@l.Message.ShortenAndDotIfNecessary(30)</a></td>
+                        <td><a href="#" class="lnk_exception" title="Click to expand">@l.ExceptionType.ShortenAndDotIfNecessary(50)</a></td>
+                        <td>
+                            @if (l.PerformanceData != null && l.PerformanceData.Count > 0) {
+                                <a href="#" class="lnk_perf" title="Click to expand">
+                                    CPU: @l.PerformanceData.GetCounterValueIfAvailable("CPU") | Mem: @l.PerformanceData.GetCounterValueIfAvailable("Memory")
+                                </a>
+                            }
+                        </td>
+                        <td>
+                            @if (l.AdditionalFields != null && l.AdditionalFields.Count > 0) {
+                                <a href="#" class="lnk_more" title="Click to display additional data">more &gt;&gt;</a>
+                            }
+                        </td>
+                    </tr>
+                    <tr class="tr_message hidden">
+                        <td colspan="7">
+                            Message: @l.Message
+                        </td>
+                    </tr>
+                    <tr class="tr_exception hidden">
+                        <td colspan="7">
+<pre>
+Exception type: @l.ExceptionType
+Exception message: @l.ExceptionMessage
+Exception additional info: @l.ExceptionAdditionalInfo
+</pre>
+                        </td>
+                    </tr>
+                    <tr class="tr_perf hidden">
+                        <td colspan="7">
+                            Process Id: @l.ProcessId, Thread Id: @l.ThreadId<br />
+                            @if (l.PerformanceData != null && l.PerformanceData.Count > 0) {
+                                foreach (var pd in l.PerformanceData) {
+                                    <text>@pd.Key: @pd.Value.ToString("#,0.00")</text><br />
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr class="tr_more hidden">
+                        <td colspan="7">
+                            @if (l.AdditionalFields != null && l.AdditionalFields.Count > 0) {
+<pre>
+    @foreach (var ad in l.AdditionalFields) {
+                                <text>@ad.Key: @(ad.Value + "\r\n")</text>
+    }
+</pre>
+                            } else {
+                                <text>No additional data</text>
+                            }
+                        </td>
                     </tr>
                 }
             </tbody>

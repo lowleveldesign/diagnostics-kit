@@ -13,7 +13,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public sealed class ApplicationLogModule : NancyModule
     {
-        private const int MaxLogsCount = 100;
+        private const int MaxLogsCount = 20;
 
         public ApplicationLogModule(ILogStore logStore, IAppConfigurationManager config)
         {
