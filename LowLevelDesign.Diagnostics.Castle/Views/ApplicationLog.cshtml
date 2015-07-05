@@ -214,7 +214,7 @@ Exception additional info: @l.ExceptionAdditionalInfo
             @if (result.Offset > 0) {
                 <a href="@Request.Url.BasePath@Request.Path@Request.Url.ReplaceQueryParameterValue("off", result.Offset - result.Limit)">&lt;&lt; Newer</a>
             }
-            @if (result.IsLastPage) {
+            @if (!result.IsLastPage) {
                 <a href="@Request.Url.BasePath@Request.Path@Request.Url.ReplaceQueryParameterValue("off", result.Offset + result.Limit)">Older &gt;&gt;</a>
             }
         </p>

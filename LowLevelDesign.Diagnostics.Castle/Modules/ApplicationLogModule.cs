@@ -71,7 +71,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 FoundItems = finalResults,
                 Limit = MaxLogsCount,
                 Offset = offset,
-                IsLastPage = foundItems.Length == MaxLogsCount + 1 || foundItems.Length == 0
+                IsLastPage = foundItems.Length < MaxLogsCount + 1 || foundItems.Length == 0
             };
         }
     }

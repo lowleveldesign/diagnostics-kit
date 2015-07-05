@@ -9,6 +9,7 @@ using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Diagnostics;
 using Nancy.TinyIoc;
+using NLog;
 using System;
 using System.Configuration;
 using System.IO;
@@ -17,11 +18,19 @@ namespace LowLevelDesign.Diagnostics.Castle
 {
     public class Bootstraper : DefaultNancyBootstrapper
     {
+        private readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
 #if !DEBUG
             DiagnosticsHook.Disable(pipelines);
 #endif
+            // log errors to NLog
+            pipelines.OnError += (ctx, err) => {
+                logger.Error(err, "Global application error occurred when serving request: {0}", ctx.Request.Url);
+                return null;
+            };
+
             // make sure that we have partitions to store the coming logs
             var logmaintain = container.Resolve<ILogMaintenance>();
             logmaintain.PerformMaintenanceIfNecessaryAsync().Wait();
