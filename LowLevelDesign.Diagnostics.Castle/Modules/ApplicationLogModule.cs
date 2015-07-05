@@ -8,39 +8,29 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public sealed class ApplicationLogModule : NancyModule
     {
-        private const int MaxLogsCount = 20;
+        private const int MaxLogsCount = 30;
 
         public ApplicationLogModule(ILogStore logStore, IAppConfigurationManager config)
         {
             Get["/logs/{apppath}/{server?}", true] = async (x, ct) => {
                 var app = await config.FindAppAsync(Application.GetPathFromBase64Key((String)x.apppath));
-                DateTime dateFrom = DateTime.Now.Subtract(TimeSpan.FromHours(10));
-                DateTime dateTo = DateTime.Now;
-
-                var model = new ApplicationLogFilterModel {
-                    ApplicationPath = app.Path,
-                    ApplicationName = app.Name,
-                    LevelFrom = (short)LogRecord.ELogLevel.Info,
-                    LevelTo = (short)LogRecord.ELogLevel.Critical,
-                    DateFrom = dateFrom,
-                    DateTo = dateTo,
-                    Server = x.server
-                };
-
-                ViewBag.Logs = await FilterLogsAsync(logStore, model, 0);
-
-                return View["ApplicationLog.cshtml", model];
-            };
-            Post["/logs/{apppath}/{server?}", true] = async (x, ct) => {
-                // FIXME validation
                 var model = this.Bind<ApplicationLogFilterModel>();
 
+                model.dfrom = model.dfrom.HasValue ? model.dfrom.Value : DateTime.Now.Subtract(TimeSpan.FromHours(10));
+                model.dto = model.dto.HasValue ? model.dto.Value : DateTime.Now;
+                model.apppath = app.Path;
+                model.appname = app.Name;
+                model.lfrom = model.lfrom.HasValue ? model.lfrom.Value : (short)LogRecord.ELogLevel.Info;
+                model.lto = model.lto.HasValue ? model.lto.Value : (short)LogRecord.ELogLevel.Critical;
+                model.server = x.server;
 
+                ViewBag.Logs = await FilterLogsAsync(logStore, model, model.off);
 
                 return View["ApplicationLog.cshtml", model];
             };
@@ -48,27 +38,40 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
         private static async Task<ApplicationLogSearchResults> FilterLogsAsync(ILogStore logStore, ApplicationLogFilterModel filter, int offset)
         {
+            Debug.Assert(filter.dfrom.HasValue);
+            Debug.Assert(filter.dto.HasValue);
+
             var levels = new List<LogRecord.ELogLevel>();
-            for (short lvl = filter.LevelFrom; lvl <= filter.LevelTo; lvl++) {
+            for (short lvl = filter.lfrom ?? 0; lvl <= filter.lto; lvl++) {
                 levels.Add((LogRecord.ELogLevel)lvl);
             }
 
             var searchResults = await logStore.FilterLogs(new LogSearchCriteria {
-                ApplicationPath = filter.ApplicationPath,
-                Server = filter.Server,
-                FromUtc = filter.DateFrom.ToUniversalTime(),
-                ToUtc = filter.DateTo.ToUniversalTime(),
-                Logger = filter.Logger,
-                Keywords = filter.Keywords,
+                ApplicationPath = filter.apppath,
+                Server = filter.server,
+                FromUtc = filter.dfrom.Value.ToUniversalTime(),
+                ToUtc = filter.dto.Value.ToUniversalTime(),
+                Logger = filter.logger,
+                Keywords = filter.keywords,
                 Levels = levels.ToArray(),
-                Limit = MaxLogsCount,
+                Limit = MaxLogsCount + 1,
                 Offset = offset
             });
 
+            var foundItems = searchResults.FoundItems.ToArray();
+            LogRecord[] finalResults;
+            if (foundItems.Length == 0) {
+                finalResults = foundItems;
+            } else {
+                finalResults = new LogRecord[foundItems.Length - 1];
+                Array.Copy(foundItems, finalResults, finalResults.Length);
+            }
+
             return new ApplicationLogSearchResults {
-                FoundItems = searchResults.FoundItems.ToArray(),
+                FoundItems = finalResults,
                 Limit = MaxLogsCount,
-                Offset = offset
+                Offset = offset,
+                IsLastPage = foundItems.Length == MaxLogsCount + 1 || foundItems.Length == 0
             };
         }
     }

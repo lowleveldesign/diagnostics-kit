@@ -17,13 +17,18 @@ namespace LowLevelDesign.Diagnostics.Castle
 {
     public class Bootstraper : DefaultNancyBootstrapper
     {
-        protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines) {
+        protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
+        {
 #if !DEBUG
             DiagnosticsHook.Disable(pipelines);
 #endif
+            // make sure that we have partitions to store the coming logs
+            var logmaintain = container.Resolve<ILogMaintenance>();
+            logmaintain.PerformMaintenanceIfNecessaryAsync().Wait();
         }
 
-        protected override void ConfigureApplicationContainer(TinyIoCContainer container) {
+        protected override void ConfigureApplicationContainer(TinyIoCContainer container)
+        {
             /* LOG STORAGE */
             var logstoreType = ConfigurationManager.AppSettings["diag:logstore"];
             try {
@@ -54,11 +59,13 @@ namespace LowLevelDesign.Diagnostics.Castle
             container.Register(typeof(IAppConfigurationManager), confMgrType);
         }
 
-        protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context) {
+        protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)
+        {
             // configure request-lifetime objects
         }
 
-        protected override Nancy.Diagnostics.DiagnosticsConfiguration DiagnosticsConfiguration {
+        protected override Nancy.Diagnostics.DiagnosticsConfiguration DiagnosticsConfiguration
+        {
             get { return new DiagnosticsConfiguration { Password = "n4ncyBoard" }; }
         }
     }

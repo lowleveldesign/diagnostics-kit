@@ -23,11 +23,16 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
                 if (Path == null) {
                     return null;
                 }
-                var bytes = Encoding.UTF8.GetBytes(Path);
-                enckey = Convert.ToBase64String(bytes).Replace("=", String.Empty)
-                    .Replace('+', '-').Replace('/', '_');
+                enckey = GetBase64EncodedKey(Path);
             }
             return enckey;
+        }
+
+        public static String GetBase64EncodedKey(String path)
+        {
+            var bytes = Encoding.UTF8.GetBytes(path);
+            return Convert.ToBase64String(bytes).Replace("=", String.Empty)
+                .Replace('+', '-').Replace('/', '_');
         }
 
         public static String GetPathFromBase64Key(String base64)

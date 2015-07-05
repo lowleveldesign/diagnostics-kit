@@ -8,25 +8,27 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
 {
     public class ApplicationLogFilterModel
     {
-        public String ApplicationName { get; set; }
+        public String appname { get; set; }
 
-        public String ApplicationPath { get; set; }
+        public String apppath { get; set; }
 
-        public String Server { get; set; }
+        public String server { get; set; }
 
-        public DateTime DateFrom { get; set; }
+        public DateTime? dfrom { get; set; }
 
-        public DateTime DateTo { get; set; }
+        public DateTime? dto { get; set; }
 
-        public String Logger { get; set; }
+        public String logger { get; set; }
 
-        public short LevelFrom { get; set; }
+        public short? lfrom { get; set; }
 
-        public short LevelTo {get; set; }
+        public short? lto {get; set; }
 
-        public String Keywords { get; set; }
+        public String keywords { get; set; }
 
-        public Tuple<short, String>[] Levels = new[] {
+        public int off { get; set; }
+
+        public static Tuple<short, String>[] Levels = new[] {
             new Tuple<short, String>((short)LogRecord.ELogLevel.Trace, "Trace"),
             new Tuple<short, String>((short)LogRecord.ELogLevel.Debug, "Debug"),
             new Tuple<short, String>((short)LogRecord.ELogLevel.Info, "Info"),
@@ -43,5 +45,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
         public int Limit { get; set; }
 
         public int Offset { get; set; }
+
+        public bool IsLastPage { get; set; }
     }
 }
