@@ -30,6 +30,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
                 if (model == null) {
                     var appstats = await logStore.GetApplicationStatuses(DateTime.UtcNow.AddMinutes(-15));
+                    var allapps = await appconf.GetAppsAsync();
 
                     var servers = new SortedSet<String>();
                     var apps = new Dictionary<String, Application>();
@@ -37,8 +38,8 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     foreach (var appstat in appstats) {
                         servers.Add(appstat.Server);
 
-                        var app = await appconf.FindAppAsync(appstat.ApplicationPath);
-
+                        var app = allapps.FirstOrDefault(a => String.Equals(a.Path, appstat.ApplicationPath, 
+                            StringComparison.InvariantCultureIgnoreCase));
                         if (app != null && !app.IsExcluded) {
                             String key = String.Format("{0}:{1}", app.Name, app.Path);
                             if (!apps.ContainsKey(key)) {
@@ -50,6 +51,18 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                                 extendedAppStats.Add(key, srvstat);
                             }
                             srvstat.Add(appstat.Server, appstat);
+                        }
+                    }
+                    // for the rest of the applications
+                    foreach (var app in allapps) {
+                        if (!app.IsExcluded) {
+                            String key = String.Format("{0}:{1}", app.Name, app.Path);
+                            if (!apps.ContainsKey(key)) {
+                                apps.Add(key, app);
+                            }
+                            if (!extendedAppStats.ContainsKey(key)) {
+                                extendedAppStats.Add(key, new Dictionary<String, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase));
+                            }
                         }
                     }
 

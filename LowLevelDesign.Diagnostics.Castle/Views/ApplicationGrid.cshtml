@@ -18,10 +18,11 @@
     </div>
 
     @if (Model.ApplicationStatuses.Count > 0) {
-            <table class="table">
+        <table class="table">
             <thead>
                 <tr>
                     <th>Application</th>
+                    <th>All servers</th>
                     @foreach (var srv in Model.Servers) {
                         <th>@srv</th>
                     }
@@ -31,7 +32,13 @@
                 @foreach (var appstat in Model.ApplicationStatuses) {
                     var app = Model.Applications[appstat.Key];
                     <tr>
-                        <td><a href="~/logs/@app.GetBase64EncodedKey()" title="Show application logs">@app.Name</a></td>
+                        <td><a href="FIXME:showapplicationconf" title="Show application settings">@app.Name</a></td>
+                        <td>
+                            <a href="~/logs/@app.GetBase64EncodedKey()" title="Show application logs">
+                                <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+                                <small>Show logs</small>
+                            </a>
+                        </td>
                         @foreach (var srv in Model.Servers) {
                             if (appstat.Value.ContainsKey(srv)) {
                                 var srvstat = appstat.Value[srv];
@@ -55,7 +62,7 @@
                                     <td>
                                         <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
                                             <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-                                            <small>???<small>
+                                            <small>Show logs</small>
                                         </a>
                                     </td>
                                 }
