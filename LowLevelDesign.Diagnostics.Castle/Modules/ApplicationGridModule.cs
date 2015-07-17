@@ -98,6 +98,11 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
             Post["conf/appexclusion", true] = async (x, ct) => {
                 return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "IsExcluded");
             };
+            Post["conf/appsrvconfig", true] = async (x, ct) => {
+                var conf = this.Bind<ApplicationServerConfig>();
+                // FIXME implement
+                throw new NotImplementedException();
+            };
         }
 
         private static async Task<String> UpdateAppPropertyAsync(IAppConfigurationManager appconf,

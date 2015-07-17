@@ -166,5 +166,16 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
              */
             throw new NotImplementedException();
         }
+
+
+        public Task<System.Collections.Generic.IEnumerable<ApplicationServerConfig>> GetAppConfigsAsync(string[] appPaths, string server = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddOrUpdateAppServerConfigAsync(ApplicationServerConfig config)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

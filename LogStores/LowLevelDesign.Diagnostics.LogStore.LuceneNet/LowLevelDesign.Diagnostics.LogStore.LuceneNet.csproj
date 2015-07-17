@@ -41,8 +41,8 @@
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.0.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.0.0.14.0\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
+    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.0.1.0.0\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lucene.Net">

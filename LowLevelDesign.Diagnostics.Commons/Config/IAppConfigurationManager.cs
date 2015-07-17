@@ -33,5 +33,21 @@ namespace LowLevelDesign.Diagnostics.Commons.Config
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<Application>> GetAppsAsync();
+
+        /// <summary>
+        /// Returns application configurations on all servers (null) or 
+        /// on a given server.
+        /// </summary>
+        /// <param name="appPaths">Applications for which we need configuration settings</param>
+        /// <param name="server">Server which interests us (or null if we want to return configurations on all servers)</param>
+        /// <returns></returns>
+        Task<IEnumerable<ApplicationServerConfig>> GetAppConfigsAsync(String[] appPaths, String server = null);
+
+        /// <summary>
+        /// Adds or updates application server configuration.
+        /// </summary>
+        /// <param name="config">Configuration settings</param>
+        /// <returns></returns>
+        Task AddOrUpdateAppServerConfigAsync(ApplicationServerConfig config);
     }
 }

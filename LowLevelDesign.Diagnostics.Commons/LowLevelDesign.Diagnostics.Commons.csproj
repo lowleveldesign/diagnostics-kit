@@ -51,6 +51,7 @@
     <Compile Include="Config\IAppConfigurationManager.cs" />
     <Compile Include="Connectors\HttpCastleConnector.cs" />
     <Compile Include="Models\Application.cs" />
+    <Compile Include="Models\ApplicationServerConfig.cs" />
     <Compile Include="Models\LogSearchCriteria.cs" />
     <Compile Include="Models\LastApplicationStatus.cs" />
     <Compile Include="Storage\ILogStore.cs" />
