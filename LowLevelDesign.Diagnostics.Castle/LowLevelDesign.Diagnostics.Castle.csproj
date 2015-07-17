@@ -159,6 +159,10 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LogStores\LowLevelDesign.Diagnostics.LogStore.MySql\LowLevelDesign.Diagnostics.LogStore.MySql.csproj">
+      <Project>{8e8eeeaf-b485-488d-9979-f4fcc6800fa2}</Project>
+      <Name>LowLevelDesign.Diagnostics.LogStore.MySql</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LowLevelDesign.Diagnostics.Commons\LowLevelDesign.Diagnostics.Commons.csproj">
       <Project>{eebc3248-e9c6-4bc3-b46f-bda8909a190c}</Project>
       <Name>LowLevelDesign.Diagnostics.Commons</Name>
