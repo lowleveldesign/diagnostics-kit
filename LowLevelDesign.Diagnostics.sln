@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLogReceptionPerformance", "Tests\TestLogReceptionPerformance\TestLogReceptionPerformance.csproj", "{2F328F9B-9540-4B42-9FA6-4FE59AF328FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Tests", "..\diagnostics-kit-premium\LowLevelDesign.Diagnostics.LogStore.Tests\LowLevelDesign.Diagnostics.LogStore.Tests.csproj", "{B36818A4-DD67-442F-A470-FE98E40FA584}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,6 +121,10 @@ Global
 		{2F328F9B-9540-4B42-9FA6-4FE59AF328FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F328F9B-9540-4B42-9FA6-4FE59AF328FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F328F9B-9540-4B42-9FA6-4FE59AF328FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,5 +145,6 @@ Global
 		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{F68F72F7-D341-4252-BBBF-A2FB31FA0DB6} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{2F328F9B-9540-4B42-9FA6-4FE59AF328FA} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
+		{B36818A4-DD67-442F-A470-FE98E40FA584} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 	EndGlobalSection
 EndGlobal
