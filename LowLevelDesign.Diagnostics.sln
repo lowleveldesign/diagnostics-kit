@@ -39,13 +39,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLuceneNetAnalysis", "Tests\TestLuceneNetAnalysis\TestLuceneNetAnalysis.csproj", "{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.MySql", "..\diagnostics-kit-premium\LogStores\LowLevelDesign.Diagnostics.LogStore.MySql\LowLevelDesign.Diagnostics.LogStore.MySql.csproj", "{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Castle.Tests", "Tests\LowLevelDesign.Diagnostics.Castle.Tests\LowLevelDesign.Diagnostics.Castle.Tests.csproj", "{F68F72F7-D341-4252-BBBF-A2FB31FA0DB6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLogReceptionPerformance", "Tests\TestLogReceptionPerformance\TestLogReceptionPerformance.csproj", "{2F328F9B-9540-4B42-9FA6-4FE59AF328FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Tests", "..\diagnostics-kit-premium\LowLevelDesign.Diagnostics.LogStore.Tests\LowLevelDesign.Diagnostics.LogStore.Tests.csproj", "{B36818A4-DD67-442F-A470-FE98E40FA584}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.MySql", "LogStores\LowLevelDesign.Diagnostics.LogStore.MySql\LowLevelDesign.Diagnostics.LogStore.MySql.csproj", "{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.MySql.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.MySql.Tests\LowLevelDesign.Diagnostics.LogStore.MySql.Tests.csproj", "{B36818A4-DD67-442F-A470-FE98E40FA584}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,10 +109,6 @@ Global
 		{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F68F72F7-D341-4252-BBBF-A2FB31FA0DB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F68F72F7-D341-4252-BBBF-A2FB31FA0DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F68F72F7-D341-4252-BBBF-A2FB31FA0DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -121,6 +117,10 @@ Global
 		{2F328F9B-9540-4B42-9FA6-4FE59AF328FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F328F9B-9540-4B42-9FA6-4FE59AF328FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F328F9B-9540-4B42-9FA6-4FE59AF328FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B36818A4-DD67-442F-A470-FE98E40FA584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B36818A4-DD67-442F-A470-FE98E40FA584}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -142,9 +142,9 @@ Global
 		{301050C2-E774-4D78-96B7-5E712A3F6CF8} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
 		{CFCDFB73-6B60-47E8-8DD1-FA1A0597ED0E} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
 		{91C9B75A-C51A-4EFE-B0AA-AD22F95EEDCE} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
-		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{F68F72F7-D341-4252-BBBF-A2FB31FA0DB6} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{2F328F9B-9540-4B42-9FA6-4FE59AF328FA} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
+		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{B36818A4-DD67-442F-A470-FE98E40FA584} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 	EndGlobalSection
 EndGlobal
