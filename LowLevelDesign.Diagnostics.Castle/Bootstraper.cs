@@ -11,13 +11,19 @@ using Nancy.Diagnostics;
 using Nancy.TinyIoc;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace LowLevelDesign.Diagnostics.Castle
 {
     public class Bootstraper : DefaultNancyBootstrapper
     {
+        private const String LogStoreKey = "diag:logstore";
+        private const String ConfMgrKey = "diag:confmgr";
+
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
 #if !DEBUG
@@ -36,19 +42,43 @@ namespace LowLevelDesign.Diagnostics.Castle
             logmaintain.PerformMaintenanceIfNecessaryAsync().Wait();
         }
 
+        private Type FindSingleTypeInLowLevelDesignAssemblies(Type typeToImplement, String confkey)
+        {
+            var implementers = new List<Type>();
+            var bindir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
+            foreach (var asmpath in Directory.GetFiles(bindir, "LowLevelDesign.*.dll")) {
+                try {
+                    var asm = Assembly.LoadFrom(asmpath);
+                    implementers.AddRange(asm.GetExportedTypes().Where(t => t.GetInterfaces().Contains(typeToImplement)));
+                } catch (Exception ex) {
+                    // just swallow and check the next one
+                    Log.Debug(ex, "Failure while loading assembly from '{0}'", asmpath);
+                }
+                if (implementers.Count > 1) {
+                    throw new ConfigurationErrorsException("More than one class implementing " + typeToImplement.FullName + 
+                        ". Please specify which one should be used by adding '" + confkey + " ' " +
+                        "key in the appsettings. Please check documentation if in doubt.");
+                }
+            }
+            if (implementers.Count == 0) {
+                // no log store found
+                throw new ConfigurationErrorsException("No class implementing " + typeToImplement.FullName + " found. Please add at least one " +
+                    "assembly where we coud find such a class. Please check documentation if in doubt.");
+            }
+            return implementers[0];
+        }
+
         protected override void ConfigureApplicationContainer(TinyIoCContainer container)
         {
             /* LOG STORAGE */
-            var logstoreType = ConfigurationManager.AppSettings["diag:logstore"];
-            try {
-                var t = Type.GetType(logstoreType);
-                var logstore = (ILogStore)Activator.CreateInstance(t);
-                container.Register(logstore);
-            } catch (Exception ex) {
-                throw new ConfigurationErrorsException(String.Format(
-                    "LogStore of type: '{0}' could not be initialized. Make sure you specified a valid type in the appsettings diag:logstore key. Error: {1}",
-                    logstoreType, ex));
+            var logstoreTypeName = ConfigurationManager.AppSettings[LogStoreKey];
+            Type logstoreType;
+            if (logstoreTypeName == null) {
+                logstoreType = FindSingleTypeInLowLevelDesignAssemblies(typeof(ILogStore), LogStoreKey);
+            } else {
+                logstoreType = Type.GetType(logstoreTypeName);
             }
+            container.Register(typeof(ILogStore), logstoreType);
 
             /* LOGS MAINTENANCE */
             container.Register<ILogMaintenance, LogMaintenance>();
@@ -59,13 +89,12 @@ namespace LowLevelDesign.Diagnostics.Castle
             container.Register<IValidator<ApplicationServerConfig>, ApplicationServerConfigValidator>();
 
             /* CONFIGURATION */
-            var confMgr = ConfigurationManager.AppSettings["diag:confmgr"];
+            var confMgrTypeName = ConfigurationManager.AppSettings[ConfMgrKey];
             Type confMgrType;
-            if (String.IsNullOrEmpty(confMgr)) {
-                // FIXME: confMgrType = typeof(DefaultAppConfigurationManager);
-                confMgrType = null;
+            if (confMgrTypeName == null) {
+                confMgrType = FindSingleTypeInLowLevelDesignAssemblies(typeof(IAppConfigurationManager), ConfMgrKey);
             } else {
-                confMgrType = Type.GetType(confMgr);
+                confMgrType = Type.GetType(confMgrTypeName);
             }
             container.Register(typeof(IAppConfigurationManager), confMgrType);
         }
