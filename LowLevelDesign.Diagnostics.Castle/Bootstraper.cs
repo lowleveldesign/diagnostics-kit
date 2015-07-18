@@ -9,7 +9,7 @@ using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Diagnostics;
 using Nancy.TinyIoc;
-using NLog;
+using Serilog;
 using System;
 using System.Configuration;
 using System.IO;
@@ -18,16 +18,16 @@ namespace LowLevelDesign.Diagnostics.Castle
 {
     public class Bootstraper : DefaultNancyBootstrapper
     {
-        private readonly ILogger logger = LogManager.GetCurrentClassLogger();
-
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
 #if !DEBUG
             DiagnosticsHook.Disable(pipelines);
 #endif
-            // log errors to NLog
+            // Logging configuration
+            Log.Logger = new LoggerConfiguration().WriteTo.Trace().CreateLogger();
+
             pipelines.OnError += (ctx, err) => {
-                logger.Error(err, "Global application error occurred when serving request: {0}", ctx.Request.Url);
+                Log.Error(err, "Global application error occurred when serving request: {0}", ctx.Request.Url);
                 return null;
             };
 
@@ -56,12 +56,14 @@ namespace LowLevelDesign.Diagnostics.Castle
             /* VALIDATORS */
             container.Register<IValidator<LogRecord>, LogRecordValidator>();
             container.Register<IValidator<Application>, ApplicationValidator>();
+            container.Register<IValidator<ApplicationServerConfig>, ApplicationServerConfigValidator>();
 
             /* CONFIGURATION */
             var confMgr = ConfigurationManager.AppSettings["diag:confmgr"];
             Type confMgrType;
             if (String.IsNullOrEmpty(confMgr)) {
-                confMgrType = typeof(DefaultAppConfigurationManager);
+                // FIXME: confMgrType = typeof(DefaultAppConfigurationManager);
+                confMgrType = null;
             } else {
                 confMgrType = Type.GetType(confMgr);
             }

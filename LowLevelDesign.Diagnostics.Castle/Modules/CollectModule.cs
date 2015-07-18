@@ -6,7 +6,8 @@ using LowLevelDesign.Diagnostics.Commons.Storage;
 using Nancy;
 using Nancy.ModelBinding;
 using Newtonsoft.Json;
-using NLog;
+using Serilog;
+using Serilog.Events;
 using System;
 using System.Collections.Generic;
 
@@ -17,7 +18,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
         private static readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings {
             NullValueHandling = NullValueHandling.Ignore
         };
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public CollectModule(IAppConfigurationManager config, IValidator<LogRecord> logrecValidator, ILogStore logstore)
         {
@@ -40,10 +40,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
                 // we should collect logs only for applications which are not excluded
                 if (!app.IsExcluded) {
-                    // FIXME add task to the tasks queue, for now we do it synchronously
                     await logstore.AddLogRecord(logrec);
                 } else {
-                    logger.Debug("Log record for the application '{0}' was not stored as the application is excluded.");
+                    Log.Debug("Log record for the application '{0}' was not stored as the application is excluded.");
                 }
 
                 return "OK";
@@ -69,18 +68,15 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         if (!app.IsExcluded) {
                             logsToSave.Add(logrec);
                         } else {
-                            logger.Debug("Log record for the application '{0}' was not stored as the application is excluded.");
+                            Log.Debug("Log record for the application '{0}' was not stored as the application is excluded.");
                         }
                     } else {
-                        if (logger.IsWarnEnabled) {
-                            logger.Warn("Validation error(s) occured when saving a logrecord: {0}, errors: {1}",
-                                JsonConvert.SerializeObject(logrec, Formatting.Indented, jsonSerializerSettings), String.Join(";",
-                                validationResult.Errors));
+                        if (Log.IsEnabled(LogEventLevel.Warning)) {
+                            Log.Warning("Validation error(s) occured when saving a logrecord: {0}, errors: {1}",
+                                logrec, validationResult.Errors);
                         }
                     }
                 }
-
-                // FIXME add task to the tasks queue, for now we do it synchronously
                 await logstore.AddLogRecords(logsToSave);
 
                 return "OK";

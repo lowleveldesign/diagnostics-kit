@@ -12,6 +12,7 @@ using LowLevelDesign.Diagnostics.Castle.Config;
 using FluentValidation;
 using System.Threading.Tasks;
 using System.Runtime.Caching;
+using Serilog;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
@@ -20,7 +21,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
         private readonly static int DefaultCacheTimeInSeconds = AppSettingsWrapper.DefaultGridCacheTimeInSeconds;
         private MemoryCache cache = MemoryCache.Default;
 
-        public ApplicationGridModule(IAppConfigurationManager appconf, ILogStore logStore, IValidator<Application> appvalidator)
+        public ApplicationGridModule(IAppConfigurationManager appconf, ILogStore logStore)
         {
             Get["/", true] = async (x, ct) => {
                 ApplicationGridModel model = null;
@@ -89,32 +90,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     return app;
                 })];
             };
-            Post["conf/appname", true] = async (x, ct) => {
-                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "Name");
-            };
-            Post["conf/appmaintenance", true] = async (x, ct) => {
-                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "DaysToKeepLogs");
-            };
-            Post["conf/appexclusion", true] = async (x, ct) => {
-                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "IsExcluded");
-            };
-            Post["conf/appsrvconfig", true] = async (x, ct) => {
-                var conf = this.Bind<ApplicationServerConfig>();
-                // FIXME implement
-                throw new NotImplementedException();
-            };
-        }
-
-        private static async Task<String> UpdateAppPropertyAsync(IAppConfigurationManager appconf,
-            IValidator<Application> validator, Application app, String property)
-        {
-            var validationResult = validator.Validate(app, "Hash", property);
-            if (!validationResult.IsValid) {
-                return "ERR_INVALID";
-            }
-            await appconf.UpdateAppPropertiesAsync(app, new[] { property });
-
-            return "OK";
         }
     }
 }

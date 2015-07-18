@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}</ProjectGuid>
+    <ProjectGuid>{3413A67B-0152-419B-8959-73E67732FD97}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LowLevelDesign.Diagnostics.LogStore.MySql</RootNamespace>
-    <AssemblyName>LowLevelDesign.Diagnostics.LogStore.MySql</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <RootNamespace>LowLevelDesign.Diagnostics.LogStore.Defaults</RootNamespace>
+    <AssemblyName>LowLevelDesign.Diagnostics.LogStore.Defaults</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,26 +30,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper">
-      <HintPath>..\..\..\diagnostics-kit\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
-    </Reference>
-    <Reference Include="FluentValidation">
-      <HintPath>..\..\..\diagnostics-kit\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
-    </Reference>
-    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\diagnostics-kit\packages\LowLevelDesign.Diagnostics.Commons.0.1.0.0\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
+    <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.9.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\..\..\diagnostics-kit\packages\MySql.Data.6.9.7\lib\net45\MySql.Data.dll</HintPath>
+    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.0.1.0.0\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\diagnostics-kit\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml.Linq" />
@@ -60,27 +57,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MySqlLogStoreConfiguration.cs" />
-    <Compile Include="MySqlAppConfigurationManager.cs" />
-    <Compile Include="Helpers.cs" />
-    <Compile Include="LogTable.cs" />
-    <Compile Include="Models.cs" />
-    <Compile Include="MySqlLogStore.cs" />
-    <Compile Include="Partition.cs" />
+    <Compile Include="DefaultAppConfigurationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="mysqldb.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LowLevelDesign.Diagnostics.LogStore.Defaults\LowLevelDesign.Diagnostics.LogStore.Defaults.csproj">
-      <Project>{3413a67b-0152-419b-8959-73e67732fd97}</Project>
-      <Name>LowLevelDesign.Diagnostics.LogStore.Defaults</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

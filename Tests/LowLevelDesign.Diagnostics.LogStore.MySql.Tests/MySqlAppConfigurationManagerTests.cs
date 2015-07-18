@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.MySql;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,8 +13,9 @@ using Xunit;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Tests
 {
-    public class MySqlConfigurationManagerTests
+    public class MySqlConfigurationManagerTests : IDisposable
     {
+        private const string path = @"c:\TEMP\test\blablabla";
         private readonly string dbConnString;
 
         public MySqlConfigurationManagerTests()
@@ -27,7 +29,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
         {
             var conf = new MySqlAppConfigurationManager();
 
-            var expectedApp = new Application { Path = @"c:\TEMP\test\testapp\", IsExcluded = true };
+            var expectedApp = new Application { Path = path, IsExcluded = true };
             await conf.AddOrUpdateAppAsync(expectedApp);
 
             var app = await conf.FindAppAsync(expectedApp.Path);
@@ -35,7 +37,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
             Assert.NotNull(app);
             Assert.Equal(expectedApp.Path.ToLowerInvariant(), app.Path);
             Assert.Equal(expectedApp.IsExcluded, app.IsExcluded);
-            Assert.Equal("testapp", app.Name); // when no name is provided we will use the one based on a path
+            Assert.Equal("blablabla", app.Name); // when no name is provided we will use the one based on a path
 
             expectedApp.Name = "newappname";
             expectedApp.IsExcluded = false;
@@ -52,6 +54,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
             await conf.UpdateAppPropertiesAsync(app, new [] { "IsExcluded" });
 
             app = await conf.FindAppAsync(expectedApp.Path);
+            Assert.True(app.IsExcluded);
 
             var appconf = new ApplicationServerConfig {
                 AppPath = app.Path,
@@ -69,6 +72,16 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
             Assert.Contains(appconf.Bindings[2], dbconf.Bindings);
 
             Assert.True(app.IsExcluded);
+        }
+
+        public void Dispose()
+        {
+            using (var conn = new MySqlConnection(dbConnString)) {
+                conn.Open();
+
+                conn.Execute("delete from Applications where Path = @path", new { path });
+                conn.Execute("delete from ApplicationConfigs where Path = @path", new { path });
+            }
         }
     }
 }

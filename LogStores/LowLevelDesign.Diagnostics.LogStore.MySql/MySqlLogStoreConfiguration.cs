@@ -11,6 +11,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
     {
         private static readonly MySqlConfigSection mySqlConfigSection;
         private static readonly String connectionString;
+        private static readonly String connectionStringName;
 
         static MySqlLogStoreConfiguration()
         {
@@ -19,7 +20,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                 throw new ConfigurationErrorsException("mySqlLogStore section is required in the application configuration file.");
             }
             try {
-                connectionString = ConfigurationManager.ConnectionStrings[mySqlConfigSection.ConnectionStringName].ConnectionString;
+                connectionStringName = mySqlConfigSection.ConnectionStringName;
+                connectionString = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
             } catch (Exception ex) {
                 throw new ConfigurationErrorsException(String.Format(
                     "There is something wrong with the connection string to the MySql log store database, error: {0}", ex));
@@ -27,6 +29,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
         }
 
         public static String ConnectionString { get { return connectionString; } }
+
+        public static String ConnectionStringName { get { return connectionStringName;  } }
     }
 
     public sealed class MySqlConfigSection : ConfigurationSection

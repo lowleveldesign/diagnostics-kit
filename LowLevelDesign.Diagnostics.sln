@@ -47,6 +47,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.MySql.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.MySql.Tests\LowLevelDesign.Diagnostics.LogStore.MySql.Tests.csproj", "{B36818A4-DD67-442F-A470-FE98E40FA584}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Defaults", "LogStores\LowLevelDesign.Diagnostics.LogStore.Defaults\LowLevelDesign.Diagnostics.LogStore.Defaults.csproj", "{3413A67B-0152-419B-8959-73E67732FD97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Defaults.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.Defaults.Tests\LowLevelDesign.Diagnostics.LogStore.Defaults.Tests.csproj", "{3DC7E0FD-41A6-4924-BA85-19D7852513B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +129,14 @@ Global
 		{B36818A4-DD67-442F-A470-FE98E40FA584}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3413A67B-0152-419B-8959-73E67732FD97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3413A67B-0152-419B-8959-73E67732FD97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3413A67B-0152-419B-8959-73E67732FD97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3413A67B-0152-419B-8959-73E67732FD97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -146,5 +158,7 @@ Global
 		{2F328F9B-9540-4B42-9FA6-4FE59AF328FA} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{B36818A4-DD67-442F-A470-FE98E40FA584} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
+		{3413A67B-0152-419B-8959-73E67732FD97} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
+		{3DC7E0FD-41A6-4924-BA85-19D7852513B0} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 	EndGlobalSection
 EndGlobal

@@ -1,7 +1,7 @@
 ﻿using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Storage;
-using NLog;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Logs
 
         private readonly IAppConfigurationManager config;
         private readonly ILogStore logStore;
-        private Logger logger = LogManager.GetCurrentClassLogger();
 
         public LogMaintenance(IAppConfigurationManager config, ILogStore logStore)
         {
@@ -34,7 +33,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Logs
         public async Task<bool> PerformMaintenanceIfNecessaryAsync(bool force = false)
         {
             if (force || !cache.Contains(lastMaintenanceKey)) {
-                logger.Info("Performing logs maintenance, force: {0}", force);
+                Log.Information("Performing logs maintenance, force: {0}", force);
 
                 // we need to perform the maintenance
                 var appmaintenance = (await config.GetAppsAsync()).Where(app => app.DaysToKeepLogs.HasValue).ToDictionary(

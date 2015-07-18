@@ -1,13 +1,9 @@
 ﻿using Dapper;
-using LowLevelDesign.Diagnostics.Castle.Config;
-using LowLevelDesign.Diagnostics.Castle.Models;
 using LowLevelDesign.Diagnostics.Commons.Models;
-using System;
-using System.Collections.Generic;
+using LowLevelDesign.Diagnostics.LogStore.Defaults;
 using System.Configuration;
 using System.Data.Common;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -15,6 +11,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
 {
     public class AppConfigurationManagerTests
     {
+        private const string path = @"c:\TEMP\test\defaultstest12312312";
         private readonly DbProviderFactory dbProviderFactory;
         private readonly string dbConnString;
 
@@ -30,7 +27,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
         {
             var conf = new DefaultAppConfigurationManager();
 
-            var expectedApp = new Application { Path = @"c:\TEMP\test\testapp\", IsExcluded = true };
+            var expectedApp = new Application { Path = path, IsExcluded = true };
             await conf.AddOrUpdateAppAsync(expectedApp);
 
             var app = await conf.FindAppAsync(expectedApp.Path);
@@ -38,7 +35,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.NotNull(app);
             Assert.Equal(expectedApp.Path.ToLowerInvariant(), app.Path);
             Assert.Equal(expectedApp.IsExcluded, app.IsExcluded);
-            Assert.Equal("testapp", app.Name); // when no name is provided we will use the one based on a path
+            Assert.Equal("defaultstest12312312", app.Name); // when no name is provided we will use the one based on a path
 
             expectedApp.Name = "newappname";
             expectedApp.IsExcluded = false;
@@ -56,7 +53,34 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
 
             app = await conf.FindAppAsync(expectedApp.Path);
 
-            Assert.False(app.IsExcluded);
+            Assert.True(app.IsExcluded);
+
+            var appconf = new ApplicationServerConfig {
+                AppPath = app.Path,
+                Server = "TEST2",
+                Bindings = new [] { "*:80:", "127.0.0.1:80:", ":80:www.test.com" }
+            };
+            await conf.AddOrUpdateAppServerConfigAsync(appconf);
+            var dbconf = (await conf.GetAppConfigsAsync(new[] { app.Path })).FirstOrDefault();
+            Assert.NotNull(dbconf);
+            Assert.Equal(appconf.AppPath, dbconf.AppPath);
+            Assert.Equal(appconf.AppPoolName, dbconf.AppPoolName);
+            Assert.Equal(appconf.Server, dbconf.Server);
+            Assert.Contains(appconf.Bindings[0], dbconf.Bindings);
+            Assert.Contains(appconf.Bindings[1], dbconf.Bindings);
+            Assert.Contains(appconf.Bindings[2], dbconf.Bindings);
+
+            Assert.True(app.IsExcluded);
+        }
+
+        public void Dispose()
+        {
+            using (var conn = dbProviderFactory.CreateConnection()) {
+                conn.Open();
+
+                conn.Execute("delete from Applications where Path = @path", new { path });
+                conn.Execute("delete from ApplicationConfigs where Path = @path", new { path });
+            }
         }
     }
 }

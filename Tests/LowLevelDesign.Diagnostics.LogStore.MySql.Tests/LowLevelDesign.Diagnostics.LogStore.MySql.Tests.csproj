@@ -86,6 +86,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\LogStores\LowLevelDesign.Diagnostics.LogStore.Defaults\LowLevelDesign.Diagnostics.LogStore.Defaults.csproj">
+      <Project>{3413a67b-0152-419b-8959-73e67732fd97}</Project>
+      <Name>LowLevelDesign.Diagnostics.LogStore.Defaults</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\LogStores\LowLevelDesign.Diagnostics.LogStore.MySql\LowLevelDesign.Diagnostics.LogStore.MySql.csproj">
       <Project>{8e8eeeaf-b485-488d-9979-f4fcc6800fa2}</Project>
       <Name>LowLevelDesign.Diagnostics.LogStore.MySql</Name>
