@@ -7,7 +7,7 @@ using System.Net;
 
 namespace LowLevelDesign.Diagnostics.Commons.Connectors
 {
-    public sealed class HttpCastleConnector : IDisposable
+    public class HttpCastleConnector : IDisposable
     {
         private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {
             NullValueHandling = NullValueHandling.Ignore,
@@ -15,7 +15,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
              * this value to local time, completely skipping timezone settings. */
             DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
         };
-        private readonly Uri diagnosticsAddress;
+        protected readonly Uri diagnosticsAddress;
 
         /// <summary>
         /// Makes a request to the diagnostics url to gather
@@ -49,14 +49,14 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
                 JsonConvert.SerializeObject(logrecs, Formatting.None, jsonSettings));
         }
 
-        private String MakeGetRequest(String url) {
+        protected String MakeGetRequest(String url) {
             var request = WebRequest.Create(url);
             using (var reader = new StreamReader(request.GetResponse().GetResponseStream())) {
                 return reader.ReadToEnd();
             }
         }
 
-        private String MakePostRequest(String url, String postData) {
+        protected String MakePostRequest(String url, String postData) {
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
             request.ContentType = "application/json";
