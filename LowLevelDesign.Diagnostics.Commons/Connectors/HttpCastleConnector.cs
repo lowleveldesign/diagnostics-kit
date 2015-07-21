@@ -9,7 +9,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
 {
     public class HttpCastleConnector : IDisposable
     {
-        private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {
+         static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {
             NullValueHandling = NullValueHandling.Ignore,
             /* HACK: for some reason the ISO format did not work with the collector. It converted
              * this value to local time, completely skipping timezone settings. */
@@ -17,11 +17,6 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
         };
         protected readonly Uri diagnosticsAddress;
 
-        /// <summary>
-        /// Makes a request to the diagnostics url to gather
-        /// information about the master node.
-        /// </summary>
-        /// <param name="uri"></param>
         public HttpCastleConnector(Uri uri) {
             if (uri == null) {
                 throw new ArgumentException("uri");
