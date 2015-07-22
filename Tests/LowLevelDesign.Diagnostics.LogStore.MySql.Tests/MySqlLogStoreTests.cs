@@ -10,6 +10,7 @@ using System.Text;
 using MySql.Data.MySqlClient;
 using Xunit;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Tests
 {
@@ -27,7 +28,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 foreach (var path in paths) {
                     var hash = BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(path))).Replace("-", String.Empty);
                     tableNames.Add(MySqlLogStore.AppLogTablePrefix + hash);
-                    tableNames.Add(MySqlLogStore.PerfLogTablePrefix + hash);
 
                     conn.Execute("delete from appstat where ApplicationHash = @hash", new { hash });
                 }
@@ -95,12 +95,11 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 var tables = conn.Query<String>("select table_name from information_schema.tables where table_schema = @db", new { db = conn.Database }).ToArray();
 
                 Assert.Contains(MySqlLogStore.AppLogTablePrefix + hash, tables, StringComparer.OrdinalIgnoreCase);
-                Assert.Contains(MySqlLogStore.PerfLogTablePrefix + hash, tables, StringComparer.OrdinalIgnoreCase);
 
                 // check partitions
                 var expectedPartitionNames = new[] { String.Format("{0}{1:yyyyMMdd}", Partition.PartitionPrefix, utcnow.Date.AddDays(1)), 
                     String.Format("{0}{1:yyyyMMdd}", Partition.PartitionPrefix, utcnow.Date.AddDays(2)) };
-                foreach (var prefix in new[] { MySqlLogStore.AppLogTablePrefix, MySqlLogStore.PerfLogTablePrefix }) {
+                foreach (var prefix in new[] { MySqlLogStore.AppLogTablePrefix }) {
                     var partitions = conn.Query<String>("select partition_name From information_schema.partitions where table_name = @tableName and table_schema = @db order by partition_name",
                         new { tableName = prefix + hash, db = conn.Database });
                     Assert.Equal(expectedPartitionNames, partitions);
@@ -136,19 +135,15 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 Assert.Equal((String)logrec.AdditionalFields["ServiceName"], dbLogRec.ServiceName);
                 Assert.Equal((String)logrec.AdditionalFields["ServiceDisplayName"], dbLogRec.ServiceDisplayName);
 
-                var dbPerfLogs = conn.Query<DbPerfLogRecord>("select * from " + MySqlLogStore.PerfLogTablePrefix + hash).ToDictionary(l => l.CounterName);
+                var dbPerfLogs = JsonConvert.DeserializeObject<IDictionary<String, float>>(dbLogRec.PerfData);
                 Assert.True(dbPerfLogs.Count == 2);
-                Assert.All(dbPerfLogs.Values, l => l.LogRecordId = dbLogRec.Id);
 
-                DbPerfLogRecord r;
+                float r;
                 Assert.True(dbPerfLogs.TryGetValue("CPU", out r));
-                Assert.Equal(r.CounterValue, logrec.PerformanceData["CPU"]);
-                Assert.Equal(r.TimeUtc.ToShortDateString(), dbLogRec.TimeUtc.ToShortDateString());
+                Assert.Equal(r, logrec.PerformanceData["CPU"]);
 
                 Assert.True(dbPerfLogs.TryGetValue("Memory", out r));
-                Assert.Equal(r.CounterValue, logrec.PerformanceData["Memory"]);
-                Assert.Equal(r.TimeUtc.ToShortDateString(), dbLogRec.TimeUtc.ToShortDateString());
-                Assert.Equal(r.TimeUtc.ToLongTimeString(), dbLogRec.TimeUtc.ToLongTimeString());
+                Assert.Equal(r, logrec.PerformanceData["Memory"]);
 
                 // finally check the appstat table which should have a record for our data
                 var appstats = conn.Query<LastApplicationStatus>("select * from appstat where ApplicationHash = @hash and Server = @server", new { hash, server = logrec.Server }).ToArray();
@@ -284,14 +279,11 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 conn.Execute(String.Format("create table {0} (Id int unsigned auto_increment not null, TimeUtc datetime not null, " +
                     "primary key (Id, TimeUtc)) partition by range columns (TimeUtc) ({1})", MySqlLogStore.AppLogTablePrefix + hash,
                     partitionDefs));
-                conn.Execute(String.Format("create table {0} (Id int unsigned auto_increment not null, TimeUtc datetime not null, " +
-                    "primary key (Id, TimeUtc)) partition by range columns (TimeUtc) ({1})", MySqlLogStore.PerfLogTablePrefix + hash,
-                    partitionDefs));
 
                 await mysqlLogStore.Maintain(TimeSpan.FromDays(0));
 
                 // no partitions should be removed
-                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix, MySqlLogStore.PerfLogTablePrefix }) {
+                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix }) {
 
                     var partitions = conn.Query<String>("select partition_name from information_schema.partitions where table_name = @Table and table_schema = @Database",
                         new { conn.Database, Table = tbl + hash });
@@ -306,7 +298,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
 
                 await mysqlLogStore.Maintain(TimeSpan.FromDays(3));
 
-                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix, MySqlLogStore.PerfLogTablePrefix }) {
+                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix }) {
 
                     var partitions = conn.Query<String>("select partition_name from information_schema.partitions where table_name = @Table and table_schema = @Database",
                         new { conn.Database, Table = tbl + hash });
@@ -323,7 +315,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 conn.Execute(String.Format("alter table {0} drop partition {1}", MySqlLogStore.AppLogTablePrefix + hash, Partition.ForDay(utcnow.AddDays(1)).Name));
                 conn.Execute(String.Format("alter table {0} drop partition {1}", MySqlLogStore.AppLogTablePrefix + hash, Partition.ForDay(utcnow).Name));
                 await mysqlLogStore.Maintain(TimeSpan.FromDays(3));
-                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix, MySqlLogStore.PerfLogTablePrefix }) {
+                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix }) {
 
                     var partitions = conn.Query<String>("select partition_name from information_schema.partitions where table_name = @Table and table_schema = @Database",
                         new { conn.Database, Table = tbl + hash });
@@ -334,7 +326,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
 
                 // check if configuration per table is working
                 mysqlLogStore.Maintain(TimeSpan.FromDays(3), new Dictionary<String, TimeSpan> { { appPath, TimeSpan.FromDays(2) } }).Wait();
-                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix, MySqlLogStore.PerfLogTablePrefix }) {
+                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix }) {
 
                     var partitions = conn.Query<String>("select partition_name from information_schema.partitions where table_name = @Table and table_schema = @Database",
                         new { conn.Database, Table = tbl + hash });

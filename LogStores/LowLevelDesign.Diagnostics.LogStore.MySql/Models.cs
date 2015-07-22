@@ -29,6 +29,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
         public String ResponseData { get; set; }
         public String ServiceName { get; set; }
         public String ServiceDisplayName { get; set; }
+        public String PerfData { get; set; }
     }
 
     internal class DbPerfLogRecord

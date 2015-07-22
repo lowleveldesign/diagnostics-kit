@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace LowLevelDesign.Diagnostics.LogStore.MySql
 {
@@ -54,9 +55,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                             ",ExceptionMessage varchar(2000) null ,ExceptionAdditionalInfo text null ,CorrelationId varchar(100) null" +
                             ",Server varchar(200) null ,ApplicationPath varchar(2000) null ,ProcessId int null ,ThreadId int null" +
                             ",Identity varchar(200) null ,Host varchar(100) null ,LoggedUser varchar(200) null ,HttpStatusCode varchar(15) character set ascii null" +
-                            ",Url varchar(2000) null ,Referer varchar(2000) null ,ClientIP varchar(50) character set ascii null ,RequestData varchar(2000) null" +
-                            ",ResponseData varchar(2000) null ,ServiceName varchar(100) null ,ServiceDisplayName varchar(200) null ,PRIMARY KEY (TimeUtc, Server, Id), KEY(Id)" +
-                            ") COLLATE='utf8_general_ci' PARTITION BY RANGE COLUMNS(TimeUtc)" + String.Format("({0},{1})",
+                            ",Url varchar(2000) null ,Referer varchar(2000) null ,ClientIP varchar(50) character set ascii null ,RequestData text null" +
+                            ",ResponseData text null,ServiceName varchar(100) null ,ServiceDisplayName varchar(200) null, PerfData varchar(3000) null" +
+                            ",PRIMARY KEY (TimeUtc, Server, Id), KEY(Id)) COLLATE='utf8_general_ci' PARTITION BY RANGE COLUMNS(TimeUtc)" + 
+                            String.Format("({0},{1})",
                             GetPartitionDefinition(currentUtcDate), GetPartitionDefinition(currentUtcDate.AddDays(1))),
                             transaction: tran);
                         availableTables.Add(tableName);
@@ -72,10 +74,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             Object v;
             return (UInt32)(await conn.QueryAsync<UInt64>("insert into " + tableName + "(LoggerName ,LogLevel ,TimeUtc ,Message ,ExceptionType " +
                     ",ExceptionMessage ,ExceptionAdditionalInfo ,CorrelationId ,Server ,ApplicationPath ,ProcessId ,ThreadId ,Identity ,Host " +
-                    ",LoggedUser ,HttpStatusCode ,Url ,Referer ,ClientIP ,RequestData ,ResponseData ,ServiceName ,ServiceDisplayName) values (" +
+                    ",LoggedUser ,HttpStatusCode ,Url ,Referer ,ClientIP ,RequestData ,ResponseData ,ServiceName ,ServiceDisplayName, PerfData) values (" +
                     "@LoggerName ,@LogLevel ,@TimeUtc ,@Message ,@ExceptionType ,@ExceptionMessage ,@ExceptionAdditionalInfo ,@CorrelationId " +
                     ",@Server ,@ApplicationPath ,@ProcessId ,@ThreadId ,@Identity ,@Host ,@LoggedUser ,@HttpStatusCode ,@Url ,@Referer ,@ClientIP " +
-                    ",@RequestData ,@ResponseData ,@ServiceName ,@ServiceDisplayName); select LAST_INSERT_ID()", new DbAppLogRecord {
+                    ",@RequestData ,@ResponseData ,@ServiceName ,@ServiceDisplayName, @PerfData); select LAST_INSERT_ID()", new DbAppLogRecord {
                         LoggerName = logrec.LoggerName,
                         LogLevel = logrec.LogLevel,
                         TimeUtc = logrec.TimeUtc,
@@ -98,38 +100,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                         RequestData = logrec.AdditionalFields.TryGetValue("RequestData", out v) ? ((String)v).ShortenIfNecessary(2000) : null,
                         ResponseData = logrec.AdditionalFields.TryGetValue("ResponseData", out v) ? ((String)v).ShortenIfNecessary(2000) : null,
                         ServiceName = logrec.AdditionalFields.TryGetValue("ServiceName", out v) ? ((String)v).ShortenIfNecessary(100) : null,
-                        ServiceDisplayName = logrec.AdditionalFields.TryGetValue("ServiceDisplayName", out v) ? ((String)v).ShortenIfNecessary(200) : null
+                        ServiceDisplayName = logrec.AdditionalFields.TryGetValue("ServiceDisplayName", out v) ? ((String)v).ShortenIfNecessary(200) : null,
+                        PerfData = logrec.PerformanceData != null && logrec.PerformanceData.Count > 0 ? JsonConvert.SerializeObject(
+                            logrec.PerformanceData).ShortenIfNecessary(3000) : null
                     }, tran)).Single();
-        }
-
-
-        public async Task HandlePerfLog(MySqlConnection conn, MySqlTransaction tran, String tableName, LogRecord logrec, Int64 logRecordId)
-        {
-            // if it's performance log we should store the performance data in the perf table
-            // make sure that table for performance logs exists
-            if (!availableTables.Contains(tableName)) {
-                lock (lck) {
-                    if (!availableTables.Contains(tableName)) {
-                        var currentUtcDate = currentUtcDateRetriever().Date;
-                        conn.Execute("create table if not exists " + tableName + " (LogRecordId int unsigned not null, TimeUtc datetime not null, CounterName varchar(100) not null" +
-                                ",CounterValue float not null ,constraint PK_LogRecordPerformanceData primary key (LogRecordId, CounterName, TimeUtc)) COLLATE='utf8_general_ci'" +
-                                String.Format("PARTITION BY RANGE COLUMNS(TimeUtc) ({0}, {1})",
-                                GetPartitionDefinition(currentUtcDate), GetPartitionDefinition(currentUtcDate.AddDays(1))),
-                                transaction: tran);
-                        availableTables.Add("perflog_all");
-                    }
-                }
-            }
-
-            foreach (var perf in logrec.PerformanceData) {
-                await conn.ExecuteAsync("insert into " + tableName + "(LogRecordId, TimeUtc, CounterName, CounterValue) values (" +
-                    "@LogRecordId, @TimeUtc, @CounterName, @CounterValue)", new {
-                        LogRecordId = logRecordId,
-                        logrec.TimeUtc,
-                        CounterName = perf.Key,
-                        CounterValue = perf.Value
-                    }, tran);
-            }
         }
 
         public async Task UpdateApplicationStatus(MySqlConnection conn, MySqlTransaction tran, String apphash, LastApplicationStatus status)

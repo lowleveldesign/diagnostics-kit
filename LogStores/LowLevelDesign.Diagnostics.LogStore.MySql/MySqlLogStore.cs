@@ -9,13 +9,13 @@ using System.Security.Cryptography;
 using System.Text;
 using MySql.Data.MySqlClient;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace LowLevelDesign.Diagnostics.LogStore.MySql
 {
     public class MySqlLogStore : ILogStore
     {
         public const String AppLogTablePrefix = "applog_";
-        public const String PerfLogTablePrefix = "perflog_";
         private static readonly ConcurrentDictionary<String, String> applicationMd5Hashes = new ConcurrentDictionary<String, String>(StringComparer.OrdinalIgnoreCase);
 
         private readonly LogTable logTable;
@@ -63,8 +63,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
 
             // performance logs need to be handled differently
             if (logrec.PerformanceData != null && logrec.PerformanceData.Count > 0) {
-                await logTable.HandlePerfLog(conn, tran, PerfLogTablePrefix + apphash, logrec, logrecId);
-
                 if (appstat == null) {
                     appstat = new LastApplicationStatus {
                         ApplicationPath = logrec.ApplicationPath,
@@ -114,13 +112,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             using (var conn = new MySqlConnection(MySqlLogStoreConfiguration.ConnectionString)) {
                 await conn.OpenAsync();
                 var dbapplogs = (await conn.QueryAsync<DbAppLogRecord>(String.Format("select * from {0}{1} {2}", AppLogTablePrefix, hash, whereSql), searchCriteria)).ToArray();
-                DbPerfLogRecord[] dbperflogs;
-                if (dbapplogs.Any() && LogTable.IsLogTableAvailable(PerfLogTablePrefix + hash))  {
-                    dbperflogs = (await conn.QueryAsync<DbPerfLogRecord>(String.Format("select * from {0}{1} where LogRecordId in @ids", PerfLogTablePrefix, hash),
-                    new { ids = dbapplogs.Select(l => l.Id) })).ToArray();
-                } else {
-                    dbperflogs = new DbPerfLogRecord[0];
-                }
                 var applogs = new LogRecord[dbapplogs.Length];
                 for (int i = 0; i < dbapplogs.Length; i++) {
                     var dbapplog = dbapplogs[i];
@@ -150,8 +141,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                     applog.AdditionalFields.AddIfNotNull("ResponseData", dbapplog.ResponseData);
                     applog.AdditionalFields.AddIfNotNull("ServiceName", dbapplog.ServiceName);
                     applog.AdditionalFields.AddIfNotNull("ServiceDisplayName", dbapplog.ServiceDisplayName);
-
-                    applog.PerformanceData = dbperflogs.Where(p => p.LogRecordId == dbapplog.Id).ToDictionary(p => p.CounterName, p => p.CounterValue);
+                    applog.PerformanceData = dbapplog.PerfData != null ? JsonConvert.DeserializeObject<IDictionary<String, float>>(
+                        dbapplog.PerfData) : null;
 
                     applogs[i] = applog;
                 }
@@ -195,8 +186,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                     String hash;
                     if (tbl.StartsWith(AppLogTablePrefix, StringComparison.OrdinalIgnoreCase)) {
                         hash = tbl.Substring(AppLogTablePrefix.Length);
-                    } else if (tbl.StartsWith(PerfLogTablePrefix, StringComparison.OrdinalIgnoreCase)) {
-                        hash = tbl.Substring(PerfLogTablePrefix.Length);
                     } else {
                         continue;
                     }
