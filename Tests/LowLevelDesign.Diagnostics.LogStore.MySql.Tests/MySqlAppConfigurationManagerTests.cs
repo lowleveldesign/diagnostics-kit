@@ -29,7 +29,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
         {
             var conf = new MySqlAppConfigurationManager();
 
-            var expectedApp = new Application { Path = path, IsExcluded = true };
+            var expectedApp = new Application { Path = path, IsExcluded = true, IsHidden = false };
             await conf.AddOrUpdateAppAsync(expectedApp);
 
             var app = await conf.FindAppAsync(expectedApp.Path);
@@ -38,6 +38,17 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
             Assert.Equal(expectedApp.Path.ToLowerInvariant(), app.Path);
             Assert.Equal(expectedApp.IsExcluded, app.IsExcluded);
             Assert.Equal("blablabla", app.Name); // when no name is provided we will use the one based on a path
+            Assert.Equal(true, app.IsExcluded);
+            Assert.Equal(false, app.IsHidden);
+
+            expectedApp.IsExcluded = false;
+            expectedApp.IsHidden = true;
+
+            await conf.AddOrUpdateAppAsync(expectedApp);
+            app = await conf.FindAppAsync(expectedApp.Path);
+
+            Assert.Equal(true, app.IsExcluded);
+            Assert.Equal(true, app.IsHidden);
 
             expectedApp.Name = "newappname";
             expectedApp.IsExcluded = false;

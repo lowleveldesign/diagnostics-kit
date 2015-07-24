@@ -88,17 +88,19 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 
                 lock (lck) {
                     // try to update the record
-                    var rec = conn.Execute("update Applications set Name = @Name, IsExcluded = @IsExcluded where PathHash = @PathHash", new {
+                    var rec = conn.Execute("update Applications set Name = @Name, IsExcluded = @IsExcluded, IsHidden = @IsHidden where PathHash = @PathHash", new {
                         app.Name,
                         app.IsExcluded,
-                        PathHash = pathHash
+                        PathHash = pathHash,
+                        app.IsHidden
                     });
                     if (rec == 0) {
                         // no application found - we need to insert it
-                        conn.Execute("insert into Applications (Name, Path, PathHash, IsExcluded) values (@Name, @Path, @PathHash, @IsExcluded)", new {
+                        conn.Execute("insert into Applications (Name, Path, PathHash, IsExcluded, IsHidden) values (@Name, @Path, @PathHash, @IsExcluded, @IsHidden)", new {
                             app.Name,
                             app.Path,
                             app.IsExcluded,
+                            app.IsHidden,
                             PathHash = pathHash
                         });
                     }
@@ -167,6 +169,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                     app.Name,
                     app.Path,
                     app.IsExcluded,
+                    app.IsHidden,
                     PathHash = pathHash,
                     app.DaysToKeepLogs
                 });

@@ -27,15 +27,25 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
         {
             var conf = new DefaultAppConfigurationManager();
 
-            var expectedApp = new Application { Path = path, IsExcluded = true };
-            await conf.AddOrUpdateAppAsync(expectedApp);
+            var expectedApp = new Application { Path = path, IsExcluded = true, IsHidden = false };
 
+            await conf.AddOrUpdateAppAsync(expectedApp);
             var app = await conf.FindAppAsync(expectedApp.Path);
 
             Assert.NotNull(app);
             Assert.Equal(expectedApp.Path.ToLowerInvariant(), app.Path);
-            Assert.Equal(expectedApp.IsExcluded, app.IsExcluded);
+            Assert.Equal(true, app.IsExcluded);
+            Assert.Equal(false, app.IsHidden);
             Assert.Equal("defaultstest12312312", app.Name); // when no name is provided we will use the one based on a path
+
+            expectedApp.IsExcluded = false;
+            expectedApp.IsHidden = true;
+
+            await conf.AddOrUpdateAppAsync(expectedApp);
+            app = await conf.FindAppAsync(expectedApp.Path);
+
+            Assert.Equal(true, app.IsExcluded);
+            Assert.Equal(true, app.IsHidden);
 
             expectedApp.Name = "newappname";
             expectedApp.IsExcluded = false;

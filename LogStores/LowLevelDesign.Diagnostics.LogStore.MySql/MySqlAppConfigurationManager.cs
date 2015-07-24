@@ -23,7 +23,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                 conn.Open();
 
                 conn.Execute("create table if not exists Applications (PathHash binary(16) primary key," +
-                        "Path varchar(2000) not null, Name varchar(500) not null, IsExcluded bit not null, DaysToKeepLogs tinyint unsigned)");
+                        "Path varchar(2000) not null, Name varchar(500) not null, IsExcluded bit not null, IsHidden bit not null, DaysToKeepLogs tinyint unsigned)");
 
                 conn.Execute("create table if not exists ApplicationConfigs (PathHash binary(16) not null, Path varchar(2000) not null, " +
                                 "Server varchar(200) not null, Binding varchar(3000) not null, AppPoolName varchar(500), AppType char(3), " + 
@@ -52,11 +52,12 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                 await conn.OpenAsync();
 
                 // try to update the record or insert it
-                await conn.ExecuteAsync("replace into Applications (Name, Path, PathHash, IsExcluded, DaysToKeepLogs) values " +
-                    "(@Name, @Path, @PathHash, @IsExcluded, @DaysToKeepLogs)", new {
+                await conn.ExecuteAsync("replace into Applications (Name, Path, PathHash, IsExcluded, IsHidden, DaysToKeepLogs) values " +
+                    "(@Name, @Path, @PathHash, @IsExcluded, @IsHidden, @DaysToKeepLogs)", new {
                         app.Name,
                         app.Path,
                         app.IsExcluded,
+                        app.IsHidden,
                         PathHash = pathHash,
                         app.DaysToKeepLogs
                     });
