@@ -58,7 +58,10 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             var appconf = new ApplicationServerConfig {
                 AppPath = app.Path,
                 Server = "TEST2",
-                Bindings = new [] { "*:80:", "127.0.0.1:80:", ":80:www.test.com" }
+                Bindings = new [] { "*:80:", "127.0.0.1:80:", ":80:www.test.com" },
+                AppType = ApplicationServerConfig.WebAppType,
+                ServiceName = "Test.Service",
+                DisplayName = "Test Service Display"
             };
             await conf.AddOrUpdateAppServerConfigAsync(appconf);
             var dbconf = (await conf.GetAppConfigsAsync(new[] { app.Path })).FirstOrDefault();
@@ -69,6 +72,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.Contains(appconf.Bindings[0], dbconf.Bindings);
             Assert.Contains(appconf.Bindings[1], dbconf.Bindings);
             Assert.Contains(appconf.Bindings[2], dbconf.Bindings);
+            Assert.Equal(appconf.AppType, dbconf.AppType);
+            Assert.Equal(appconf.ServiceName, dbconf.ServiceName);
+            Assert.Equal(appconf.DisplayName, dbconf.DisplayName);
 
             Assert.True(app.IsExcluded);
         }

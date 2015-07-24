@@ -187,6 +187,12 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
             public String Binding { get; set; }
 
             public String AppPoolName { get; set; }
+
+            public String ServiceName { get; set; }
+
+            public String DisplayName { get; set; }
+
+            public String AppType { get; set; }
         }
 
 
@@ -200,7 +206,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                 Path = config.AppPath,
                 Server = config.Server,
                 Binding = String.Join("|", config.Bindings),
-                AppPoolName = config.AppPoolName
+                AppPoolName = config.AppPoolName,
+                AppType = config.AppType,
+                ServiceName = config.ServiceName,
+                DisplayName = config.DisplayName
             };
 
             using (var conn = CreateConnection()) {
@@ -208,12 +217,12 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 
                 lock (lck) {
                     // try to update the record or insert it
-                    var rec = conn.Execute("update ApplicationConfigs set Path = @Path, Binding = @Binding, AppPoolName = @AppPoolName " +
-                        "where PathHash = @PathHash and Server = @Server", c);
+                    var rec = conn.Execute("update ApplicationConfigs set Path = @Path, Binding = @Binding, AppPoolName = @AppPoolName, " +
+                        "AppType = @AppType, ServiceName = @ServiceName, DisplayName = @DisplayName where PathHash = @PathHash and Server = @Server", c);
                     if (rec == 0) {
                         // no application found - we need to insert it
-                        conn.Execute("insert into ApplicationConfigs (PathHash, Path, Server, Binding, AppPoolName) values " +
-                                        "(@PathHash, @Path, @Server, @Binding, @AppPoolName)", c);
+                        conn.Execute("insert into ApplicationConfigs (PathHash, Path, Server, Binding, AppPoolName, AppType, ServiceName, DisplayName) values " +
+                                        "(@PathHash, @Path, @Server, @Binding, @AppPoolName, @AppType, @ServiceName, @DisplayName)", c);
                     }
                 }
             }
@@ -242,7 +251,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                         AppPath = c.Path,
                         AppPoolName = c.AppPoolName,
                         Server = c.Server,
-                        Bindings = c.Binding.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
+                        Bindings = c.Binding.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries),
+                        AppType = c.AppType,
+                        ServiceName = c.ServiceName,
+                        DisplayName = c.DisplayName
                     });
             }
         }

@@ -26,7 +26,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                         "Path varchar(2000) not null, Name varchar(500) not null, IsExcluded bit not null, DaysToKeepLogs tinyint unsigned)");
 
                 conn.Execute("create table if not exists ApplicationConfigs (PathHash binary(16) not null, Path varchar(2000) not null, " +
-                                "Server varchar(200) not null, Binding varchar(3000) not null, AppPoolName varchar(500), primary key (PathHash, Server))");
+                                "Server varchar(200) not null, Binding varchar(3000) not null, AppPoolName varchar(500), AppType char(3), " + 
+                                "ServiceName varchar(300), DisplayName varchar(500), primary key (PathHash, Server))");
             }
         }
 
@@ -76,15 +77,18 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                 Path = config.AppPath,
                 Server = config.Server,
                 Binding = String.Join("|", config.Bindings),
-                AppPoolName = config.AppPoolName
+                AppPoolName = config.AppPoolName,
+                AppType = config.AppType,
+                ServiceName = config.ServiceName,
+                DisplayName = config.DisplayName
             };
 
             using (var conn = new MySqlConnection(dbConnString)) {
                 await conn.OpenAsync();
 
                 // try to update the record or insert it
-                await conn.ExecuteAsync("replace into ApplicationConfigs (PathHash, Path, Server, Binding, AppPoolName) values " +
-                    "(@PathHash, @Path, @Server, @Binding, @AppPoolName)", c);
+                await conn.ExecuteAsync("replace into ApplicationConfigs (PathHash, Path, Server, Binding, AppPoolName, AppType, ServiceName, DisplayName) values " +
+                    "(@PathHash, @Path, @Server, @Binding, @AppPoolName, @AppType, @ServiceName, @DisplayName)", c);
             }
         }
 

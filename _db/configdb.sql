@@ -11,5 +11,8 @@ create table ApplicationConfigs (
     Server nvarchar(200) not null,
     Binding nvarchar(3000) not null,
     AppPoolName nvarchar(500),
+    AppType nchar(3),
+    ServiceName nvarchar(300),
+    DisplayName nvarchar(500),
     primary key (PathHash, Server)
 );
