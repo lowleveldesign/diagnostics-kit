@@ -26,6 +26,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
             Post["conf/appexclusion", true] = async (x, ct) => {
                 return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "IsExcluded");
             };
+            Post["conf/apphidden", true] = async (x, ct) => {
+                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "IsHidden");
+            };
             Post["conf/appsrvconfig", true] = async (x, ct) => {
                 var configs = this.Bind<ApplicationServerConfig[]>();
                 var apppaths = new List<String>();
