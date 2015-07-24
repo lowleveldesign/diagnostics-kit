@@ -9,7 +9,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
 {
     public class HttpCastleConnector : IDisposable
     {
-         static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {
+        protected static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings {
             NullValueHandling = NullValueHandling.Ignore,
             /* HACK: for some reason the ISO format did not work with the collector. It converted
              * this value to local time, completely skipping timezone settings. */
@@ -32,7 +32,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
         /// <param name="logrec"></param>
         public void SendLogRecord(LogRecord logrec) {
             MakePostRequest(String.Format("{0}/collect", diagnosticsAddress),
-                JsonConvert.SerializeObject(logrec, Formatting.None, jsonSettings));
+                JsonConvert.SerializeObject(logrec, Formatting.None, JsonSettings));
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
         /// <param name="logrecs"></param>
         public void SendLogRecords(IEnumerable<LogRecord> logrecs) {
             MakePostRequest(String.Format("{0}/collectall", diagnosticsAddress),
-                JsonConvert.SerializeObject(logrecs, Formatting.None, jsonSettings));
+                JsonConvert.SerializeObject(logrecs, Formatting.None, JsonSettings));
         }
 
         protected String MakeGetRequest(String url) {

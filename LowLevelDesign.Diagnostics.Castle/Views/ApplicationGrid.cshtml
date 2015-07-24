@@ -27,14 +27,22 @@
                         $('h4', clonedDlg).text(name);
                         if (data && data.length > 0) {
                             $(data).each(function (ind, elem) {
-                                var html = "<div class=\"panel panel-primary\">" + "<div class=\"panel-heading\"><strong>" +
-                                elem.server + "</strong></div><div class=\"panel-body\"><p>Application pool: <strong>" +
-                                elem.appPoolName + "</strong></p><p>Application path: <strong>" + elem.appPath + "</strong></p>" +
-                                "<ul class=\"list-group\"><li class=\"list-group-item list-group-item-info\">Bindings</li>";
-                                for (var i = 0; i < elem.bindings.length; i++) {
-                                    html += "<li class=\"list-group-item\">" + elem.bindings[i] + "</li>";
+                                var html = "<div class=\"panel panel-primary\">" + "<div class=\"panel-heading\"><strong>Server: " +
+                                elem.server + "</strong></div><div class=\"panel-body\">";
+
+                                if (elem.appPoolName) {
+                                    html += "<p>Application pool: <strong>" + elem.appPoolName + "</strong></p>";
                                 }
-                                html += "</ul></div></div>";
+                                html += "<p>Application path: <strong>" + elem.appPath + "</strong></p>";
+
+                                if (elem.bindings && elem.bindings.length > 0) {
+                                    "<ul class=\"list-group\"><li class=\"list-group-item list-group-item-info\">Bindings</li>";
+                                    for (var i = 0; i < elem.bindings.length; i++) {
+                                        html += "<li class=\"list-group-item\">" + elem.bindings[i] + "</li>";
+                                    }
+                                    html += "</ul>";
+                                }
+                                html += "</div></div>";
                                 $('.modal-body', clonedDlg).append(html);
                             })
                         } else {
@@ -44,8 +52,7 @@
                         clonedDlg.after('#modelDialog');
                         clonedDlg.modal();
                     }, 'json').fail(function () {
-                        // FIXME
-                        alert('error');
+                        alert('Error occurred while connecting the server. Please try again.');
                     });
                 }
             });

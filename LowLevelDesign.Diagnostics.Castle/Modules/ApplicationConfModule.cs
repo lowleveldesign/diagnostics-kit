@@ -14,7 +14,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public class ApplicationConfModule : NancyModule
     {
-
         public ApplicationConfModule(IAppConfigurationManager appconf, ILogStore logStore, IValidator<Application> appvalidator,
             IValidator<ApplicationServerConfig> appconfvalidator)
         {
