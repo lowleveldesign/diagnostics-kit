@@ -12,7 +12,13 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
 
         public String Path { get; set; }
 
-        public bool IsExcluded { get; set; }
+        private bool isExcluded;
+        public bool IsExcluded {
+            get { return IsHidden || isExcluded; }
+            set { isExcluded = value; }
+        }
+
+        public bool IsHidden { get; set; }
 
         public byte? DaysToKeepLogs { get; set; }
 

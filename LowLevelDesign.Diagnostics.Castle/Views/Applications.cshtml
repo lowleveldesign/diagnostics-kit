@@ -24,6 +24,17 @@
                     $('#globalAlert').removeClass('hidden');
                 });
             });
+            /* application removal */
+            $("button[name='apphide']").on('click', function () {
+                var ctrl = $(this);
+                var path = $(this).attr('data-apppath');
+                $.post('conf/apphidden', { Path: path, IsHidden: true }, function (data) {
+                    ctrl.closest('tr').remove();
+                }).fail(function () {
+                    $('#globalAlert').removeClass('hidden');
+                });
+                return false;
+            });
             /* application name */
             $("a[name='appname']").on('click', function () {
                 $("#appnameModal input[name='apppath']").val($(this).attr('data-apppath'));
@@ -33,6 +44,7 @@
                 $('#appnameModal div.alert').addClass('hidden');
                 // show modal
                 $('#appnameModal').modal();
+                return false;
             });
             $("#btnSaveAppname").on('click', function () {
                 var apppath = $("#appnameModal input[name='apppath']").val();
@@ -49,6 +61,7 @@
                 }).fail(function () {
                     $('#appnameModal div.alert').removeClass('hidden');
                 });
+                return false;
             });
             /* application logs maintenance */
             $("a[name='appmaintain']").on('click', function () {
@@ -59,6 +72,7 @@
                 $('#appMaintenanceModal div.alert').addClass('hidden');
                 // show modal
                 $('#appMaintenanceModal').modal();
+                return false;
             });
             $('#btnSaveAppMaintenance').on('click', function () {
                 var apppath = $("#appMaintenanceModal input[name='apppath']").val();
@@ -86,6 +100,7 @@
                 }).fail(function () {
                     $('#appMaintenanceModal div.alert').removeClass('hidden');
                 });
+                return false;
             });
         });
     </script>
@@ -100,11 +115,12 @@
                 There was <strong>a network problem</strong> while trying to update the application info. Please try again and if the problem
                 persists contact the application administrator. 
             </div>
-            <span>
-                Applications for which we have received logs. You may here decide for which of them logs
-                should be collected and how should they be maintained. <strong>Click on an item to change its value.</strong> 
-                When you are done, you may <a href="~/">go back to the grid</a>.
-            </span>
+            <p>
+                The table below displays applications for which we have received logs or configuration information. By default all applications 
+                are disabled and logs coming for them are rejected. You may here change that behavior <strong>by enabling</strong> interesting applications. 
+                Additionally you may <strong>configure the log maintenance</strong> (for how many days logs should be kept). If a given application is not interesting
+                for you you may <strong>remove it</strong> - it won't ever again appear in the table. 
+            </p>
             <!-- Table -->
             <table class="table table-striped table-bordered">
                 <thead>
@@ -113,6 +129,7 @@
                         <th>Application path</th>
                         <th>Application name</th>
                         <th>Logs keep time</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -142,10 +159,16 @@
                                     }
                                 </a>
                             </td>
+                            <td>
+                                <button name="apphide" href="#" title="click to hide" class="btn btn-danger" data-apppath="@app.Path">Remove</button>
+                            </td>
                         </tr>
                     }
                 </tbody>
             </table>
+            <p>
+                <a href="~/">&lt;&lt; Go back to the grid</a>.
+            </p>
         </div>
     </div>
 </div>

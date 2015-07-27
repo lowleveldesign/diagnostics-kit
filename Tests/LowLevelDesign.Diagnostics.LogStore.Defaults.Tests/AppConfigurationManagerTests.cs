@@ -27,15 +27,25 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
         {
             var conf = new DefaultAppConfigurationManager();
 
-            var expectedApp = new Application { Path = path, IsExcluded = true };
-            await conf.AddOrUpdateAppAsync(expectedApp);
+            var expectedApp = new Application { Path = path, IsExcluded = true, IsHidden = false };
 
+            await conf.AddOrUpdateAppAsync(expectedApp);
             var app = await conf.FindAppAsync(expectedApp.Path);
 
             Assert.NotNull(app);
             Assert.Equal(expectedApp.Path.ToLowerInvariant(), app.Path);
-            Assert.Equal(expectedApp.IsExcluded, app.IsExcluded);
+            Assert.Equal(true, app.IsExcluded);
+            Assert.Equal(false, app.IsHidden);
             Assert.Equal("defaultstest12312312", app.Name); // when no name is provided we will use the one based on a path
+
+            expectedApp.IsExcluded = false;
+            expectedApp.IsHidden = true;
+
+            await conf.AddOrUpdateAppAsync(expectedApp);
+            app = await conf.FindAppAsync(expectedApp.Path);
+
+            Assert.Equal(true, app.IsExcluded);
+            Assert.Equal(true, app.IsHidden);
 
             expectedApp.Name = "newappname";
             expectedApp.IsExcluded = false;
@@ -58,7 +68,10 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             var appconf = new ApplicationServerConfig {
                 AppPath = app.Path,
                 Server = "TEST2",
-                Bindings = new [] { "*:80:", "127.0.0.1:80:", ":80:www.test.com" }
+                Bindings = new [] { "*:80:", "127.0.0.1:80:", ":80:www.test.com" },
+                AppType = ApplicationServerConfig.WebAppType,
+                ServiceName = "Test.Service",
+                DisplayName = "Test Service Display"
             };
             await conf.AddOrUpdateAppServerConfigAsync(appconf);
             var dbconf = (await conf.GetAppConfigsAsync(new[] { app.Path })).FirstOrDefault();
@@ -69,6 +82,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.Contains(appconf.Bindings[0], dbconf.Bindings);
             Assert.Contains(appconf.Bindings[1], dbconf.Bindings);
             Assert.Contains(appconf.Bindings[2], dbconf.Bindings);
+            Assert.Equal(appconf.AppType, dbconf.AppType);
+            Assert.Equal(appconf.ServiceName, dbconf.ServiceName);
+            Assert.Equal(appconf.DisplayName, dbconf.DisplayName);
 
             Assert.True(app.IsExcluded);
         }

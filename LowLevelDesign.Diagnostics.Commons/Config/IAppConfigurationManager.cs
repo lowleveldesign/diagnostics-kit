@@ -29,7 +29,8 @@ namespace LowLevelDesign.Diagnostics.Commons.Config
         Task UpdateAppPropertiesAsync(Application app, String[] propertiesToUpdate);
 
         /// <summary>
-        /// Retruns a sorted list of applications for which we have already received logs.
+        /// Retruns a sorted list of applications for which we have already received logs
+        /// and which are not hidden.
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<Application>> GetAppsAsync();
