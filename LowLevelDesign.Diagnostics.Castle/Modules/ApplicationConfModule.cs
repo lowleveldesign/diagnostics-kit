@@ -18,16 +18,19 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
             IValidator<ApplicationServerConfig> appconfvalidator)
         {
             Post["conf/appname", true] = async (x, ct) => {
-                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "Name");
+                return await UpdateAppPropertiesAsync(appconf, appvalidator, this.Bind<Application>(), "Name");
             };
             Post["conf/appmaintenance", true] = async (x, ct) => {
-                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "DaysToKeepLogs");
+                return await UpdateAppPropertiesAsync(appconf, appvalidator, this.Bind<Application>(), "DaysToKeepLogs");
             };
             Post["conf/appexclusion", true] = async (x, ct) => {
-                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "IsExcluded");
+                return await UpdateAppPropertiesAsync(appconf, appvalidator, this.Bind<Application>(), "IsExcluded");
             };
             Post["conf/apphidden", true] = async (x, ct) => {
-                return await UpdateAppPropertyAsync(appconf, appvalidator, this.Bind<Application>(), "IsHidden");
+                // we will mark it as excluded also
+                var app = this.Bind<Application>();
+                app.IsExcluded = true;
+                return await UpdateAppPropertiesAsync(appconf, appvalidator, app, new[] { "IsHidden", "IsExcluded" });
             };
             Post["conf/appsrvconfig", true] = async (x, ct) => {
                 var configs = this.Bind<ApplicationServerConfig[]>();
@@ -59,14 +62,14 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
             };
         }
 
-        private static async Task<String> UpdateAppPropertyAsync(IAppConfigurationManager appconf,
-            IValidator<Application> validator, Application app, String property)
+        private static async Task<String> UpdateAppPropertiesAsync(IAppConfigurationManager appconf,
+            IValidator<Application> validator, Application app, params String[] properties)
         {
-            var validationResult = validator.Validate(app, "Hash", property);
+            var validationResult = validator.Validate(app, properties);
             if (!validationResult.IsValid) {
                 return "ERR_INVALID";
             }
-            await appconf.UpdateAppPropertiesAsync(app, new[] { property });
+            await appconf.UpdateAppPropertiesAsync(app, properties);
 
             return "OK";
         }
