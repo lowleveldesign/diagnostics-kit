@@ -47,7 +47,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     }
                     await appconf.AddOrUpdateAppServerConfigAsync(conf);
                 }
-                return apppaths;
+                return Response.AsJson(apppaths);
             };
             Get["conf/appsrvconfig/{apppath?}", true] = async (x, ct) => {
                 IEnumerable<Application> apps;
