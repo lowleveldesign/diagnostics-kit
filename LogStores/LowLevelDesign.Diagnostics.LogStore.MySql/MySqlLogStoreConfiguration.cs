@@ -9,13 +9,13 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
 {
     internal static class MySqlLogStoreConfiguration
     {
-        private static readonly MySqlConfigSection mySqlConfigSection;
+        private static readonly MySqlLogStoreConfigSection mySqlConfigSection;
         private static readonly String connectionString;
         private static readonly String connectionStringName;
 
         static MySqlLogStoreConfiguration()
         {
-            mySqlConfigSection = ConfigurationManager.GetSection("mySqlLogStore") as MySqlConfigSection;
+            mySqlConfigSection = ConfigurationManager.GetSection("mySqlLogStore") as MySqlLogStoreConfigSection;
             if (mySqlConfigSection == null) {
                 throw new ConfigurationErrorsException("mySqlLogStore section is required in the application configuration file.");
             }
@@ -33,7 +33,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
         public static String ConnectionStringName { get { return connectionStringName;  } }
     }
 
-    public sealed class MySqlConfigSection : ConfigurationSection
+    public sealed class MySqlLogStoreConfigSection : ConfigurationSection
     {
         [ConfigurationProperty("connectionStringName", IsRequired = true, IsKey = true)]
         public String ConnectionStringName { get { return (String)this["connectionStringName"]; } }

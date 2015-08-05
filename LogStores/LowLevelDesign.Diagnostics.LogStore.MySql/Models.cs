@@ -31,13 +31,4 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
         public String ServiceDisplayName { get; set; }
         public String PerfData { get; set; }
     }
-
-    internal class DbPerfLogRecord
-    {
-        public Int64 LogRecordId { get; set; }
-        public DateTime TimeUtc { get; set; }
-        public String CounterName { get; set; }
-        public float CounterValue { get; set; }
-    }
-
 }
