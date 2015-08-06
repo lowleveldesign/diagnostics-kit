@@ -19,4 +19,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 // For tests
-[assembly: InternalsVisibleTo("LowLevelDesign.Diagnostics.LogStore.Tests")]
+[assembly: InternalsVisibleTo("LowLevelDesign.Diagnostics.LogStore.MySql.Tests")]

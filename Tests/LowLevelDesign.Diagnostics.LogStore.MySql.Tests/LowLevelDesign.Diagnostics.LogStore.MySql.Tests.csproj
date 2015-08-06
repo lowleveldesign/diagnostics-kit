@@ -10,8 +10,8 @@
     <ProjectGuid>{B36818A4-DD67-442F-A470-FE98E40FA584}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LowLevelDesign.Diagnostics.LogStore.Tests</RootNamespace>
-    <AssemblyName>LowLevelDesign.Diagnostics.LogStore.Tests</AssemblyName>
+    <RootNamespace>LowLevelDesign.Diagnostics.LogStore.MySql.Tests</RootNamespace>
+    <AssemblyName>LowLevelDesign.Diagnostics.LogStore.MySql.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
