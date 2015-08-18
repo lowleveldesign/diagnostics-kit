@@ -35,7 +35,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
             var app = await conf.FindAppAsync(expectedApp.Path);
 
             Assert.NotNull(app);
-            Assert.Equal(expectedApp.Path.ToLowerInvariant(), app.Path);
+            Assert.Equal(expectedApp.Path, app.Path);
             Assert.Equal(expectedApp.IsExcluded, app.IsExcluded);
             Assert.Equal("blablabla", app.Name); // when no name is provided we will use the one based on a path
             Assert.Equal(true, app.IsExcluded);
@@ -57,7 +57,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
             app = await conf.FindAppAsync(expectedApp.Path);
 
             Assert.NotNull(app);
-            Assert.Equal(expectedApp.Path.ToLowerInvariant(), app.Path);
+            Assert.Equal(expectedApp.Path, app.Path);
             Assert.Equal(expectedApp.IsExcluded, app.IsExcluded);
             Assert.Equal(expectedApp.Name, app.Name);
 

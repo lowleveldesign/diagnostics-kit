@@ -76,7 +76,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
             if (app == null || app.Path == null) {
                 throw new ArgumentException("app is null or app.Path is null");
             }
-            app.Path = app.Path.ToLowerInvariant();
             var pathHash = GetApplicationHash(app.Path);
             if (String.IsNullOrEmpty(app.Name)) {
                 // if name is not provided we need to assign a default one
@@ -117,7 +116,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
             if (path == null) {
                 throw new ArgumentException("path is null");
             }
-            path = path.ToLowerInvariant();
             var hash = GetApplicationHash(path);
 
             if (cache.Contains(path)) {
@@ -158,7 +156,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
             if (path == null) {
                 throw new ArgumentException("path is null");
             }
-            var pathHash = GetApplicationHash(path.ToLowerInvariant());
+            var pathHash = GetApplicationHash(path);
 
             using (var conn = CreateConnection()) {
                 await conn.OpenAsync();
@@ -205,7 +203,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                 throw new ArgumentException("AppPath and Server must be provided");
             }
             var c = new AppConfig {
-                PathHash = GetApplicationHash(config.AppPath.ToLower()),
+                PathHash = GetApplicationHash(config.AppPath),
                 Path = config.AppPath,
                 Server = config.Server,
                 Binding = String.Join("|", config.Bindings),

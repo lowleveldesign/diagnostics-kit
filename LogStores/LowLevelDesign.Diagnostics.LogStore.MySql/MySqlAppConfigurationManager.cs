@@ -41,7 +41,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             if (app == null || app.Path == null) {
                 throw new ArgumentException("app is null or app.Path is null");
             }
-            app.Path = app.Path.ToLowerInvariant();
             var pathHash = GetApplicationHash(app.Path);
             if (String.IsNullOrEmpty(app.Name)) {
                 // if name is not provided we need to assign a default one
@@ -74,7 +73,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                 throw new ArgumentException("AppPath and Server must be provided");
             }
             var c = new AppConfig {
-                PathHash = GetApplicationHash(config.AppPath.ToLower()),
+                PathHash = GetApplicationHash(config.AppPath),
                 Path = config.AppPath,
                 Server = config.Server,
                 Binding = String.Join("|", config.Bindings),
