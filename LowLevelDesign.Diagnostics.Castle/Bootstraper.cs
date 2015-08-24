@@ -15,6 +15,8 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Nancy.Conventions;
+using Nancy.Responses;
 
 namespace LowLevelDesign.Diagnostics.Castle
 {
@@ -22,6 +24,8 @@ namespace LowLevelDesign.Diagnostics.Castle
     {
         private const String LogStoreKey = "diag:logstore";
         private const String ConfMgrKey = "diag:confmgr";
+        // Diagnostics defaults - we should use them only if other options are not available
+        private const String defaultTypesNamespace = "LowLevelDesign.Diagnostics.LogStore.Defaults";
 
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
@@ -54,9 +58,16 @@ namespace LowLevelDesign.Diagnostics.Castle
                     Log.Debug(ex, "Failure while loading assembly from '{0}'", asmpath);
                 }
                 if (implementers.Count > 1) {
-                    throw new ConfigurationErrorsException("More than one class implementing " + typeToImplement.FullName + 
-                        ". Please specify which one should be used by adding '" + confkey + " ' " +
-                        "key in the appsettings. Please check documentation if in doubt.");
+                    // we may skip the default one if present
+                    var ind = implementers.FindIndex(t => t.Namespace.StartsWith(defaultTypesNamespace, StringComparison.Ordinal));
+                    if (ind >= 0) {
+                        implementers.RemoveAt(ind);
+                    }
+                    if (implementers.Count > 1) {
+                        throw new ConfigurationErrorsException("More than one class implementing " + typeToImplement.FullName +
+                            ". Please specify which one should be used by adding '" + confkey + " ' " +
+                            "key in the appsettings. Please check documentation if in doubt.");
+                    }
                 }
             }
             if (implementers.Count == 0) {
@@ -106,6 +117,11 @@ namespace LowLevelDesign.Diagnostics.Castle
         protected override Nancy.Diagnostics.DiagnosticsConfiguration DiagnosticsConfiguration
         {
             get { return new DiagnosticsConfiguration { Password = "n4ncyBoard" }; }
+        }
+
+        protected override void ConfigureConventions(NancyConventions conventions)
+        {
+            base.ConfigureConventions(conventions);
         }
     }
 }
