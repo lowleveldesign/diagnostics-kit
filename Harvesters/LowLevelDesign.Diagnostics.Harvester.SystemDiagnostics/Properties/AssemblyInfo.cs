@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("LowLevelDesign.Diagnostics.Harvesters.SystemDiagnostics")]
+[assembly: AssemblyDescription("A log harvester to be used in System.Diagnostics tracing.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCompany("LowLevelDesign")]
+[assembly: AssemblyProduct("LowLevelDesign.Diagnostics.Harvesters.SystemDiagnostics")]
+[assembly: AssemblyCopyright("Copyright © Sebastian Solnica 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

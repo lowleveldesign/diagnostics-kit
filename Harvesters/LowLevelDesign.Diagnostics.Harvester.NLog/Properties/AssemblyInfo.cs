@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("LowLevelDesign.Diagnostics.Harvester.NLog")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A log harvester to be used with NLog.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("LowLevelDesign")]
 [assembly: AssemblyProduct("LowLevelDesign.Diagnostics.Harvester.NLog")]
