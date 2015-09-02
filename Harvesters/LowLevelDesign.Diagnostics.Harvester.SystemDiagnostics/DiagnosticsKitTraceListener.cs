@@ -2,6 +2,7 @@
 using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 
 namespace LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics
@@ -17,6 +18,20 @@ namespace LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics
 
         public override void Fail(string message, string detailMessage) {
             SendLogRecord("Trace", TraceEventType.Critical, 0, message, null);
+        }
+
+        public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
+        {
+            SendLogRecord(source, eventType, id, data != null ? data.ToString() : null, eventCache);
+        }
+
+        public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
+        {
+            var message = new StringBuilder();
+            if (data != null) {
+                message.Append(data).Append(',');
+            }
+            SendLogRecord(source, eventType, id, message.ToString(), eventCache);
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id) {

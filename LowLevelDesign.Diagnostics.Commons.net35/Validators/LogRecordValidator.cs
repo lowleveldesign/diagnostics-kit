@@ -9,7 +9,8 @@ namespace LowLevelDesign.Diagnostics.Commons.Validators
     {
         public class AdditionalFieldValidator : AbstractValidator<KeyValuePair<String, Object>>
         {
-            public AdditionalFieldValidator() {
+            public AdditionalFieldValidator()
+            {
                 RuleFor(kvp => kvp.Key).NotEmpty().Length(1, 256);
                 RuleFor(kvp => kvp.Value).NotNull().Must(v => {
                     if (v is String) {
@@ -22,12 +23,14 @@ namespace LowLevelDesign.Diagnostics.Commons.Validators
 
         public class PerformanceDataValidator : AbstractValidator<KeyValuePair<String, float>>
         {
-            public PerformanceDataValidator() {
+            public PerformanceDataValidator()
+            {
                 RuleFor(kvp => kvp.Key).NotEmpty().Length(1, 100);
             }
         }
 
-        public LogRecordValidator() {
+        public LogRecordValidator()
+        {
             RuleFor(r => r.LoggerName).NotEmpty().Length(1, 200);
             RuleFor(r => r.Message).Length(0, 7000);
             RuleFor(r => r.Server).NotEmpty().Length(1, 200);
@@ -40,8 +43,24 @@ namespace LowLevelDesign.Diagnostics.Commons.Validators
             RuleFor(r => r.ExceptionMessage).Length(0, 2000);
             RuleFor(r => r.ExceptionAdditionalInfo).Length(0, 5000);
 
-            RuleForEach(r => r.AdditionalFields).SetValidator(new AdditionalFieldValidator());
-            RuleForEach(r => r.PerformanceData).SetValidator(new PerformanceDataValidator());
+            RuleFor(r => r.AdditionalFields).Must(f => {
+                var vld = new AdditionalFieldValidator();
+                foreach (var k in f) {
+                    if (!vld.Validate(k).IsValid) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+            RuleFor(r => r.PerformanceData).Must(f => {
+                var vld = new PerformanceDataValidator();
+                foreach (var k in f) {
+                    if (!vld.Validate(k).IsValid) {
+                        return false;
+                    }
+                }
+                return true;
+            });
         }
     }
 

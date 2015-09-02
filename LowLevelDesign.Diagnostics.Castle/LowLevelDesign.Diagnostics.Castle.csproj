@@ -130,6 +130,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Applications.cshtml" />
     <Content Include="Views\ApplicationLog.cshtml" />
+    <None Include="Properties\PublishProfiles\Local.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
