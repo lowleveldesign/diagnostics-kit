@@ -130,6 +130,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Applications.cshtml" />
     <Content Include="Views\ApplicationLog.cshtml" />
+    <None Include="Properties\PublishProfiles\Local-Debug.pubxml" />
     <None Include="Properties\PublishProfiles\Local.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -142,8 +143,8 @@
     <Content Include="Content\css\bootstrap.min.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\js\bootstrap.min.js" />
-    <None Include="Views\ApplicationGrid.cshtml" />
-    <None Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\ApplicationGrid.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
