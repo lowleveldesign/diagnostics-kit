@@ -60,7 +60,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
             var foundItems = searchResults.FoundItems.ToArray();
             LogRecord[] finalResults;
-            if (foundItems.Length == 0) {
+            if (foundItems.Length < MaxLogsCount + 1) {
                 finalResults = foundItems;
             } else {
                 finalResults = new LogRecord[foundItems.Length - 1];
@@ -71,7 +71,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 FoundItems = finalResults,
                 Limit = MaxLogsCount,
                 Offset = offset,
-                IsLastPage = foundItems.Length < MaxLogsCount + 1 || foundItems.Length == 0
+                IsLastPage = foundItems.Length < MaxLogsCount + 1
             };
         }
     }

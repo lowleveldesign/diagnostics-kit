@@ -149,7 +149,7 @@
                 @foreach (var l in result.FoundItems) {
                     var bootstrapClass = GetBootstrapClassForLog(l.LogLevel);
                     <tr>
-                        <td class="@bootstrapClass"><strong>@l.TimeUtc.ToLocalTime().ToString()</strong></td>
+                        <td class="@bootstrapClass"><strong>@l.TimeUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm.fff")</strong></td>
                         <td class="@bootstrapClass">@l.LogLevel.ToString()</td>
                         <td>@l.LoggerName.ShortenAndDotIfNecessary(20)</td>
                         <td><a href="#" class="lnk_message" title="Click to expand">@l.Message.ShortenAndDotIfNecessary(30)</a></td>
