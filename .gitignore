@@ -8,6 +8,7 @@ build-nuget-package.bat
 *.suo
 *.user
 *.sln.docstates
+.vs
 
 # Build results
 [Dd]ebug/
