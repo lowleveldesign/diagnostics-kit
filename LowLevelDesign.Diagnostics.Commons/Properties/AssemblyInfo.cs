@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("LowLevelDesign.Diagnostics.Commons")]
 [assembly: AssemblyDescription("Common classes required for all components of the Diagnostics Toolkit.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("LowLevelDesign")]
+[assembly: AssemblyCompany("www.lowleveldesign.org")]
 [assembly: AssemblyProduct("LowLevelDesign.Diagnostics.Commons")]
 [assembly: AssemblyCopyright("Copyright © Sebastian Solnica 2015")]
 [assembly: AssemblyTrademark("")]
