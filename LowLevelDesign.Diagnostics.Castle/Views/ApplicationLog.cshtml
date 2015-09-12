@@ -9,6 +9,10 @@
         .hidden {
             display: none;
         }
+
+        .shorten {
+            white-space: normal;
+        }
     </style>
 }
 
@@ -16,7 +20,7 @@
     <script type="text/javascript">
         $(function () {
             $('.lnk_message').on('click', function () {
-                $(this).parent().parent().next('tr.tr_message:first').toggleClass('hidden');
+                $(this).closest('tr').next('tr.tr_message:first').toggleClass('hidden');
                 return false;
             });
             $('.lnk_exception').on('click', function () {
@@ -151,9 +155,9 @@
                     <tr>
                         <td class="@bootstrapClass"><strong>@l.TimeUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm.fff")</strong></td>
                         <td class="@bootstrapClass">@l.LogLevel.ToString()</td>
-                        <td>@l.LoggerName.ShortenAndDotIfNecessary(20)</td>
-                        <td><a href="#" class="lnk_message" title="Click to expand">@l.Message.ShortenAndDotIfNecessary(30)</a></td>
-                        <td><a href="#" class="lnk_exception" title="Click to expand">@l.ExceptionType.ShortenAndDotIfNecessary(50)</a></td>
+                        <td><div class="shorten">@l.LoggerName</div></td>
+                        <td><div class="shorten"><a href="#" class="lnk_message" title="Click to expand">@l.Message</a></div></td>
+                        <td><div class="shorten"><a href="#" class="lnk_exception" title="Click to expand">@l.ExceptionType</a></div></td>
                         <td>
                             @if (l.PerformanceData != null && l.PerformanceData.Count > 0) {
                                 <a href="#" class="lnk_perf" title="Click to expand">

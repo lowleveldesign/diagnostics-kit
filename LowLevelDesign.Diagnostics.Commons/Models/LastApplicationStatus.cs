@@ -29,7 +29,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Models
                     return null;
                 }
                 var ind = LastErrorType.LastIndexOf('.');
-                return ind == -1 ? LastErrorType : LastErrorType.Substring(ind);
+                return ind == -1 ? LastErrorType : LastErrorType.Substring(ind + 1);
             }
         }
     }

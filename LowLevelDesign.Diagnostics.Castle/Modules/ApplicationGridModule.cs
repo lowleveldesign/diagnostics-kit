@@ -1,18 +1,13 @@
-﻿using LowLevelDesign.Diagnostics.Castle.Models;
-using LowLevelDesign.Diagnostics.Commons.Storage;
-using Nancy;
-using Nancy.ModelBinding;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using LowLevelDesign.Diagnostics.Commons;
+﻿using LowLevelDesign.Diagnostics.Castle.Config;
+using LowLevelDesign.Diagnostics.Castle.Models;
 using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
-using LowLevelDesign.Diagnostics.Castle.Config;
-using FluentValidation;
-using System.Threading.Tasks;
+using LowLevelDesign.Diagnostics.Commons.Storage;
+using Nancy;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Caching;
-using Serilog;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {

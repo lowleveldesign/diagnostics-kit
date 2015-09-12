@@ -5,6 +5,16 @@
         .MusketeerInfo {
             display: none;
         }
+
+        .table-fixed {
+            table-layout: fixed;
+        }
+
+        .shorten {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
     </style>
 }
 
@@ -69,7 +79,9 @@
                 No logs found - maybe there are some <a href="~/apps">waiting excluded applications</a> or you need to install one of the
                 <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki#2-logs-collection" target="_blank">harvesters</a> in your applications.
             </span>
-        } else {
+        }
+        else
+        {
             <span>
                 You may change application names, maintenance configuration or add new applications to the grid on
                 <strong><a href="~/apps">the application configuration</a></strong> page.
@@ -77,19 +89,22 @@
         }
     </div>
 
-    @if (Model.ApplicationStatuses.Count > 0) {
-        <table class="table">
+    @if (Model.ApplicationStatuses.Count > 0)
+    {
+        <table class="table table-fixed">
             <thead>
                 <tr>
                     <th>Application</th>
                     <th>All servers</th>
-                    @foreach (var srv in Model.Servers) {
+                    @foreach (var srv in Model.Servers)
+                    {
                         <th>@srv</th>
                     }
                 </tr>
             </thead>
             <tbody>
-                @foreach (var appstat in Model.ApplicationStatuses) {
+                @foreach (var appstat in Model.ApplicationStatuses)
+                {
                     var app = Model.Applications[appstat.Key];
                     <tr>
                         <td><a href="#" class="appname" title="Show application settings" data-encpath="@app.GetBase64EncodedKey()">@app.Name</a></td>
@@ -99,35 +114,47 @@
                                 <small>Show logs</small>
                             </a>
                         </td>
-                        @foreach (var srv in Model.Servers) {
-                            if (appstat.Value.ContainsKey(srv)) {
+                        @foreach (var srv in Model.Servers)
+                        {
+                            if (appstat.Value.ContainsKey(srv))
+                            {
                                 var srvstat = appstat.Value[srv];
                                 @* we will lighten the box in red for 2 min. after an error has occured *@
-                                if (srvstat.LastErrorTimeUtc.HasValue && DateTime.UtcNow.Subtract(srvstat.LastErrorTimeUtc.Value) < TimeSpan.FromMinutes(2)) {
-                                    <td class="danger">
-                                        <a href="~/logs/@app.GetBase64EncodedKey()/@srv" title="@srvstat.LastErrorType">
-                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                                            <small>@srvstat.LastErrorTypeName.ShortenIfNecessary(20)</small>
-                                        </a>
-                                    </td>
-                                } else if (srvstat.LastUpdateTimeUtc.HasValue && DateTime.UtcNow.Subtract(srvstat.LastUpdateTimeUtc.Value) < TimeSpan.FromMinutes(8)) {
-                                    <td class="success">
-                                        <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
-                                            <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-                                            @if (srvstat.Cpu.HasValue) { <small>CPU: @srvstat.Cpu.Value.ToString("0.##")%</small>}
-                                            @if (srvstat.Memory.HasValue) { <small>Mem: @((srvstat.Memory.Value / 1024f).ToString("#,0."))MB</small>}
-                                        </a>
-                                    </td>
-                                } else {
-                                    <td>
-                                        <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
-                                            <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-                                            <small>Show logs</small>
-                                        </a>
-                                    </td>
-                                }
-                            } else {
-                                <td></td>
+                        if (srvstat.LastErrorTimeUtc.HasValue && DateTime.UtcNow.Subtract(srvstat.LastErrorTimeUtc.Value) < TimeSpan.FromMinutes(2))
+                        {
+                            <td class="danger">
+                                <div class="shorten">
+                                <a href="~/logs/@app.GetBase64EncodedKey()/@srv" title="@srvstat.LastErrorType">
+                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                    <small>@srvstat.LastErrorTypeName</small>
+                                </a></div>
+                            </td>
+                        }
+                        else if (srvstat.LastUpdateTimeUtc.HasValue && DateTime.UtcNow.Subtract(srvstat.LastUpdateTimeUtc.Value) < TimeSpan.FromMinutes(8))
+                        {
+                            <td class="success">
+                                <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
+                                    <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+                                    @if (srvstat.Cpu.HasValue)
+                                    { <small>CPU: @srvstat.Cpu.Value.ToString("0.##")%</small>}
+                                    @if (srvstat.Memory.HasValue)
+                                    { <small>Mem: @((srvstat.Memory.Value / 1048576f).ToString("#,0."))MB</small>}
+                                </a>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
+                                    <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+                                    <small>Show logs</small>
+                                </a>
+                            </td>
+                            }
+                        }
+                        else
+                        {
+                            <td></td>
                             }
                         }
                     </tr>
