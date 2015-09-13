@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 
-namespace LowLevelDesign.Diagnostics.Commons.Validators
+namespace LowLevelDesign.Diagnostics.LogStore.Commons.Validators
 {
     public class ApplicationValidator : AbstractValidator<Application>
     {

@@ -59,32 +59,17 @@
     <Compile Include="..\LowLevelDesign.Diagnostics.Commons\Connectors\HttpCastleConnector.cs">
       <Link>Connectors\HttpCastleConnector.cs</Link>
     </Compile>
-    <Compile Include="..\LowLevelDesign.Diagnostics.Commons\Models\Application.cs">
-      <Link>Models\Application.cs</Link>
-    </Compile>
     <Compile Include="..\LowLevelDesign.Diagnostics.Commons\Models\ApplicationServerConfig.cs">
       <Link>Models\ApplicationServerConfig.cs</Link>
     </Compile>
-    <Compile Include="..\LowLevelDesign.Diagnostics.Commons\Models\LastApplicationStatus.cs">
-      <Link>Models\LastApplicationStatus.cs</Link>
-    </Compile>
     <Compile Include="..\LowLevelDesign.Diagnostics.Commons\Models\LogRecord.cs">
       <Link>Models\LogRecord.cs</Link>
-    </Compile>
-    <Compile Include="..\LowLevelDesign.Diagnostics.Commons\Models\LogSearchCriteria.cs">
-      <Link>Models\LogSearchCriteria.cs</Link>
-    </Compile>
-    <Compile Include="..\LowLevelDesign.Diagnostics.Commons\Models\LogSearchResults.cs">
-      <Link>Models\LogSearchResults.cs</Link>
     </Compile>
     <Compile Include="..\LowLevelDesign.Diagnostics.Commons\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="..\LowLevelDesign.Diagnostics.Commons\Utils.cs">
       <Link>Utils.cs</Link>
-    </Compile>
-    <Compile Include="..\LowLevelDesign.Diagnostics.Commons\Validators\ApplicationValidator.cs">
-      <Link>Validators\ApplicationValidator.cs</Link>
     </Compile>
     <Compile Include="Validators\LogRecordValidator.cs" />
   </ItemGroup>

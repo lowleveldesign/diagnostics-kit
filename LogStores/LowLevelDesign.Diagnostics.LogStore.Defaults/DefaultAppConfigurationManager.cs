@@ -1,6 +1,7 @@
 ﻿using Dapper;
-using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

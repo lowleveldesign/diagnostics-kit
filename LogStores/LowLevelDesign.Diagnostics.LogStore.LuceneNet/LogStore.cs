@@ -1,15 +1,14 @@
-﻿using System.IO;
-using LowLevelDesign.Diagnostics.Commons.Models;
-using LowLevelDesign.Diagnostics.LogStore.LuceneNet.Lucene.Analyzers;
+﻿using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.LuceneNet.Lucene;
-using Lucene.Net.Documents;
-using System;
-using LowLevelDesign.Diagnostics.Commons.Storage;
-using Lucene.Net.Store;
-using NLog;
-using System.Collections.Generic;
+using LowLevelDesign.Diagnostics.LogStore.LuceneNet.Lucene.Analyzers;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Documents;
+using NLog;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.LogStore.LuceneNet

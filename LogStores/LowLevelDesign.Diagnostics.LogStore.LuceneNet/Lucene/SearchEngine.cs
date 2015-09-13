@@ -1,5 +1,4 @@
-﻿using LowLevelDesign.Diagnostics.Commons.Storage;
-using Lucene.Net.Analysis;
+﻿using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;

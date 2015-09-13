@@ -1,14 +1,13 @@
 ﻿using FluentValidation;
-using LowLevelDesign.Diagnostics.Castle.Logs;
-using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
-using LowLevelDesign.Diagnostics.Commons.Storage;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
 using Nancy;
 using Nancy.ModelBinding;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
-using System;
 using System.Collections.Generic;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules

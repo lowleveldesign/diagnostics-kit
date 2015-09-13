@@ -41,8 +41,12 @@
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.2.1.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.0.2.1.2\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
+    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.3.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.0.3.0.1\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="LowLevelDesign.Diagnostics.LogStore.Commons, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.LogStore.Commons.0.1.0.0\lib\net452\LowLevelDesign.Diagnostics.LogStore.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lucene.Net">
@@ -105,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="ILogStore.cs" />
     <Compile Include="LogStore.cs" />
     <Compile Include="Lucene\Analyzers\DottedNameAnalyzer.cs" />
     <Compile Include="Lucene\DocumentExtensions.cs" />

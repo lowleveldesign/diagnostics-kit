@@ -1,6 +1,7 @@
-﻿using System;
+﻿using LowLevelDesign.Diagnostics.Commons.Models;
+using System;
 
-namespace LowLevelDesign.Diagnostics.Commons.Models
+namespace LowLevelDesign.Diagnostics.LogStore.Commons.Models
 {
     /// <summary>
     /// Criterias used to search for logs.

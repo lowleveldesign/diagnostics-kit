@@ -1,9 +1,10 @@
-﻿using System;
+﻿using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
+using System;
 using System.Collections.Generic;
-using LowLevelDesign.Diagnostics.Commons.Models;
 using System.Threading.Tasks;
 
-namespace LowLevelDesign.Diagnostics.Commons.Storage
+namespace LowLevelDesign.Diagnostics.LogStore.Commons.Storage
 {
     public interface ILogStore
     {

@@ -1,9 +1,10 @@
 ﻿using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace LowLevelDesign.Diagnostics.Commons.Config
+namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
 {
     public interface IAppConfigurationManager
     {

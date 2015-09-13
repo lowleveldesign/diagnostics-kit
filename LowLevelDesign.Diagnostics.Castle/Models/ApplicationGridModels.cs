@@ -1,8 +1,6 @@
-﻿using LowLevelDesign.Diagnostics.Commons.Models;
+﻿using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace LowLevelDesign.Diagnostics.Castle.Models
 {

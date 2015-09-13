@@ -1,13 +1,11 @@
 ﻿using Dapper;
 using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.MySql;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Data.Common;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 

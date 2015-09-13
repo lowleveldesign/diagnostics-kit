@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Defaults;
 using MySql.Data.MySqlClient;
 using System;

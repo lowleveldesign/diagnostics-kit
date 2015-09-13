@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
 using LowLevelDesign.Diagnostics.Castle.Logs;
-using LowLevelDesign.Diagnostics.Commons.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
-using LowLevelDesign.Diagnostics.Commons.Storage;
 using LowLevelDesign.Diagnostics.Commons.Validators;
 using Nancy;
 using Nancy.Bootstrapper;
@@ -17,6 +15,10 @@ using System.Linq;
 using System.Reflection;
 using Nancy.Conventions;
 using Nancy.Responses;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Validators;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
 
 namespace LowLevelDesign.Diagnostics.Castle
 {

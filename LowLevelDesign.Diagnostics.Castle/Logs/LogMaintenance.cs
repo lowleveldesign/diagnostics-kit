@@ -1,13 +1,11 @@
 ﻿using LowLevelDesign.Diagnostics.Castle.Config;
-using LowLevelDesign.Diagnostics.Commons.Config;
-using LowLevelDesign.Diagnostics.Commons.Storage;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace LowLevelDesign.Diagnostics.Castle.Logs
 {

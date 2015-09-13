@@ -1,16 +1,17 @@
-﻿using System.Configuration;
-using System.Security.Cryptography;
-using Dapper;
+﻿using Dapper;
 using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.MySql;
+using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
-using MySql.Data.MySqlClient;
-using Xunit;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Xunit;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Tests
 {
