@@ -158,7 +158,7 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\js\bootstrap.min.js" />
     <Content Include="Views\ApplicationGrid.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\_Layout.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -172,6 +172,7 @@
     <Compile Include="Models\ApplicationLogModels.cs" />
     <Compile Include="Modules\ApplicationConfModule.cs" />
     <Compile Include="Modules\ApplicationGridModule.cs" />
+    <Compile Include="Modules\AuthModule.cs" />
     <Compile Include="Modules\CollectModule.cs" />
     <Compile Include="Modules\ApplicationLogModule.cs" />
     <Compile Include="Modules\InfoModule.cs" />
