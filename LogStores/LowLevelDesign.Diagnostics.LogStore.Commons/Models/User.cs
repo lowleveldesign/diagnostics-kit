@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Commons.Models
 {
@@ -14,5 +16,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Models
         public bool Enabled { get; set; }
 
         public DateTime RegistrationDate { get; set; }
+
+        public ICollection<Claim> Claims { get; }
     }
 }
