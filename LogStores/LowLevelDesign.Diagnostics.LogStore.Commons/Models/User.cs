@@ -1,13 +1,18 @@
 ﻿using Microsoft.AspNet.Identity;
+using System;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Commons.Models
 {
     public sealed class User : IUser
     {
-        public string Id { get; set; }
+        public String Id { get; set; }
 
-        public string UserName { get; set; }
+        public String UserName { get; set; }
+
+        public String Email { get; set; }
 
         public bool Enabled { get; set; }
+
+        public DateTime RegistrationDate { get; set; }
     }
 }

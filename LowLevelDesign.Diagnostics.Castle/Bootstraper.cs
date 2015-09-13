@@ -19,6 +19,7 @@ using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Validators;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
+using Microsoft.AspNet.Identity;
 
 namespace LowLevelDesign.Diagnostics.Castle
 {
@@ -109,6 +110,9 @@ namespace LowLevelDesign.Diagnostics.Castle
                 confMgrType = Type.GetType(confMgrTypeName);
             }
             container.Register(typeof(IAppConfigurationManager), confMgrType);
+
+            /* SECURITY */
+            container.Register(typeof(IUserStore<User>), confMgrType);
         }
 
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)

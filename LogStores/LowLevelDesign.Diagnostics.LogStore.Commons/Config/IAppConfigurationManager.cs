@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
 {
-    public interface IAppConfigurationManager : IUserStore<User>, IUserPasswordStore<User>
+    public interface IAppConfigurationManager : IUserStore<User>, IUserPasswordStore<User>, IUserClaimStore<User>
     {
         /// <summary>
         /// Adds or updates application in the cache and in the configuration database.
@@ -53,6 +53,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
         /// <returns></returns>
         Task AddOrUpdateAppServerConfigAsync(ApplicationServerConfig config);
 
+        /// <summary>
+        /// Returns a list of registered users
+        /// </summary>
+        /// <returns></returns>
         Task<IEnumerable<User>> GetRegisteredUsersAsync();
     }
 }
