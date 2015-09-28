@@ -17,6 +17,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Models
 
         public DateTime RegistrationDate { get; set; }
 
-        public ICollection<Claim> Claims { get; }
+        // FIXME public ICollection<Claim> Claims { get; }
     }
 }
