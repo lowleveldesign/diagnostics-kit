@@ -47,6 +47,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
     </Reference>
+    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.3.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LowLevelDesign.Diagnostics.Commons.0.3.0.4\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="LowLevelDesign.Diagnostics.LogStore.Commons, Version=0.3.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LowLevelDesign.Diagnostics.LogStore.Commons.0.3.1.1\lib\net452\LowLevelDesign.Diagnostics.LogStore.Commons.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -192,16 +200,6 @@
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Include="Startup.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LowLevelDesign.Diagnostics.Commons\LowLevelDesign.Diagnostics.Commons.csproj">
-      <Project>{eebc3248-e9c6-4bc3-b46f-bda8909a190c}</Project>
-      <Name>LowLevelDesign.Diagnostics.Commons</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LogStores\LowLevelDesign.Diagnostics.LogStore.Commons\LowLevelDesign.Diagnostics.LogStore.Commons.csproj">
-      <Project>{b769b100-2318-4a28-89d4-eb23b8682fe6}</Project>
-      <Name>LowLevelDesign.Diagnostics.LogStore.Commons</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

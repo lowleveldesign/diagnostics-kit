@@ -3,11 +3,12 @@ using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
 {
-    public interface IAppConfigurationManager : IUserStore<User>, IUserPasswordStore<User>, IUserClaimStore<User>
+    public interface IAppConfigurationManager
     {
         /// <summary>
         /// Adds or updates application in the cache and in the configuration database.
@@ -52,11 +53,5 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
         /// <param name="config">Configuration settings</param>
         /// <returns></returns>
         Task AddOrUpdateAppServerConfigAsync(ApplicationServerConfig config);
-
-        /// <summary>
-        /// Returns a list of registered users
-        /// </summary>
-        /// <returns></returns>
-        Task<IEnumerable<User>> GetRegisteredUsersAsync();
     }
 }

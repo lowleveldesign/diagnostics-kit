@@ -10,6 +10,7 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,7 +38,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
         public DefaultAppConfigurationManager(String connstrName = "configdb")
         {
             var configDbConnString = ConfigurationManager.ConnectionStrings[connstrName];
-            if (configDbConnString == null) {
+            if (configDbConnString == null)
+            {
                 throw new ConfigurationErrorsException("'" + connstrName + "' connection string is missing. Please add it to the web.config file.");
             }
             dbConnStringName = connstrName;
@@ -46,9 +48,12 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 
         protected virtual DbConnection CreateConnection()
         {
-            if (dbProviderFactory == null) {
-                lock (lck) {
-                    if (dbProviderFactory == null) {
+            if (dbProviderFactory == null)
+            {
+                lock (lck)
+                {
+                    if (dbProviderFactory == null)
+                    {
                         var configDbConnString = ConfigurationManager.ConnectionStrings[dbConnStringName];
                         dbProviderFactory = DbProviderFactories.GetFactory(configDbConnString.ProviderName ?? "System.Data.SqlClient");
                     }
@@ -63,8 +68,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
         protected byte[] GetApplicationHash(String applicationPath)
         {
             byte[] apphash;
-            if (!applicationMd5Hashes.TryGetValue(applicationPath, out apphash)) {
-                using (var md5 = MD5.Create()) {
+            if (!applicationMd5Hashes.TryGetValue(applicationPath, out apphash))
+            {
+                using (var md5 = MD5.Create())
+                {
                     apphash = md5.ComputeHash(Encoding.UTF8.GetBytes(applicationPath));
                     applicationMd5Hashes.TryAdd(applicationPath, apphash);
                 }
@@ -74,19 +81,23 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 
         public virtual async Task AddOrUpdateAppAsync(Application app)
         {
-            if (app == null || app.Path == null) {
+            if (app == null || app.Path == null)
+            {
                 throw new ArgumentException("app is null or app.Path is null");
             }
             var pathHash = GetApplicationHash(app.Path);
-            if (String.IsNullOrEmpty(app.Name)) {
+            if (String.IsNullOrEmpty(app.Name))
+            {
                 // if name is not provided we need to assign a default one
                 app.Name = Path.GetFileName(app.Path.TrimEnd(Path.DirectorySeparatorChar));
             }
 
-            using (var conn = CreateConnection()) {
+            using (var conn = CreateConnection())
+            {
                 await conn.OpenAsync();
 
-                lock (lck) {
+                lock (lck)
+                {
                     // try to update the record
                     var rec = conn.Execute("update Applications set Name = @Name, IsExcluded = @IsExcluded, IsHidden = @IsHidden where PathHash = @PathHash", new {
                         app.Name,
@@ -94,7 +105,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                         PathHash = pathHash,
                         app.IsHidden
                     });
-                    if (rec == 0) {
+                    if (rec == 0)
+                    {
                         // no application found - we need to insert it
                         conn.Execute("insert into Applications (Name, Path, PathHash, IsExcluded, IsHidden) values (@Name, @Path, @PathHash, @IsExcluded, @IsHidden)", new {
                             app.Name,
@@ -114,26 +126,31 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 
         public virtual async Task<Application> FindAppAsync(String path)
         {
-            if (path == null) {
+            if (path == null)
+            {
                 throw new ArgumentException("path is null");
             }
             var hash = GetApplicationHash(path);
 
-            if (cache.Contains(path)) {
+            if (cache.Contains(path))
+            {
                 return cache[path] as Application;
             }
 
             // we need to hit the database
-            using (var conn = CreateConnection()) {
+            using (var conn = CreateConnection())
+            {
                 await conn.OpenAsync();
 
                 var apps = (await conn.QueryAsync<Application>("select * from Applications"));
                 Application result = null;
-                foreach (var app in apps) {
+                foreach (var app in apps)
+                {
                     cache.Set(app.Path, app, new CacheItemPolicy {
                         AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(appCacheExpirationInMinutes + rand.Next(10))
                     });
-                    if (String.Equals(app.Path, path)) {
+                    if (String.Equals(app.Path, path))
+                    {
                         result = app;
                     }
                 }
@@ -143,7 +160,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 
         public virtual async Task<IEnumerable<Application>> GetAppsAsync()
         {
-            using (var conn = CreateConnection()) {
+            using (var conn = CreateConnection())
+            {
                 await conn.OpenAsync();
 
                 return await conn.QueryAsync<Application>("select * from Applications where IsHidden = 0 order by Path");
@@ -154,12 +172,14 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
         public virtual async Task UpdateAppPropertiesAsync(Application app, string[] propertiesToUpdate)
         {
             var path = app.Path;
-            if (path == null) {
+            if (path == null)
+            {
                 throw new ArgumentException("path is null");
             }
             var pathHash = GetApplicationHash(path);
 
-            using (var conn = CreateConnection()) {
+            using (var conn = CreateConnection())
+            {
                 await conn.OpenAsync();
 
                 var variables = String.Join(",", propertiesToUpdate.Select(prop => prop + " = @" + prop));
@@ -200,7 +220,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 
         public virtual async Task AddOrUpdateAppServerConfigAsync(ApplicationServerConfig config)
         {
-            if (config == null || config.AppPath == null || config.Server == null) {
+            if (config == null || config.AppPath == null || config.Server == null)
+            {
                 throw new ArgumentException("AppPath and Server must be provided");
             }
             var c = new AppConfig {
@@ -214,14 +235,17 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                 DisplayName = config.DisplayName
             };
 
-            using (var conn = CreateConnection()) {
+            using (var conn = CreateConnection())
+            {
                 await conn.OpenAsync();
 
-                lock (lck) {
+                lock (lck)
+                {
                     // try to update the record or insert it
                     var rec = conn.Execute("update ApplicationConfigs set Path = @Path, Binding = @Binding, AppPoolName = @AppPoolName, " +
                         "AppType = @AppType, ServiceName = @ServiceName, DisplayName = @DisplayName where PathHash = @PathHash and Server = @Server", c);
-                    if (rec == 0) {
+                    if (rec == 0)
+                    {
                         // no application found - we need to insert it
                         conn.Execute("insert into ApplicationConfigs (PathHash, Path, Server, Binding, AppPoolName, AppType, ServiceName, DisplayName) values " +
                                         "(@PathHash, @Path, @Server, @Binding, @AppPoolName, @AppType, @ServiceName, @DisplayName)", c);
@@ -232,20 +256,24 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 
         public virtual async Task<IEnumerable<ApplicationServerConfig>> GetAppConfigsAsync(string[] appPaths, string server = null)
         {
-            if (appPaths == null || appPaths.Length == 0) {
+            if (appPaths == null || appPaths.Length == 0)
+            {
                 throw new ArgumentException("At least one application path must be provided.");
             }
 
             var sql = new StringBuilder("select * from ApplicationConfigs where PathHash in @hashes");
-            if (server != null) {
+            if (server != null)
+            {
                 sql.Append(" and Server = @server");
             }
             var hashes = new byte[appPaths.Length][];
-            for (int i = 0; i < hashes.Length; i++) {
+            for (int i = 0; i < hashes.Length; i++)
+            {
                 hashes[i] = GetApplicationHash(appPaths[i]);
             }
 
-            using (var conn = CreateConnection()) {
+            using (var conn = CreateConnection())
+            {
                 await conn.OpenAsync();
 
                 return (await conn.QueryAsync<AppConfig>(sql.ToString(), new { hashes, server })).Select(
@@ -259,56 +287,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                         DisplayName = c.DisplayName
                     });
             }
-        }
-
-        public Task<IEnumerable<User>> GetRegisteredUsersAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetPasswordHashAsync(User user, string passwordHash)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string> GetPasswordHashAsync(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> HasPasswordAsync(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task CreateAsync(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAsync(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteAsync(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<User> FindByIdAsync(string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<User> FindByNameAsync(string userName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 }

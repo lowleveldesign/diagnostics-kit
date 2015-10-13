@@ -2,6 +2,7 @@
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Defaults;
+using System;
 using System.Configuration;
 using System.Data.Common;
 using System.Linq;

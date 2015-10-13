@@ -13,10 +13,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Models
 
         public String Email { get; set; }
 
+        public String PasswordHash { get; set; }
+
         public bool Enabled { get; set; }
 
-        public DateTime RegistrationDate { get; set; }
-
-        // FIXME public ICollection<Claim> Claims { get; }
+        public DateTime RegistrationDateUtc { get; set; }
     }
 }
