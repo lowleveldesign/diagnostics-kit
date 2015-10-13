@@ -76,7 +76,7 @@ namespace LowLevelDesign.Diagnostics.Castle
             if (implementers.Count == 0) {
                 // no log store found
                 throw new ConfigurationErrorsException("No class implementing " + typeToImplement.FullName + " found. Please add at least one " +
-                    "assembly where we coud find such a class. Please check documentation if in doubt.");
+                    "assembly where we could find such a class. Please check documentation if in doubt.");
             }
             return implementers[0];
         }
