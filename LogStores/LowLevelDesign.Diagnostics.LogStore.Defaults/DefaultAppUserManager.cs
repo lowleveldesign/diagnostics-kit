@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using Dapper;
+﻿using Dapper;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Auth;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.Common;
-using System.Configuration;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data.Common;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 {

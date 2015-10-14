@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Commons.Models
 {

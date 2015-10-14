@@ -32,7 +32,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
         Task UpdateAppPropertiesAsync(Application app, String[] propertiesToUpdate);
 
         /// <summary>
-        /// Retruns a sorted list of applications for which we have already received logs
+        /// Retruns an ordered by path list of applications for which we have already received logs
         /// and which are not hidden.
         /// </summary>
         /// <returns></returns>

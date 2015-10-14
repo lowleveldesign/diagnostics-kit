@@ -55,8 +55,8 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 if (x.apppath != null) {
                     apps = new[] { await appconf.FindAppAsync(Application.GetPathFromBase64Key((String)x.apppath)) };
                 } else {
-                    // get all available applications
-                    apps = await appconf.GetAppsAsync();
+                    // get all non-hidden applications
+                    apps = (await appconf.GetAppsAsync()).Where(app => !app.IsHidden);
                 }
                 // and send back their configuration
                 return await appconf.GetAppConfigsAsync(apps.Select(app => app.Path).ToArray());

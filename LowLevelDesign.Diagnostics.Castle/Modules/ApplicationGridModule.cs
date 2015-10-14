@@ -20,29 +20,35 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
         {
             Get["/", true] = async (x, ct) => {
                 ApplicationGridModel model = null;
-                if (DefaultCacheTimeInSeconds != 0) {
+                if (DefaultCacheTimeInSeconds != 0)
+                {
                     model = cache["appstats"] as ApplicationGridModel;
                 }
 
-                if (model == null) {
+                if (model == null)
+                {
                     var appstats = await logStore.GetApplicationStatuses(DateTime.UtcNow.AddMinutes(-15));
                     var allapps = await appconf.GetAppsAsync();
 
                     var servers = new SortedSet<String>();
                     var apps = new Dictionary<String, Application>();
                     var extendedAppStats = new SortedDictionary<String, IDictionary<String, LastApplicationStatus>>();
-                    foreach (var appstat in appstats) {
+                    foreach (var appstat in appstats)
+                    {
                         servers.Add(appstat.Server);
 
-                        var app = allapps.FirstOrDefault(a => String.Equals(a.Path, appstat.ApplicationPath, 
+                        var app = allapps.FirstOrDefault(a => String.Equals(a.Path, appstat.ApplicationPath,
                             StringComparison.InvariantCultureIgnoreCase));
-                        if (app != null && !app.IsExcluded) {
+                        if (app != null && !app.IsExcluded)
+                        {
                             String key = String.Format("{0}:{1}", app.Name, app.Path);
-                            if (!apps.ContainsKey(key)) {
+                            if (!apps.ContainsKey(key))
+                            {
                                 apps.Add(key, app);
                             }
                             IDictionary<String, LastApplicationStatus> srvstat;
-                            if (!extendedAppStats.TryGetValue(key, out srvstat)) {
+                            if (!extendedAppStats.TryGetValue(key, out srvstat))
+                            {
                                 srvstat = new Dictionary<String, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase);
                                 extendedAppStats.Add(key, srvstat);
                             }
@@ -50,13 +56,17 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         }
                     }
                     // for the rest of the applications
-                    foreach (var app in allapps) {
-                        if (!app.IsExcluded) {
+                    foreach (var app in allapps)
+                    {
+                        if (!app.IsExcluded)
+                        {
                             String key = String.Format("{0}:{1}", app.Name, app.Path);
-                            if (!apps.ContainsKey(key)) {
+                            if (!apps.ContainsKey(key))
+                            {
                                 apps.Add(key, app);
                             }
-                            if (!extendedAppStats.ContainsKey(key)) {
+                            if (!extendedAppStats.ContainsKey(key))
+                            {
                                 extendedAppStats.Add(key, new Dictionary<String, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase));
                             }
                         }
@@ -68,7 +78,8 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         Applications = apps,
                         ApplicationStatuses = extendedAppStats
                     };
-                    if (DefaultCacheTimeInSeconds != 0) {
+                    if (DefaultCacheTimeInSeconds != 0)
+                    {
                         cache.Set("appstats", model, new CacheItemPolicy() {
                             AbsoluteExpiration = DateTimeOffset.UtcNow.AddSeconds(DefaultCacheTimeInSeconds)
                         });
@@ -80,10 +91,11 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
             Get["/apps", true] = async (x, ct) => {
                 // gets applications for which we have received the logs
-                return View["Applications", (await appconf.GetAppsAsync()).Select(app => {
-                    app.DaysToKeepLogs = app.DaysToKeepLogs ?? AppSettingsWrapper.DefaultNoOfDaysToKeepLogs;
-                    return app;
-                })];
+                return View["Applications", (await appconf.GetAppsAsync()).Where(app => !app.IsHidden).Select(
+                    app => {
+                        app.DaysToKeepLogs = app.DaysToKeepLogs ?? AppSettingsWrapper.DefaultNoOfDaysToKeepLogs;
+                        return app;
+                    })];
             };
         }
     }

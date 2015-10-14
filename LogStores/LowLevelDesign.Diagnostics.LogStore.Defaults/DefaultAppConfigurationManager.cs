@@ -164,7 +164,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
             {
                 await conn.OpenAsync();
 
-                return await conn.QueryAsync<Application>("select * from Applications where IsHidden = 0 order by Path");
+                return await conn.QueryAsync<Application>("select * from Applications order by Path");
             }
         }
 
