@@ -1,27 +1,23 @@
 ﻿using FluentValidation;
+using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Castle.Logs;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Commons.Validators;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Auth;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Validators;
+using Microsoft.AspNet.Identity;
 using Nancy;
+using Nancy.Owin;
 using Nancy.Bootstrapper;
+using Nancy.Conventions;
 using Nancy.Diagnostics;
 using Nancy.TinyIoc;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using Nancy.Conventions;
-using Nancy.Responses;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Validators;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
-using Microsoft.AspNet.Identity;
-using LowLevelDesign.Diagnostics.Castle.Config;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Auth;
 
 namespace LowLevelDesign.Diagnostics.Castle
 {
@@ -29,18 +25,13 @@ namespace LowLevelDesign.Diagnostics.Castle
     {
         private const String LogStoreKey = "diag:logstore";
         private const String ConfMgrKey = "diag:confmgr";
-        private const String UserMgrKey = "diag:usermgr";
-        // Diagnostics defaults - we should use them only if other options are not available
-        private const String defaultTypesNamespace = "LowLevelDesign.Diagnostics.LogStore.Defaults";
 
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
 #if !DEBUG
+            StaticConfiguration.DisableErrorTraces = false;
             DiagnosticsHook.Disable(pipelines);
 #endif
-            // Logging configuration
-            Log.Logger = new LoggerConfiguration().WriteTo.Trace().CreateLogger();
-
             pipelines.OnError += (ctx, err) => {
                 Log.Error(err, "Global application error occurred when serving request: {0}", ctx.Request.Url);
                 return null;
@@ -51,47 +42,6 @@ namespace LowLevelDesign.Diagnostics.Castle
             logmaintain.PerformMaintenanceIfNecessaryAsync().Wait();
         }
 
-        private Type FindSingleTypeInLowLevelDesignAssemblies(Type typeToImplement, String confkey)
-        {
-            var implementers = new List<Type>();
-            var bindir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
-            foreach (var asmpath in Directory.GetFiles(bindir, "LowLevelDesign.*.dll"))
-            {
-                try
-                {
-                    var asm = Assembly.LoadFrom(asmpath);
-                    implementers.AddRange(asm.GetExportedTypes().Where(t => t.GetInterfaces().Contains(typeToImplement)));
-                }
-                catch (Exception ex)
-                {
-                    // just swallow and check the next one
-                    Log.Debug(ex, "Failure while loading assembly from '{0}'", asmpath);
-                }
-                if (implementers.Count > 1)
-                {
-                    // we may skip the default one if present
-                    var ind = implementers.FindIndex(t => t.Namespace.StartsWith(defaultTypesNamespace, StringComparison.Ordinal));
-                    if (ind >= 0)
-                    {
-                        implementers.RemoveAt(ind);
-                    }
-                    if (implementers.Count > 1)
-                    {
-                        throw new ConfigurationErrorsException("More than one class implementing " + typeToImplement.FullName +
-                            ". Please specify which one should be used by adding '" + confkey + " ' " +
-                            "key in the appsettings. Please check documentation if in doubt.");
-                    }
-                }
-            }
-            if (implementers.Count == 0)
-            {
-                // no log store found
-                throw new ConfigurationErrorsException("No class implementing " + typeToImplement.FullName + " found. Please add at least one " +
-                    "assembly where we could find such a class. Please check documentation if in doubt.");
-            }
-            return implementers[0];
-        }
-
         protected override void ConfigureApplicationContainer(TinyIoCContainer container)
         {
             /* LOG STORAGE */
@@ -99,7 +49,7 @@ namespace LowLevelDesign.Diagnostics.Castle
             Type logstoreType;
             if (logstoreTypeName == null)
             {
-                logstoreType = FindSingleTypeInLowLevelDesignAssemblies(typeof(ILogStore), LogStoreKey);
+                logstoreType = AppSettings.FindSingleTypeInLowLevelDesignAssemblies(typeof(ILogStore), LogStoreKey);
             }
             else
             {
@@ -120,36 +70,23 @@ namespace LowLevelDesign.Diagnostics.Castle
             Type confMgrType;
             if (confMgrTypeName == null)
             {
-                confMgrType = FindSingleTypeInLowLevelDesignAssemblies(typeof(IAppConfigurationManager), ConfMgrKey);
+                confMgrType = AppSettings.FindSingleTypeInLowLevelDesignAssemblies(typeof(IAppConfigurationManager), ConfMgrKey);
             }
             else
             {
                 confMgrType = Type.GetType(confMgrTypeName);
             }
             container.Register(typeof(IAppConfigurationManager), confMgrType);
-
-            /* SECURITY */
-            if (AppSettingsWrapper.AuthenticationEnabled)
-            {
-                var userMgrTypeName = ConfigurationManager.AppSettings[UserMgrKey];
-                Type userMgrType;
-                if (userMgrTypeName == null)
-                {
-                    userMgrType = FindSingleTypeInLowLevelDesignAssemblies(typeof(IAppUserManager), UserMgrKey);
-                } else
-                {
-                    userMgrType = Type.GetType(userMgrTypeName);
-                }
-                // only when enabled we will show additional options
-                container.Register(typeof(IAppUserManager), userMgrType);
-                container.Register(typeof(IUserStore<User>), userMgrType);
-                // FIXME do we need any other interfaces?
-            }
         }
 
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)
         {
             // configure request-lifetime objects
+            /* SECURITY */
+            container.Register<IAppUserManager>((c, p) => {
+                return (IAppUserManager)context.GetOwinEnvironment()["AspNet.Identity.Owin:" + 
+                    AuthSettings.UserManagerType.AssemblyQualifiedName]; // get by recompiling Microsoft.Aspnet.Identity.Owin
+            });
         }
 
         protected override Nancy.Diagnostics.DiagnosticsConfiguration DiagnosticsConfiguration

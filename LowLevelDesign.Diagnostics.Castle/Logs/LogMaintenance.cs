@@ -37,7 +37,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Logs
                 var appmaintenance = (await config.GetAppsAsync()).Where(app => app.DaysToKeepLogs.HasValue).ToDictionary(
                     app => app.Path, app => TimeSpan.FromDays(app.DaysToKeepLogs.Value));
                 
-                await logStore.Maintain(TimeSpan.FromDays(AppSettingsWrapper.DefaultNoOfDaysToKeepLogs), appmaintenance);
+                await logStore.Maintain(TimeSpan.FromDays(AppSettings.DefaultNoOfDaysToKeepLogs), appmaintenance);
 
                 // the maintenance can't be performed often then on daily basis 
                 // so we shouldn't call it more often then once a day (I will leave

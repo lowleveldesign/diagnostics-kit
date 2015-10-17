@@ -181,7 +181,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstraper.cs" />
-    <Compile Include="Config\AppSettingsWrapper.cs" />
+    <Compile Include="Config\AppSettings.cs" />
+    <Compile Include="Config\AuthSettings.cs" />
     <Compile Include="HelperClasses.cs" />
     <Compile Include="Logs\LogMaintenance.cs" />
     <Compile Include="Models\ApplicationGridModels.cs" />

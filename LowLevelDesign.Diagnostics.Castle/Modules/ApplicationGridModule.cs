@@ -13,7 +13,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public class ApplicationGridModule : NancyModule
     {
-        private readonly static int DefaultCacheTimeInSeconds = AppSettingsWrapper.DefaultGridCacheTimeInSeconds;
+        private readonly static int DefaultCacheTimeInSeconds = AppSettings.DefaultGridCacheTimeInSeconds;
         private MemoryCache cache = MemoryCache.Default;
 
         public ApplicationGridModule(IAppConfigurationManager appconf, ILogStore logStore)
@@ -93,7 +93,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 // gets applications for which we have received the logs
                 return View["Applications", (await appconf.GetAppsAsync()).Where(app => !app.IsHidden).Select(
                     app => {
-                        app.DaysToKeepLogs = app.DaysToKeepLogs ?? AppSettingsWrapper.DefaultNoOfDaysToKeepLogs;
+                        app.DaysToKeepLogs = app.DaysToKeepLogs ?? AppSettings.DefaultNoOfDaysToKeepLogs;
                         return app;
                     })];
             };
