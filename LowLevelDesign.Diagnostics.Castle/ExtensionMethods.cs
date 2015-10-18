@@ -1,9 +1,15 @@
-﻿using Nancy;
+﻿using LowLevelDesign.Diagnostics.Castle.Config;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
+using Microsoft.AspNet.Identity;
+using Nancy;
 using Nancy.Helpers;
+using Nancy.Owin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace LowLevelDesign.Diagnostics.Castle
@@ -53,6 +59,25 @@ namespace LowLevelDesign.Diagnostics.Castle
                 queryString.AppendFormat("{0}={1}", parsedQuery.GetKey(i), HttpUtility.UrlEncode(parsedQuery.GetValues(i).First()));
             }
             return queryString.ToString();
+        }
+
+        public static async Task<ClaimsIdentity> GenerateUserIdentityAsync(this User user, ApplicationUserManager manager)
+        {
+            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
+            var userIdentity = await manager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
+            // Add custom user claims here
+            return userIdentity;
+        }
+
+        public static T GetFromOwinContext<T>(this NancyContext context)
+        {
+            return (T)context.GetOwinEnvironment()["AspNet.Identity.Owin:" + 
+                    typeof(T).AssemblyQualifiedName]; // get by recompiling Microsoft.Aspnet.Identity.Owin
+        }
+
+        public static T GetFromOwinContext<T>(this NancyContext context, string typeName)
+        {
+            return (T)context.GetOwinEnvironment()["AspNet.Identity.Owin:" + typeName]; // get by recompiling Microsoft.Aspnet.Identity.Owin
         }
     }
 }

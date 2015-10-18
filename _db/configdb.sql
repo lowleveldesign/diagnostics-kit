@@ -18,6 +18,10 @@ create table ApplicationConfigs (
     primary key (PathHash, Server)
 );
 
+create table Globals (
+    ConfKey varchar(100) not null primary key,
+    ConfValue varchar(1000) not null);
+
 create table Users (
     Id varchar(32) not null primary key,
     UserName varchar(100) not null,

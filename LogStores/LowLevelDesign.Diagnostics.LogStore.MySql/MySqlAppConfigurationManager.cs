@@ -29,6 +29,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                 conn.Execute("create table if not exists ApplicationConfigs (PathHash binary(16) not null, Path varchar(2000) not null, " +
                                 "Server varchar(200) not null, Binding varchar(3000) not null, AppPoolName varchar(500), AppType char(3), " + 
                                 "ServiceName varchar(300), DisplayName varchar(500), primary key (PathHash, Server))");
+
+                conn.Execute("create table if not exists Globals (ConfKey varchar(100) not null primary key, ConfValue varchar(1000))");
             }
         }
 
@@ -93,5 +95,22 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             }
         }
 
+        public override async Task SetGlobalSettingAsync(string key, string value)
+        {
+            if (String.IsNullOrEmpty(key)) {
+                throw new ArgumentException("Invalid configuration key - can't be empty.");
+            }
+
+            using (var conn = new MySqlConnection(dbConnString)) {
+                await conn.OpenAsync();
+
+                if (String.IsNullOrEmpty(value)) {
+                    await conn.ExecuteAsync("delete from Globals where ConfKey = @key", new { key });
+                } else {
+                    // try to update the record or insert it
+                    await conn.ExecuteAsync("replace into Globals (ConfKey, ConfValue) values (@key, @value)", new { key, value });
+                }
+            }
+        }
     }
 }

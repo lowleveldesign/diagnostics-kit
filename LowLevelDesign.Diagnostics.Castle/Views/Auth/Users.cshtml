@@ -1,6 +1,8 @@
-﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<IEnumerable<Application>>
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<string>
 
 @section style {
     <link href="~/Content/css/bootstrap-switch.min.css" rel="stylesheet">
 }
+
+<h1>@Model</h1>
 

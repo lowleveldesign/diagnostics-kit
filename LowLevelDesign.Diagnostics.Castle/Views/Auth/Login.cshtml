@@ -1,6 +1,42 @@
-﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<IEnumerable<Application>>
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<LoginViewModel>
 
-@section style {
-    <link href="~/Content/css/bootstrap-switch.min.css" rel="stylesheet">
-}
-
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Welcome!</h3>
+            </div>
+            <div class="panel-body">
+                @if (ViewBag.ValidationErrors != null) {
+                    var validationErrors = (Nancy.Validation.ModelValidationResult)ViewBag.ValidationErrors;
+                    <div class="alert alert-danger" role="alert">
+                        @foreach (var k in validationErrors.Errors) {
+                            if (k.Value.Count == 1) {
+                                @k.Value[0].ErrorMessage<br />
+                            } else {
+                                <ul>
+                                    @foreach (var e in k.Value) {
+                                        <li>@e.ErrorMessage</li>
+                                    }
+                                </ul>
+                            }
+                        }
+                    </div>
+                }
+                <form method="post" action="~/auth/login">
+                    <div class="form-group">
+                        <label for="Login">Login</label>
+                        <input type="text" class="form-control" id="Login" name="Login" placeholder="Email" value="@Model.Login" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Password">Password</label>
+                        <input type="password" class="form-control" id="Password" name="Password" placeholder="Password" value="@Model.Password" />
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3"></div>
+</div>

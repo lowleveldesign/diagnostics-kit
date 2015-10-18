@@ -23,9 +23,6 @@ namespace LowLevelDesign.Diagnostics.Castle
 {
     public class Bootstraper : DefaultNancyBootstrapper
     {
-        private const String LogStoreKey = "diag:logstore";
-        private const String ConfMgrKey = "diag:confmgr";
-
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
 #if !DEBUG
@@ -44,18 +41,8 @@ namespace LowLevelDesign.Diagnostics.Castle
 
         protected override void ConfigureApplicationContainer(TinyIoCContainer container)
         {
-            /* LOG STORAGE */
-            var logstoreTypeName = ConfigurationManager.AppSettings[LogStoreKey];
-            Type logstoreType;
-            if (logstoreTypeName == null)
-            {
-                logstoreType = AppSettings.FindSingleTypeInLowLevelDesignAssemblies(typeof(ILogStore), LogStoreKey);
-            }
-            else
-            {
-                logstoreType = Type.GetType(logstoreTypeName);
-            }
-            container.Register(typeof(ILogStore), logstoreType);
+            /* LOG STORE */
+            container.Register(AppSettings.GetLogStore());
 
             /* LOGS MAINTENANCE */
             container.Register<ILogMaintenance, LogMaintenance>();
@@ -66,27 +53,16 @@ namespace LowLevelDesign.Diagnostics.Castle
             container.Register<IValidator<ApplicationServerConfig>, ApplicationServerConfigValidator>();
 
             /* CONFIGURATION */
-            var confMgrTypeName = ConfigurationManager.AppSettings[ConfMgrKey];
-            Type confMgrType;
-            if (confMgrTypeName == null)
-            {
-                confMgrType = AppSettings.FindSingleTypeInLowLevelDesignAssemblies(typeof(IAppConfigurationManager), ConfMgrKey);
-            }
-            else
-            {
-                confMgrType = Type.GetType(confMgrTypeName);
-            }
-            container.Register(typeof(IAppConfigurationManager), confMgrType);
+            container.Register(AppSettings.GetAppConfigurationManager());
+            container.Register<GlobalConfig>();
+
+            /* SECURITY */
+            container.Register(AppSettings.GetAppUserManager());
         }
 
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)
         {
             // configure request-lifetime objects
-            /* SECURITY */
-            container.Register<IAppUserManager>((c, p) => {
-                return (IAppUserManager)context.GetOwinEnvironment()["AspNet.Identity.Owin:" + 
-                    AuthSettings.UserManagerType.AssemblyQualifiedName]; // get by recompiling Microsoft.Aspnet.Identity.Owin
-            });
         }
 
         protected override Nancy.Diagnostics.DiagnosticsConfiguration DiagnosticsConfiguration

@@ -14,6 +14,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
     public class MySqlConfigurationManagerTests : IDisposable
     {
         private const string path = @"c:\TEMP\test\blablabla";
+        private const string confkey = "test:test:1234";
         private readonly string dbConnString;
 
         public MySqlConfigurationManagerTests()
@@ -89,11 +90,29 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
             Assert.True(app.IsExcluded);
         }
 
+        [Fact]
+        public async Task TestGlobals()
+        {
+            var conf = new MySqlAppConfigurationManager();
+
+            var v = await conf.GetGlobalSettingAsync(confkey);
+            Assert.Null(v);
+
+            v = "testvalue";
+            await conf.SetGlobalSettingAsync(confkey, v);
+            var v2 = await conf.GetGlobalSettingAsync(confkey);
+            Assert.Equal(v, v2);
+            await conf.SetGlobalSettingAsync(confkey, null);
+            v2 = await conf.GetGlobalSettingAsync(confkey);
+            Assert.Null(v2);
+        }
+
         public void Dispose()
         {
             using (var conn = new MySqlConnection(dbConnString)) {
                 conn.Open();
 
+                conn.Execute("delete from Globals where ConfKey = @confKey", new { confkey });
                 conn.Execute("delete from Applications where Path = @path", new { path });
                 conn.Execute("delete from ApplicationConfigs where Path = @path", new { path });
             }

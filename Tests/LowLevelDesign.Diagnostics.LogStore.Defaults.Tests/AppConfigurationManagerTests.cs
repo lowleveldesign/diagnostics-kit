@@ -14,6 +14,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
     public class AppConfigurationManagerTests
     {
         private const string path = @"c:\TEMP\test\defaultstest12312312";
+        private const string confkey = "test:test:1234";
         private readonly DbProviderFactory dbProviderFactory;
         private readonly string dbConnString;
 
@@ -91,6 +92,23 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.True(app.IsExcluded);
         }
 
+        [Fact]
+        public async Task TestGlobals()
+        {
+            var conf = new DefaultAppConfigurationManager();
+
+            var v = await conf.GetGlobalSettingAsync(confkey);
+            Assert.Null(v);
+
+            v = "testvalue";
+            await conf.SetGlobalSettingAsync(confkey, v);
+            var v2 = await conf.GetGlobalSettingAsync(confkey);
+            Assert.Equal(v, v2);
+            await conf.SetGlobalSettingAsync(confkey, null);
+            v2 = await conf.GetGlobalSettingAsync(confkey);
+            Assert.Null(v2);
+        }
+
         public void Dispose()
         {
             using (var conn = dbProviderFactory.CreateConnection()) {
@@ -98,6 +116,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
 
                 conn.Execute("delete from Applications where Path = @path", new { path });
                 conn.Execute("delete from ApplicationConfigs where Path = @path", new { path });
+                conn.Execute("delete from Globals where ConfKey = @confKey", new { confkey });
             }
         }
     }

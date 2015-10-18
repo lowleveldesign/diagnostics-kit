@@ -1,9 +1,7 @@
 ﻿using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
-using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
@@ -53,5 +51,17 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
         /// <param name="config">Configuration settings</param>
         /// <returns></returns>
         Task AddOrUpdateAppServerConfigAsync(ApplicationServerConfig config);
+
+        /// <summary>
+        /// Sets global setting value. If value for a given key exists
+        /// it will be overwritten. 
+        /// </summary>
+        Task SetGlobalSettingAsync(String key, String value);
+
+        /// <summary>
+        /// Gets value of the global setting. Returns null 
+        /// if the key does not exist.
+        /// </summary>
+        Task<String> GetGlobalSettingAsync(String key);
     }
 }

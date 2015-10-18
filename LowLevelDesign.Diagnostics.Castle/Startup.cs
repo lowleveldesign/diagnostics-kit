@@ -15,22 +15,17 @@ namespace LowLevelDesign.Diagnostics.Castle
     {
         public void Configuration(IAppBuilder app)
         {
-            if (AuthSettings.AuthenticationEnabled) {
-                ConfigureAuth(app);
-            }
+            ConfigureAuth(app);
             app.UseNancy();
             app.UseStageMarker(PipelineStage.MapHandler);
         }
 
         private void ConfigureAuth(IAppBuilder app)
         {
-            // only when enabled we will show additional options
-            app.CreatePerOwinContext(() => {
-                return (IUserStore<User>)Activator.CreateInstance(AuthSettings.UserManagerType);
-            });
-
             // Configure the db context and user manager to use a single instance per request
+            app.CreatePerOwinContext(() => { return AppSettings.GetAppUserManager(); });
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+            app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
@@ -39,15 +34,9 @@ namespace LowLevelDesign.Diagnostics.Castle
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/auth/login"),
                 Provider = new CookieAuthenticationProvider {
-                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, User, String>(
-                        TimeSpan.FromMinutes(30),
-                        async (manager, user) => {
-                            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-                            var userIdentity = await manager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-                            // Add custom user claims here
-                            return userIdentity;
-                        },
-                        null)
+                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, User>(
+                        validateInterval: TimeSpan.FromMinutes(30),
+                        regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
             });
 
