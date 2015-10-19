@@ -39,8 +39,17 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
             Post["/auth/register", true] = async (x, ct) => {
                 var model = this.BindAndValidate<RegisterViewModel>();
+                // HACK: the compare attribute is not working in Nancyvalidation
+                if (!String.Equals(model.Password, model.ConfirmPassword, StringComparison.Ordinal))
+                {
+                    ModelValidationResult.Errors.Add("", "The password and confirmation password do not match.");
+                }
                 if (ModelValidationResult.IsValid) {
-                    var user = new User { UserName = model.Login, Email = model.Email };
+                    var user = new User {
+                        Id = Guid.NewGuid().ToString("N"),
+                        UserName = model.Login,
+                        RegistrationDateUtc = DateTime.UtcNow
+                    };
                     var result = await UserManager.CreateAsync(user, model.Password);
                     if (result.Succeeded) {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
@@ -51,11 +60,12 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                         // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                        return Response.AsRedirect("~/");
+                        return Response.AsRedirect("~/auth/users");
                     }
                     ModelValidationResult.Errors.Add("", result.Errors.Select(err => new ModelValidationError(
                         "", err)).ToList());
                 }
+                ViewBag.ValidationErrors = ModelValidationResult;
                 // If we got this far, something failed, redisplay form
                 return View["Auth/Register.cshtml", model];
             };

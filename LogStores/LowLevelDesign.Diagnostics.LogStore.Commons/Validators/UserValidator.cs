@@ -14,7 +14,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Validators
         {
             RuleFor(u => u.Id).NotNull().Length(1, 32);
             RuleFor(u => u.UserName).NotNull().Length(1, 100);
-            RuleFor(u => u.Email).NotNull().EmailAddress().Length(1, 100);
         }
     }
 }

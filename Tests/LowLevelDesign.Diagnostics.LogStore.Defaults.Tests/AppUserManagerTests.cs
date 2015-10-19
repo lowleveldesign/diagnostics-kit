@@ -34,9 +34,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             var expectedUser = new User {
                 Id = userId,
                 UserName = "testuser",
-                Email = "test@test.com",
                 PasswordHash = "testhash",
-                Enabled = true,
                 RegistrationDateUtc = DateTime.UtcNow
             };
 
@@ -46,36 +44,28 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.NotNull(u);
             Assert.Equal(expectedUser.Id, u.Id);
             Assert.Equal(expectedUser.UserName, u.UserName);
-            Assert.Equal(expectedUser.Email, u.Email);
-            Assert.Equal(expectedUser.Enabled, u.Enabled);
             Assert.Equal(expectedUser.PasswordHash, u.PasswordHash);
-            Assert.Equal(expectedUser.RegistrationDateUtc.ToString("yyyyMMdd HH:mm:ss"),
-                u.RegistrationDateUtc.ToString("yyyyMMdd HH:mm:ss"));
+            Assert.True(Math.Abs(expectedUser.RegistrationDateUtc.Subtract(
+                u.RegistrationDateUtc).TotalSeconds) < 10);
 
             u = await users.FindByNameAsync(expectedUser.UserName);
             Assert.NotNull(u);
             Assert.Equal(expectedUser.Id, u.Id);
             Assert.Equal(expectedUser.UserName, u.UserName);
-            Assert.Equal(expectedUser.Email, u.Email);
-            Assert.Equal(expectedUser.Enabled, u.Enabled);
             Assert.Equal(expectedUser.PasswordHash, u.PasswordHash);
-            Assert.Equal(expectedUser.RegistrationDateUtc.ToString("yyyyMMdd HH:mm:ss"),
-                u.RegistrationDateUtc.ToString("yyyyMMdd HH:mm:ss"));
+            Assert.True(Math.Abs(expectedUser.RegistrationDateUtc.Subtract(
+                u.RegistrationDateUtc).TotalSeconds) < 10);
 
             expectedUser.UserName += "2";
-            expectedUser.Email += "2";
             expectedUser.PasswordHash += "2";
-            expectedUser.Enabled = false;
             await users.UpdateAsync(expectedUser);
             u = await users.FindByIdAsync(userId);
             Assert.NotNull(u);
             Assert.Equal(expectedUser.Id, u.Id);
             Assert.Equal(expectedUser.UserName, u.UserName);
-            Assert.Equal(expectedUser.Email, u.Email);
-            Assert.Equal(expectedUser.Enabled, u.Enabled);
             Assert.Equal(expectedUser.PasswordHash, u.PasswordHash);
-            Assert.Equal(expectedUser.RegistrationDateUtc.ToString("yyyyMMdd HH:mm:ss"),
-                u.RegistrationDateUtc.ToString("yyyyMMdd HH:mm:ss"));
+            Assert.True(Math.Abs(expectedUser.RegistrationDateUtc.Subtract(
+                u.RegistrationDateUtc).TotalSeconds) < 10);
 
             Assert.True(await users.HasPasswordAsync(u));
             Assert.Equal(expectedUser.PasswordHash, await users.GetPasswordHashAsync(u));

@@ -25,17 +25,15 @@ create table Globals (
 create table Users (
     Id varchar(32) not null primary key,
     UserName varchar(100) not null,
-    Email varchar(100) not null,
     PasswordHash varchar(1000) null,
-    Enabled bit not null,
     RegistrationDateUtc DateTime not null
 );
 
 create table UserClaims (
-    UserId varchar(32) not null,
+    UserId varchar(32) not null references Users(Id),
     ClaimType varchar(250) not null,
     ClaimValue varchar(1000) not null,
-    primary key(UserId, ClaimType)
+    primary key(UserId, ClaimType),
 );
 
 create unique nonclustered index NCIX_Users_UserName on Users(UserName);

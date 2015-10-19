@@ -97,8 +97,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
             using (var conn = CreateConnection())
             {
                 await conn.OpenAsync();
-                await conn.ExecuteAsync("insert into Users (Id, UserName, Email, PasswordHash, Enabled, RegistrationDateUtc) values (" +
-                    "@Id, @UserName, @Email, @PasswordHash, @Enabled, @RegistrationDateUtc)", user);
+                await conn.ExecuteAsync("insert into Users (Id, UserName, PasswordHash, RegistrationDateUtc) values (" +
+                    "@Id, @UserName, @PasswordHash, @RegistrationDateUtc)", user);
             }
         }
 
@@ -108,7 +108,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
             using (var conn = CreateConnection())
             {
                 await conn.OpenAsync();
-                await conn.ExecuteAsync("update Users set UserName = @UserName, Email = @Email, PasswordHash = @PasswordHash, Enabled = @Enabled, " + 
+                await conn.ExecuteAsync("update Users set UserName = @UserName, PasswordHash = @PasswordHash, " + 
                     "RegistrationDateUtc = @RegistrationDateUtc where Id = @Id", user);
             }
         }

@@ -9,11 +9,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Models
 
         public String UserName { get; set; }
 
-        public String Email { get; set; }
-
         public String PasswordHash { get; set; }
-
-        public bool Enabled { get; set; }
 
         public DateTime RegistrationDateUtc { get; set; }
     }
