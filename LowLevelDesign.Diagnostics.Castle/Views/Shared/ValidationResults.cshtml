@@ -1,0 +1,16 @@
+﻿@if (ViewBag.ValidationErrors != null) {
+    var validationErrors = (Nancy.Validation.ModelValidationResult)ViewBag.ValidationErrors;
+    <div class="alert alert-danger" role="alert">
+        @foreach (var k in validationErrors.Errors) {
+            if (k.Value.Count == 1) {
+                @k.Value[0].ErrorMessage<br />
+            } else {
+                <ul>
+                    @foreach (var e in k.Value) {
+                        <li>@e.ErrorMessage</li>
+                    }
+                </ul>
+            }
+        }
+    </div>
+}
