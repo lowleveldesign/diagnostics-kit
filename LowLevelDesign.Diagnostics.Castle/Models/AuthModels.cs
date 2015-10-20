@@ -1,4 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
+using System.Collections;
+using System.Linq;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using System;
 
 namespace LowLevelDesign.Diagnostics.Castle.Models
 {
@@ -14,7 +20,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
         public bool RememberMe { get; set; }
     }
 
-    public class RegisterViewModel
+    public sealed class RegisterViewModel
     {
         [Required]
         public string Login { get; set; }
@@ -33,7 +39,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
         public string ConfirmPassword { get; set; }
     }
 
-    public class ResetPasswordViewModel
+    public sealed class ResetPasswordViewModel
     {
         [Required]
         [EmailAddress]
@@ -49,5 +55,33 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
         public string ConfirmPassword { get; set; }
 
         public string Code { get; set; }
+    }
+
+    public sealed class UserWithClaims
+    {
+        public const string AdminRole = "admin";
+
+        public UserWithClaims(User u, IEnumerable<Claim> claims)
+        {
+            Id = u.Id;
+            UserName = u.UserName;
+            Claims = claims;
+        }
+
+        public string Id { get; private set; }
+
+        public string UserName { get; private set; }
+
+        public IEnumerable<Claim> Claims { get; private set; }
+
+        public bool IsAdmin
+        {
+            get
+            {
+                return Claims != null && Claims.FirstOrDefault(c =>
+                    string.Equals(c.Type, ClaimTypes.Role, StringComparison.Ordinal) &&
+                    string.Equals(c.Value, AdminRole, StringComparison.Ordinal)) != null;
+            }
+        }
     }
 }
