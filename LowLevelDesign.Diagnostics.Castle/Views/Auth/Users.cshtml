@@ -8,9 +8,25 @@
     <script src="~/Content/js/bootstrap-switch.min.js"></script>
 
     <script type="text/javascript">
+        /* Authentication control */
+        $("#authEnabledSwitch").bootstrapSwitch({
+            onSwitchChange: function (event, state) {
+                if (state && $("span[name='adminbadge']").length == 0) {
+                    event.preventDefault();
+                    $('#noAdminModal').modal();
+                    return false;
+                }
+                $.post('enable', { 'Enabled': state }, function (data) {
+                }).fail(function () {
+                    $('#globalAlert').removeClass('hidden');
+                });
+            }
+        });
+
+        /* Users management */
         var userIdToRemove = null;
 
-        $(function() {
+        $(function () {
             $("button[name='rmuser']").on('click', function () {
                 userIdToRemove = $(this).attr('data-userid');
                 var username = $(this).attr('data-username');
@@ -19,7 +35,7 @@
                 $('#userRemoveModal').modal();
                 return false;
             });
-            $("#userRemoveModal button[name='rmbtn'").on('click', function() {
+            $("#userRemoveModal button[name='rmbtn'").on('click', function () {
                 if (userIdToRemove == null) {
                     $('#userRemoveModal').modal('hide');
                 } else {
@@ -40,52 +56,80 @@
 }
 
 <div class="panel panel-primary">
-<!-- Default panel contents -->
-  <div class="panel-heading">Registered users</div>
-  <div class="panel-body">
-    <div id="globalAlert" class="alert alert-danger alert-dismissible hidden" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        There was <strong>a problem</strong> while trying to update the user info. Please try again and if the problem
-        persists contact the application administrator.
+    <!-- Default panel contents -->
+    <div class="panel-heading">Access control configuration</div>
+    <div class="panel-body">
+        <div id="globalAlert" class="alert alert-danger alert-dismissible hidden" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            There was <strong>a problem</strong> while trying to update the user info. Please try again and if the problem
+            persists contact the application administrator.
+        </div>
+        <p>
+            <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki/1.5.authentication" target="_blank">Access control</a> is:
+            <input id="authEnabledSwitch" type="checkbox" data-size="mini" data-on-text="ON" data-off-text="OFF" data-on-color="success"
+                   checked="@((bool)ViewBag.AuthEnabled)" />
+        </p>
+        <p>
+            A list of users which have access to the applications grid can be found below. To register a new user go to
+            <a href="~/auth/register" class="btn btn-xs btn-default">the registration form</a>.
+        </p>
     </div>
-    <p>A list of users which have access to the applications grid. To register a new user go to 
-    <a href="~/auth/register" class="btn btn-xs btn-success">the registration form</a>.</p>
-  </div>
-  <table class="table table-hover">
-    <tbody>
-        @foreach (var u in Model) {
-          <tr id="tr@(u.Id)" >
-            <td>
-              @u.UserName @if (u.IsAdmin) { <span class="label label-success">Administrator</span> }
-            </td>
-            <td class="text-right text-nowrap">
-              <button class="btn btn-xs btn-info">Reset Password</button>
-              <button name="rmuser" class="btn btn-xs btn-warning" data-userid="@u.Id" data-username="@u.UserName">
-                <span class="glyphicon glyphicon-trash"></span>
-                Remove
-              </button>
-            </td>
-          </tr>
-        }
-    </tbody>
-  </table>
+    <table class="table table-hover">
+        <tbody>
+            @foreach (var u in Model) {
+                <tr id="tr@(u.Id)">
+                    <td>
+                        @u.UserName @if (u.IsAdmin) { <span name="adminbadge" class="label label-success">Administrator</span> }
+                    </td>
+                    <td class="text-right text-nowrap">
+                        <button class="btn btn-xs btn-info">Reset Password</button>
+                        <button name="rmuser" class="btn btn-xs btn-danger" data-userid="@u.Id" data-username="@u.UserName">
+                            <span class="glyphicon glyphicon-trash"></span>
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
 
 <div id="userRemoveModal" class="modal fade">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title"></h4>
-      </div>
-      <div class="modal-body">
-        <p>After removal the user won't be able to sign into the application.</p>
-      </div>
-      <div class="modal-footer">
-        <button name="rmbtn" type="button" class="btn btn-danger">Remove</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <p>After removal the user won't be able to sign into the application.</p>
+            </div>
+            <div class="modal-footer">
+                <button name="rmbtn" type="button" class="btn btn-danger">Remove</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="noAdminModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">No Administrator account found.</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <strong>Please register an Administrator account</strong> - you can't enable access control when there is
+                    no Administrator account configured in the application. More information can be found in the
+                    <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki/1.5.authentication" target="_blank">documentation</a>.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

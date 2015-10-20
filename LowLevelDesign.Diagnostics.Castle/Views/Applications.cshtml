@@ -113,13 +113,13 @@
             <div id="globalAlert" class="alert alert-danger alert-dismissible hidden" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 There was <strong>a network problem</strong> while trying to update the application info. Please try again and if the problem
-                persists contact the application administrator. 
+                persists contact the application administrator.
             </div>
             <p>
-                The table below displays applications for which we have received logs or configuration information. By default all applications 
-                are disabled and logs coming for them are rejected. You may here change that behavior <strong>by enabling</strong> interesting applications. 
+                The table below displays applications for which we have received logs or configuration information. By default all applications
+                are disabled and logs coming for them are rejected. You may here change that behavior <strong>by enabling</strong> interesting applications.
                 Additionally you may <strong>configure the log maintenance</strong> (for how many days logs should be kept). If a given application is not interesting
-                for you you may <strong>remove it</strong> - it won't ever again appear in the table. 
+                for you you may <strong>remove it</strong> - it won't ever again appear in the table.
             </p>
             <!-- Table -->
             <table class="table table-striped table-bordered">
@@ -149,10 +149,10 @@
                                                 <text>Forever</text>
                                                 break;
                                             case 1:
-                                            <text>1 day</text>
+                                                <text>1 day</text>
                                                 break;
                                             default:
-                                            <text>@app.DaysToKeepLogs days</text>
+                                                <text>@app.DaysToKeepLogs days</text>
                                                 break;
 
                                         }
@@ -160,7 +160,10 @@
                                 </a>
                             </td>
                             <td>
-                                <button name="apphide" href="#" title="click to hide" class="btn btn-danger" data-apppath="@app.Path">Remove</button>
+                                <button name="apphide" href="#" title="click to hide" class="btn btn-xs btn-danger" data-apppath="@app.Path">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                    Remove
+                                </button>
                             </td>
                         </tr>
                     }

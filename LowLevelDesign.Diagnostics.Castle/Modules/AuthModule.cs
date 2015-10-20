@@ -94,6 +94,16 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 await appUserManager.DeleteAsync(user);
                 return Response.AsRedirect("~/auth/users");
             };
+
+            Post["/auth/enable", true] = async (x, ct) => {
+                // FIXME admin only or no auth
+                
+                if (Request.Form.Enabled == null) { 
+                    throw new ArgumentException();
+                }
+                await globals.ToggleAuthentication((bool)Request.Form.Enabled);
+                return "OK";
+            };
         }
 
         public ApplicationSignInManager SignInManager
