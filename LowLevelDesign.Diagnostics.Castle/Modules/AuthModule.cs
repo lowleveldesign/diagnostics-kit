@@ -1,5 +1,6 @@
 ﻿using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Castle.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Auth;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using Microsoft.AspNet.Identity.Owin;
 using Nancy;
@@ -7,12 +8,13 @@ using Nancy.ModelBinding;
 using Nancy.Validation;
 using System;
 using System.Linq;
+using System.Security.Claims;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public sealed class AuthModule : NancyModule
     {
-        public AuthModule(GlobalConfig globals)
+        public AuthModule(GlobalConfig globals, IAppUserManager appUserManager)
         {
             // FIXME some general message here to show info if authentication is not enabled
 
@@ -38,6 +40,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
             };
 
             Post["/auth/register", true] = async (x, ct) => {
+                // FIXME only admin or if authentication is disabled everyone
                 var model = this.BindAndValidate<RegisterViewModel>();
                 // HACK: the compare attribute is not working in Nancyvalidation
                 if (!String.Equals(model.Password, model.ConfirmPassword, StringComparison.Ordinal))
@@ -51,6 +54,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         RegistrationDateUtc = DateTime.UtcNow
                     };
                     var result = await UserManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded && model.IsAdmin) {
+                        result = await UserManager.AddClaimAsync(user.Id, new Claim(ClaimTypes.Role, UserWithClaims.AdminRole));
+                    }
                     if (result.Succeeded) {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
@@ -70,11 +76,23 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 return View["Auth/Register.cshtml", model];
             };
 
-            // FIXME
             Get["/auth/users", true] = async (x, ct) => {
-                bool isenabled = await globals.IsAuthenticationEnabled();
 
-                return View["Auth/Users.cshtml", isenabled.ToString()];
+                // FIXME admin only
+
+                ViewBag.AuthEnabled = await globals.IsAuthenticationEnabled();
+                var ucs = await appUserManager.GetRegisteredUsersWithClaimsAsync();
+
+                return View["Auth/Users.cshtml", ucs.Select(uc => new UserWithClaims(uc.Item1, uc.Item2))];
+            };
+
+            Post["/auth/remove", true] = async (x, ct) => {
+                // FIXME admin only - authentication
+
+                var user = this.Bind<User>();
+                // only id is required
+                await appUserManager.DeleteAsync(user);
+                return Response.AsRedirect("~/auth/users");
             };
         }
 

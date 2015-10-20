@@ -11,7 +11,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Auth
     {
 
         /// <summary>
-        /// Returns a list of registered users
+        /// Returns a list of registered users ordered by username.
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<Tuple<User, IEnumerable<Claim>>>> GetRegisteredUsersWithClaimsAsync();

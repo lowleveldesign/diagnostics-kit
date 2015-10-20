@@ -1,8 +1,91 @@
-﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<IEnumerable<UserWithClaim>>
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<IEnumerable<UserWithClaims>>
 
 @section style {
     <link href="~/Content/css/bootstrap-switch.min.css" rel="stylesheet">
 }
 
-<h1>@Model</h1>
+@section scripts {
+    <script src="~/Content/js/bootstrap-switch.min.js"></script>
 
+    <script type="text/javascript">
+        var userIdToRemove = null;
+
+        $(function() {
+            $("button[name='rmuser']").on('click', function () {
+                userIdToRemove = $(this).attr('data-userid');
+                var username = $(this).attr('data-username');
+                $('#userRemoveModal h4').text('Are you sure you want to remove the \'' +
+                     username + '\' user?');
+                $('#userRemoveModal').modal();
+                return false;
+            });
+            $("#userRemoveModal button[name='rmbtn'").on('click', function() {
+                if (userIdToRemove == null) {
+                    $('#userRemoveModal').modal('hide');
+                } else {
+                    var id = userIdToRemove;
+                    $.post('remove', { Id: id }, function (data) {
+                        $('#tr' + id).remove();
+                        $('#globalAlert').addClass('hidden');
+                        $('#userRemoveModal').modal('hide');
+                    }).fail(function () {
+                        $('#globalAlert').removeClass('hidden');
+                        $('#userRemoveModal').modal('hide');
+                    });
+                }
+                return false;
+            });
+        });
+    </script>
+}
+
+<div class="panel panel-primary">
+<!-- Default panel contents -->
+  <div class="panel-heading">Registered users</div>
+  <div class="panel-body">
+    <div id="globalAlert" class="alert alert-danger alert-dismissible hidden" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        There was <strong>a problem</strong> while trying to update the user info. Please try again and if the problem
+        persists contact the application administrator.
+    </div>
+    <p>A list of users which have access to the applications grid. To register a new user go to 
+    <a href="~/auth/register" class="btn btn-xs btn-success">the registration form</a>.</p>
+  </div>
+  <table class="table table-hover">
+    <tbody>
+        @foreach (var u in Model) {
+          <tr id="tr@(u.Id)" >
+            <td>
+              @u.UserName @if (u.IsAdmin) { <span class="label label-success">Administrator</span> }
+            </td>
+            <td class="text-right text-nowrap">
+              <button class="btn btn-xs btn-info">Reset Password</button>
+              <button name="rmuser" class="btn btn-xs btn-warning" data-userid="@u.Id" data-username="@u.UserName">
+                <span class="glyphicon glyphicon-trash"></span>
+                Remove
+              </button>
+            </td>
+          </tr>
+        }
+    </tbody>
+  </table>
+</div>
+
+
+<div id="userRemoveModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+        <p>After removal the user won't be able to sign into the application.</p>
+      </div>
+      <div class="modal-footer">
+        <button name="rmbtn" type="button" class="btn btn-danger">Remove</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

@@ -1,34 +1,14 @@
-﻿using LowLevelDesign.Diagnostics.LogStore.Commons.Auth;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
+﻿using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using System;
-using System.Configuration;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.Castle.Config
 {
-    //public static class AuthSettings
-    //{
-    //    private static readonly bool authenticationEnabled;
-
-    //    static AuthSettings()
-    //    {
-    //        /* SECURITY */
-    //        bool flag;
-    //        Boolean.TryParse(ConfigurationManager.AppSettings["diag:authentication-enabled"], out flag);
-    //        authenticationEnabled = flag;
-    //    }
-
-    //    public static bool AuthenticationEnabled
-    //    {
-    //        get { return authenticationEnabled; }
-    //    }
-    //}
-
     public class ApplicationUserManager : UserManager<User, String>
     {
         public ApplicationUserManager(IUserStore<User, String> store) : base(store)

@@ -63,7 +63,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
             using (var conn = CreateConnection())
             {
                 await conn.OpenAsync();
-                var users = await conn.QueryAsync<User>("select * from Users");
+                var users = await conn.QueryAsync<User>("select * from Users order by UserName");
                 var claims = await conn.QueryAsync<UserClaim>("select * from UserClaims");
 
                 var res = new List<Tuple<User, IEnumerable<Claim>>>();

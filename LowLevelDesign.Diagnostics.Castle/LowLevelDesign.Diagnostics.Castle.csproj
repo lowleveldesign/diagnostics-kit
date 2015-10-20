@@ -189,7 +189,7 @@
   <ItemGroup>
     <Compile Include="Bootstraper.cs" />
     <Compile Include="Config\AppSettings.cs" />
-    <Compile Include="Config\AuthSettings.cs" />
+    <Compile Include="Config\IdentityConfig.cs" />
     <Compile Include="Config\GlobalConfig.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Logs\LogMaintenance.cs" />
