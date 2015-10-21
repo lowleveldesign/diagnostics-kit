@@ -196,6 +196,7 @@
     <Compile Include="Models\AuthModels.cs" />
     <Compile Include="Models\ApplicationGridModels.cs" />
     <Compile Include="Models\ApplicationLogModels.cs" />
+    <Compile Include="Models\SharedModels.cs" />
     <Compile Include="Modules\ApplicationConfModule.cs" />
     <Compile Include="Modules\ApplicationGridModule.cs" />
     <Compile Include="Modules\AuthModule.cs" />

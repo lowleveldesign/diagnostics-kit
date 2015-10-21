@@ -23,12 +23,37 @@
             }
         });
 
+        function submitAjaxFormFromModal(modalId, form, onsuccess) {
+            var dataToSent = $(form).serialize();
+            $.post($(form).attr('action'), dataToSent,
+                function (data) {
+                    if (data.isSuccess) {
+                        $('#globalAlert').addClass('hidden');
+                        $('#' + modalId).modal('hide');
+
+                        if (onsuccess) {
+                            onsuccess(data);
+                        }
+                    } else {
+                        if (!data.errors) {
+                            data.errors = ["Unknown error"];
+                        }
+                        $('#' + modalId + ' .alert').html(data.errors.join('<br/>'));
+                        $('#' + modalId + ' .alert').removeClass('hidden');
+                    }
+                }).fail(function () {
+                    $('#globalAlert').removeClass('hidden');
+                    $('#' + modalId).modal('hide');
+                });
+        }
+
         /* Users management */
-        var userIdToRemove = null;
+        var currentUserId = null;
 
         $(function () {
+            // user removal
             $("button[name='rmuser']").on('click', function () {
-                userIdToRemove = $(this).attr('data-userid');
+                currentUserId = $(this).attr('data-userid');
                 var username = $(this).attr('data-username');
                 $('#userRemoveModal h4').text('Are you sure you want to remove the \'' +
                      username + '\' user?');
@@ -36,10 +61,10 @@
                 return false;
             });
             $("#userRemoveModal button[name='rmbtn'").on('click', function () {
-                if (userIdToRemove == null) {
+                if (currentUserId == null) {
                     $('#userRemoveModal').modal('hide');
                 } else {
-                    var id = userIdToRemove;
+                    var id = currentUserId;
                     $.post('remove', { Id: id }, function (data) {
                         $('#tr' + id).remove();
                         $('#globalAlert').addClass('hidden');
@@ -49,6 +74,59 @@
                         $('#userRemoveModal').modal('hide');
                     });
                 }
+                return false;
+            });
+            // password reset
+            $("button[name='resetpasswd']").on('click', function () {
+                var userId = $(this).attr('data-userid');
+                var username = $(this).attr('data-username');
+                $('#changePasswordModal h4').text('Change password for \'' + username + '\'');
+                $('#changePasswordModal .alert').addClass('hidden');
+                $('#changePasswordModal input').val('');
+                $("#changePasswordModal input[name='Id']").val(userId);
+                $('#changePasswordModal').modal();
+                return false;
+            });
+            $('#changePasswordModal form').on('submit', function () {
+                $.post($(this).attr('action'), $(this).serialize(),
+                    function (data) {
+                        if (data.isSuccess) {
+                            $('#globalAlert').addClass('hidden');
+                            $('#changePasswordModal').modal('hide');
+                        } else {
+                            if (!data.errors) {
+                                data.errors = ["Unknown error"];
+                            }
+                            $('#changePasswordModal .alert').html(data.errors.join('<br/>'));
+                            $('#changePasswordModal .alert').removeClass('hidden');
+                        }
+                    }).fail(function () {
+                        $('#globalAlert').removeClass('hidden');
+                        $('#changePasswordModal').modal('hide');
+                    });
+                return false;
+            });
+            $("#changePasswordModal button[name='confirm']").on('click', function () {
+                $('#changePasswordModal form').submit();
+            });
+            // register new user
+            $("button[name='registeruser'").on('click', function () {
+                $('#registerNewUserModal .alert').addClass('hidden');
+                $('#registerNewUserModal input').val('');
+                $('#registerNewUserModal input').removeAttr('checked');
+                $('#registerNewUserModal').modal();
+                return false;
+            });
+            $("#registerNewUserModal button[name='confirm']").on('click', function () {
+                $('#registerNewUserModal form').submit();
+            });
+            $('#registerNewUserModal form').on('submit', function () {
+                var form = this;
+                submitAjaxFormFromModal('registerNewUserModal', form, function (data) {
+                    var html = $('#template tbody').html().replace('{userid}', data.result).replace(
+                        '{username}', $('#Login').val());
+                    $('#table tbody').append(html);
+                });
                 return false;
             });
         });
@@ -71,10 +149,10 @@
         </p>
         <p>
             A list of users which have access to the applications grid can be found below. To register a new user go to
-            <a href="~/auth/register" class="btn btn-xs btn-default">the registration form</a>.
+            <button name="registeruser" class="btn btn-xs btn-default">the registration form</button>.
         </p>
     </div>
-    <table class="table table-hover">
+    <table id="users" class="table table-hover">
         <tbody>
             @foreach (var u in Model) {
                 <tr id="tr@(u.Id)">
@@ -82,7 +160,9 @@
                         @u.UserName @if (u.IsAdmin) { <span name="adminbadge" class="label label-success">Administrator</span> }
                     </td>
                     <td class="text-right text-nowrap">
-                        <button class="btn btn-xs btn-info">Reset Password</button>
+                        <button name="resetpasswd" class="btn btn-xs btn-info" data-userid="@u.Id" data-username="@u.UserName">
+                            Change Password
+                        </button>
                         <button name="rmuser" class="btn btn-xs btn-danger" data-userid="@u.Id" data-username="@u.UserName">
                             <span class="glyphicon glyphicon-trash"></span>
                             Remove
@@ -90,6 +170,21 @@
                     </td>
                 </tr>
             }
+        </tbody>
+    </table>
+    <table id="template" class="hidden">
+        <tbody>
+            <tr id="td{userid}"><td>{username}</td>
+                <td class="text-right text-nowrap">
+                    <button name="resetpasswd" class="btn btn-xs btn-info" data-userid="{userid}" data-username="{username}">
+                        Change Password
+                    </button>
+                    <button name="rmuser" class="btn btn-xs btn-danger" data-userid="{userid}" data-username="{username}">
+                        <span class="glyphicon glyphicon-trash"></span>
+                        Remove
+                    </button>
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>
@@ -109,9 +204,9 @@
                 <button name="rmbtn" type="button" class="btn btn-danger">Remove</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+        </div>
+    </div>
+</div>
 
 <div id="noAdminModal" class="modal fade">
     <div class="modal-dialog">
@@ -130,6 +225,76 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+        </div>
+    </div>
+</div>
+
+<div id="changePasswordModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Change password</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger hidden" role="alert"></div>
+                <form method="post" action="~/auth/adminresetpasswd">
+                    <input name="Id" type="hidden" value="" />
+                    <div class="form-group">
+                        <label for="Password">New password</label>
+                        <input type="password" class="form-control" name="Password" placeholder="New password" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="ConfirmPassword">Confirm password</label>
+                        <input type="password" class="form-control" name="ConfirmPassword" placeholder="Confirm password" value="" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button name="confirm" type="button" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="registerNewUserModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Register new user</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger hidden" role="alert"></div>
+                <form method="post" action="~/auth/register">
+                    <div class="form-group">
+                        <label for="Login">Login</label>
+                        <input type="text" class="form-control" id="Login" name="Login" placeholder="Login" value="" />
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input name="IsAdmin" id="IsAdmin" type="checkbox" />
+                                Is Administrator
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Password">Password</label>
+                        <input type="password" class="form-control" id="Password" name="Password" placeholder="Password" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="ConfirmPassword">Confirm password</label>
+                        <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" placeholder="Confirm password" value="" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button name="confirm" type="button" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

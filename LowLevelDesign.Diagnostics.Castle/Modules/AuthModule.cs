@@ -7,6 +7,7 @@ using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Validation;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
@@ -35,16 +36,11 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 return View["Auth/Login.cshtml", model];
             };
 
-            Get["/auth/register"] = _ => {
-                return View["Auth/Register.cshtml", new RegisterViewModel()];
-            };
-
             Post["/auth/register", true] = async (x, ct) => {
                 // FIXME only admin or if authentication is disabled everyone
                 var model = this.BindAndValidate<RegisterViewModel>();
                 // HACK: the compare attribute is not working in Nancyvalidation
-                if (!String.Equals(model.Password, model.ConfirmPassword, StringComparison.Ordinal))
-                {
+                if (!String.Equals(model.Password, model.ConfirmPassword, StringComparison.Ordinal)) {
                     ModelValidationResult.Errors.Add("", "The password and confirmation password do not match.");
                 }
                 if (ModelValidationResult.IsValid) {
@@ -59,21 +55,20 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     }
                     if (result.Succeeded) {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
-                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                        // Send an email with this link
-                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                        return Response.AsRedirect("~/auth/users");
+                        return Response.AsJson(new JsonFormValidationResult {
+                            IsSuccess = true,
+                            Result = user.Id
+                        });
                     }
                     ModelValidationResult.Errors.Add("", result.Errors.Select(err => new ModelValidationError(
                         "", err)).ToList());
                 }
                 ViewBag.ValidationErrors = ModelValidationResult;
                 // If we got this far, something failed, redisplay form
-                return View["Auth/Register.cshtml", model];
+                return Response.AsJson(new JsonFormValidationResult {
+                    IsSuccess = false,
+                    Errors = GetErrorsListFromValidationResult(ModelValidationResult)
+                });
             };
 
             Get["/auth/users", true] = async (x, ct) => {
@@ -97,12 +92,40 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
             Post["/auth/enable", true] = async (x, ct) => {
                 // FIXME admin only or no auth
-                
-                if (Request.Form.Enabled == null) { 
+
+                if (Request.Form.Enabled == null) {
                     throw new ArgumentException();
                 }
                 await globals.ToggleAuthentication((bool)Request.Form.Enabled);
                 return "OK";
+            };
+
+            Post["/auth/adminresetpasswd", true] = async (x, ct) => {
+                // FIXME admin only or no auth
+
+                var model = this.BindAndValidate<AdminResetPasswordViewModel>();
+                if (!String.Equals(model.Password, model.ConfirmPassword, StringComparison.Ordinal)) {
+                    ModelValidationResult.Errors.Add("", "The password and confirmation password do not match.");
+                }
+                if (ModelValidationResult.IsValid) {
+                    var user = await UserManager.FindByIdAsync(model.Id);
+                    if (user == null) {
+                        ModelValidationResult.Errors.Add("", "User not found.");
+                    } else {
+                        // here we don't do the usual password reset procedure but a mock
+                        var token = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                        var result = await UserManager.ResetPasswordAsync(user.Id, token, model.Password);
+                        if (result.Succeeded) {
+                            return Response.AsJson(new JsonFormValidationResult { IsSuccess = true });
+                        }
+                        ModelValidationResult.Errors.Add("", result.Errors.Select(
+                            err => new ModelValidationError("", err)).ToList());
+                    }
+                }
+                return Response.AsJson(new JsonFormValidationResult {
+                    IsSuccess = false,
+                    Errors = GetErrorsListFromValidationResult(ModelValidationResult)
+                });
             };
         }
 
@@ -114,6 +137,15 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
         public ApplicationUserManager UserManager
         {
             get { return Context.GetFromOwinContext<ApplicationUserManager>(); }
+        }
+
+        private String[] GetErrorsListFromValidationResult(ModelValidationResult result)
+        {
+            var errors = new List<String>(10);
+            foreach (var err in result.Errors) {
+                errors.AddRange(err.Value.Select(suberr => suberr.ErrorMessage));
+            }
+            return errors.ToArray();
         }
     }
 }

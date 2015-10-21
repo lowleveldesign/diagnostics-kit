@@ -28,7 +28,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
                 RequireNonLetterOrDigit = false,
                 RequireDigit = true,
                 RequireLowercase = true,
-                RequireUppercase = true,
+                RequireUppercase = true
             };
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null) {
