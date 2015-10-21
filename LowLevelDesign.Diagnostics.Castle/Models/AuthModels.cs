@@ -5,9 +5,29 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System;
+using Nancy.Security;
 
 namespace LowLevelDesign.Diagnostics.Castle.Models
 {
+    public sealed class AuthenticatedUser : IUserIdentity
+    {
+        public AuthenticatedUser(string username, IEnumerable<string> claims)
+        {
+            this.UserName = username;
+            this.Claims = claims;
+        }
+
+        public AuthenticatedUser(ClaimsPrincipal principal)
+        {
+            UserName = principal.Identity.Name;
+            Claims = principal.Claims.Select(c => c.Type + ":" + c.Value);
+        }
+
+        public string UserName { get; private set; }
+
+        public IEnumerable<string> Claims { get; private set; }
+    }
+
     public sealed class LoginViewModel
     {
         [Required]

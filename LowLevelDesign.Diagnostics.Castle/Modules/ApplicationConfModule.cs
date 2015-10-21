@@ -1,10 +1,12 @@
 ﻿using FluentValidation;
+using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
 using Nancy;
 using Nancy.ModelBinding;
+using Nancy.Security;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -15,9 +17,14 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public class ApplicationConfModule : NancyModule
     {
-        public ApplicationConfModule(IAppConfigurationManager appconf, ILogStore logStore, IValidator<Application> appvalidator,
-            IValidator<ApplicationServerConfig> appconfvalidator)
+        public ApplicationConfModule(GlobalConfig globals, IAppConfigurationManager appconf, ILogStore logStore, 
+            IValidator<Application> appvalidator, IValidator<ApplicationServerConfig> appconfvalidator)
         {
+            if (globals.IsAuthenticationEnabled())
+            {
+                this.RequiresAuthentication();
+            }
+
             Post["conf/appname", true] = async (x, ct) => {
                 return await UpdateAppPropertiesAsync(appconf, appvalidator, this.Bind<Application>(), "Name");
             };

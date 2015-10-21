@@ -51,8 +51,8 @@
       <HintPath>..\packages\LowLevelDesign.Diagnostics.Commons.0.3.0.4\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LowLevelDesign.Diagnostics.LogStore.Commons, Version=0.3.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LowLevelDesign.Diagnostics.LogStore.Commons.0.3.6.0\lib\net452\LowLevelDesign.Diagnostics.LogStore.Commons.dll</HintPath>
+    <Reference Include="LowLevelDesign.Diagnostics.LogStore.Commons, Version=0.3.6.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LowLevelDesign.Diagnostics.LogStore.Commons.0.3.6.1\lib\net452\LowLevelDesign.Diagnostics.LogStore.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -90,6 +90,10 @@
     </Reference>
     <Reference Include="Nancy, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nancy.1.3.0\lib\net40\Nancy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nancy.Authentication.Stateless, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Authentication.Stateless.1.3.0\lib\net40\Nancy.Authentication.Stateless.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nancy.Owin, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -165,7 +169,6 @@
     <None Include="Properties\PublishProfiles\Local-Debug.pubxml" />
     <None Include="Properties\PublishProfiles\Local.pubxml" />
     <Content Include="Views\Auth\Users.cshtml" />
-    <Content Include="Views\Auth\Register.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Auth\ChangePassword.cshtml" />
     <Content Include="Views\Shared\ValidationResults.cshtml" />
@@ -199,11 +202,12 @@
     <Compile Include="Models\SharedModels.cs" />
     <Compile Include="Modules\ApplicationConfModule.cs" />
     <Compile Include="Modules\ApplicationGridModule.cs" />
-    <Compile Include="Modules\AuthModule.cs" />
+    <Compile Include="Modules\UserAdminModule.cs" />
     <Compile Include="Modules\CollectModule.cs" />
     <Compile Include="Modules\ApplicationLogModule.cs" />
     <Compile Include="Modules\InfoModule.cs" />
     <Compile Include="Modules\MaintenanceModule.cs" />
+    <Compile Include="Modules\UserAuthModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>

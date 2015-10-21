@@ -296,5 +296,18 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                 return (await conn.QueryAsync<String>("select ConfValue from Globals where ConfKey = @key", new { key })).SingleOrDefault();
             }
         }
+
+        public string GetGlobalSetting(string key)
+        {
+            if (String.IsNullOrEmpty(key)) {
+                throw new ArgumentException("Invalid configuration key - can't be empty.");
+            }
+
+            using (var conn = CreateConnection()) {
+                conn.Open();
+
+                return conn.Query<String>("select ConfValue from Globals where ConfKey = @key", new { key }).SingleOrDefault();
+            }
+        }
     }
 }

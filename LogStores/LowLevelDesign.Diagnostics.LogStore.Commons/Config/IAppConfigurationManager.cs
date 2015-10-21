@@ -63,5 +63,13 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
         /// if the key does not exist.
         /// </summary>
         Task<String> GetGlobalSettingAsync(String key);
+
+        /// <summary>
+        /// Gets value of the global setting synchronously. 
+        /// Returns null if the key does not exist.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        String GetGlobalSetting(String key);
     }
 }

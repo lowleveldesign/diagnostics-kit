@@ -4,6 +4,7 @@ using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
 using Nancy;
+using Nancy.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,13 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
         private readonly static int DefaultCacheTimeInSeconds = AppSettings.DefaultGridCacheTimeInSeconds;
         private MemoryCache cache = MemoryCache.Default;
 
-        public ApplicationGridModule(IAppConfigurationManager appconf, ILogStore logStore)
+        public ApplicationGridModule(GlobalConfig globals, IAppConfigurationManager appconf, ILogStore logStore)
         {
+            if (globals.IsAuthenticationEnabled())
+            {
+                this.RequiresAuthentication();
+            }
+
             Get["/", true] = async (x, ct) => {
                 ApplicationGridModel model = null;
                 if (DefaultCacheTimeInSeconds != 0)

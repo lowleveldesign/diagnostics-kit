@@ -1,13 +1,17 @@
 ﻿using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
 using System;
 using System.Runtime.Caching;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.Castle.Config
 {
     public class GlobalConfig
     {
+        public static readonly String AdminRoleClaim = ClaimTypes.Role + ":admin";
+
         private const String AuthSettingKey = "auth:enabled";
+        private const int ConfigCacheInvalidationInMinutes = 5;
 
         private const String CachePrefix = "conf:";
         private MemoryCache cache = MemoryCache.Default;
@@ -19,14 +23,14 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
             this.confManager = confManager;
         }
 
-        public async Task<bool> IsAuthenticationEnabled()
+        public bool IsAuthenticationEnabled()
         {
             var o = cache.Get(CachePrefix + AuthSettingKey);
             if (o == null) {
                 bool flag;
-                Boolean.TryParse(await confManager.GetGlobalSettingAsync(AuthSettingKey), out flag);
+                Boolean.TryParse(confManager.GetGlobalSetting(AuthSettingKey), out flag);
                 cache.Set(CachePrefix + AuthSettingKey, flag, new CacheItemPolicy {
-                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(5)
+                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(ConfigCacheInvalidationInMinutes)
                 });
                 return flag;
             }

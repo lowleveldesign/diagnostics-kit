@@ -1,10 +1,12 @@
-﻿using LowLevelDesign.Diagnostics.Castle.Models;
+﻿using LowLevelDesign.Diagnostics.Castle.Config;
+using LowLevelDesign.Diagnostics.Castle.Models;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
 using Nancy;
 using Nancy.ModelBinding;
+using Nancy.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,8 +19,13 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
     {
         private const int MaxLogsCount = 30;
 
-        public ApplicationLogModule(ILogStore logStore, IAppConfigurationManager config)
+        public ApplicationLogModule(GlobalConfig globals, ILogStore logStore, IAppConfigurationManager config)
         {
+            if (globals.IsAuthenticationEnabled())
+            {
+                this.RequiresAuthentication();
+            }
+
             Get["/logs/{apppath}/{server?}", true] = async (x, ct) => {
                 var app = await config.FindAppAsync(Application.GetPathFromBase64Key((String)x.apppath));
                 var model = this.Bind<ApplicationLogFilterModel>();

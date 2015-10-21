@@ -1,23 +1,18 @@
 ﻿using FluentValidation;
 using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Castle.Logs;
+using LowLevelDesign.Diagnostics.Castle.Models;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Commons.Validators;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Auth;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Validators;
-using Microsoft.AspNet.Identity;
 using Nancy;
-using Nancy.Owin;
+using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
 using Nancy.Conventions;
 using Nancy.Diagnostics;
 using Nancy.TinyIoc;
 using Serilog;
-using System;
-using System.Configuration;
 
 namespace LowLevelDesign.Diagnostics.Castle
 {
@@ -25,6 +20,16 @@ namespace LowLevelDesign.Diagnostics.Castle
     {
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
+            base.ApplicationStartup(container, pipelines);
+
+            // Authentication
+            var authconf = new StatelessAuthenticationConfiguration(ctx => {
+                var principal = ctx.GetFromOwinContext<ApplicationSignInManager>().AuthenticationManager.User;
+                return principal.Identity.IsAuthenticated ? new AuthenticatedUser(principal) : null;
+            });
+            StatelessAuthentication.Enable(pipelines, authconf);
+
+            // Diagnostics
 #if !DEBUG
             StaticConfiguration.DisableErrorTraces = false;
             DiagnosticsHook.Disable(pipelines);
@@ -65,7 +70,7 @@ namespace LowLevelDesign.Diagnostics.Castle
             // configure request-lifetime objects
         }
 
-        protected override Nancy.Diagnostics.DiagnosticsConfiguration DiagnosticsConfiguration
+        protected override DiagnosticsConfiguration DiagnosticsConfiguration
         {
             get { return new DiagnosticsConfiguration { Password = "n4ncyBoard" }; }
         }

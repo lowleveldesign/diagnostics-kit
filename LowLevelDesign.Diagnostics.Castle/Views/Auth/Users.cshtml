@@ -47,18 +47,31 @@
                 });
         }
 
+        function btnRemoveUser(btn) {
+            currentUserId = $(btn).attr('data-userid');
+            var username = $(btn).attr('data-username');
+            $('#userRemoveModal h4').text('Are you sure you want to remove the \'' +
+                 username + '\' user?');
+            $('#userRemoveModal').modal();
+        }
+
+        function btnResetPassword(btn) {
+            var userId = $(btn).attr('data-userid');
+            var username = $(btn).attr('data-username');
+            $('#changePasswordModal h4').text('Change password for \'' + username + '\'');
+            $('#changePasswordModal .alert').addClass('hidden');
+            $('#changePasswordModal input').val('');
+            $("#changePasswordModal input[name='Id']").val(userId);
+            $('#changePasswordModal').modal();
+        }
+
         /* Users management */
         var currentUserId = null;
 
         $(function () {
             // user removal
             $("button[name='rmuser']").on('click', function () {
-                currentUserId = $(this).attr('data-userid');
-                var username = $(this).attr('data-username');
-                $('#userRemoveModal h4').text('Are you sure you want to remove the \'' +
-                     username + '\' user?');
-                $('#userRemoveModal').modal();
-                return false;
+                btnRemoveUser(this);
             });
             $("#userRemoveModal button[name='rmbtn'").on('click', function () {
                 if (currentUserId == null) {
@@ -78,14 +91,7 @@
             });
             // password reset
             $("button[name='resetpasswd']").on('click', function () {
-                var userId = $(this).attr('data-userid');
-                var username = $(this).attr('data-username');
-                $('#changePasswordModal h4').text('Change password for \'' + username + '\'');
-                $('#changePasswordModal .alert').addClass('hidden');
-                $('#changePasswordModal input').val('');
-                $("#changePasswordModal input[name='Id']").val(userId);
-                $('#changePasswordModal').modal();
-                return false;
+                btnResetPassword(this);
             });
             $('#changePasswordModal form').on('submit', function () {
                 $.post($(this).attr('action'), $(this).serialize(),
@@ -113,6 +119,7 @@
             $("button[name='registeruser'").on('click', function () {
                 $('#registerNewUserModal .alert').addClass('hidden');
                 $('#registerNewUserModal input').val('');
+                $("#registerNewUserModal input[type='checkbox']").val('true');
                 $('#registerNewUserModal input').removeAttr('checked');
                 $('#registerNewUserModal').modal();
                 return false;
@@ -123,9 +130,18 @@
             $('#registerNewUserModal form').on('submit', function () {
                 var form = this;
                 submitAjaxFormFromModal('registerNewUserModal', form, function (data) {
-                    var html = $('#template tbody').html().replace('{userid}', data.result).replace(
-                        '{username}', $('#Login').val());
-                    $('#table tbody').append(html);
+                    var html = $('#template tbody').html().replace(/{userid}/g, data.result).replace(
+                        /{username}/g, $('#Login').val());
+                    var ctrl = $('#users tbody').append(html);
+                    ctrl.find("button[name='rmuser']").on('click', function () {
+                        btnRemoveUser(this);
+                    });
+                    ctrl.find("button[name='resetpasswd']").on('click', function () {
+                        btnResetPassword(this);
+                    });
+                    if ($('#IsAdmin').prop('checked')) {
+                        ctrl.find(".label").removeClass('hidden');
+                    }
                 });
                 return false;
             });
@@ -174,7 +190,8 @@
     </table>
     <table id="template" class="hidden">
         <tbody>
-            <tr id="td{userid}"><td>{username}</td>
+            <tr id="td{userid}">
+                <td>{username} <span name="adminbadge" class="label label-success hidden">Administrator</span></td>
                 <td class="text-right text-nowrap">
                     <button name="resetpasswd" class="btn btn-xs btn-info" data-userid="{userid}" data-username="{username}">
                         Change Password
@@ -276,7 +293,7 @@
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
-                                <input name="IsAdmin" id="IsAdmin" type="checkbox" />
+                                <input name="IsAdmin" id="IsAdmin" type="checkbox" value="true" />
                                 Is Administrator
                             </label>
                         </div>
