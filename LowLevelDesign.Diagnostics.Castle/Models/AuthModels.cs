@@ -1,11 +1,10 @@
 ﻿using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
-using System.Collections;
-using System.Linq;
+using Nancy.Security;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Security.Claims;
-using System;
-using Nancy.Security;
 
 namespace LowLevelDesign.Diagnostics.Castle.Models
 {
@@ -50,11 +49,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
-        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [Required]
-        [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
@@ -66,10 +63,8 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
-        [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
@@ -77,15 +72,13 @@ namespace LowLevelDesign.Diagnostics.Castle.Models
     public sealed class ResetPasswordViewModel
     {
         [Required]
-        [EmailAddress]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         public string OldPassword { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
-        [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }

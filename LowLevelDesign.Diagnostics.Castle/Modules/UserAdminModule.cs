@@ -40,7 +40,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         result = await UserManager.AddClaimAsync(user.Id, new Claim(ClaimTypes.Role, UserWithClaims.AdminRole));
                     }
                     if (result.Succeeded) {
-                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                         return Response.AsJson(new JsonFormValidationResult {
                             IsSuccess = true,
                             Result = user.Id

@@ -60,7 +60,8 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
         }
     }
-    public class UserStoreWithLockoutSimulation : IUserStore<User>, IUserLockoutStore<User, string>, IUserPasswordStore<User>, IUserClaimStore<User>
+    public class UserStoreWithLockoutSimulation : IUserStore<User>, IUserLockoutStore<User, string>, 
+        IUserPasswordStore<User>, IUserClaimStore<User>, IUserTwoFactorStore<User, string>
     {
         private readonly IAppUserManager um;
 
@@ -114,9 +115,14 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
             return um.GetPasswordHashAsync(user);
         }
 
+        public Task<bool> GetTwoFactorEnabledAsync(User user)
+        {
+            return Task.FromResult(false);
+        }
+
         public Task<bool> HasPasswordAsync(User user)
         {
-            throw new NotImplementedException();
+            return um.HasPasswordAsync(user);
         }
 
         public Task<int> IncrementAccessFailedCountAsync(User user)
@@ -147,6 +153,11 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
         public Task SetPasswordHashAsync(User user, string passwordHash)
         {
             return um.SetPasswordHashAsync(user, passwordHash);
+        }
+
+        public Task SetTwoFactorEnabledAsync(User user, bool enabled)
+        {
+            throw new NotImplementedException();
         }
 
         async Task IUserStore<User, string>.CreateAsync(User user)

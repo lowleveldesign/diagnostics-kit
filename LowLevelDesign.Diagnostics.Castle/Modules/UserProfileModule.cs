@@ -4,41 +4,39 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Nancy;
 using Nancy.ModelBinding;
-using Nancy.Security;
 using Nancy.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
-    public class UserProfileModule : NancyModule
+    public class UserAuthModule : NancyModule
     {
-        public UserProfileModule()
+        public UserAuthModule()
         {
-            this.RequiresAuthentication();
-
-            Get["/auth/passwd"] = _ => {
-                return View["Auth/ChangePassword.cshtml", new ResetPasswordViewModel()];
+            Get["/auth/login"] = _ => {
+                return View["Auth/Login.cshtml", new LoginViewModel()];
             };
 
-            Post["/auth/passwd", true] = async (x, ct) => {
-                var model = this.BindAndValidate<ResetPasswordViewModel>();
-                if (!String.Equals(model.Password, model.ConfirmPassword, StringComparison.Ordinal)) {
-                    ModelValidationResult.Errors.Add("", "The password and confirmation password do not match.");
-                }
-                if (this.ModelValidationResult.IsValid) {
-                    var u = await UserManager.FindByNameAsync(Context.CurrentUser.UserName);
-                    var result = await UserManager.ChangePasswordAsync(u.Id, model.OldPassword, model.Password);
-                    if (result == IdentityResult.Success) {
-                        ViewBag.PasswordChanged = true;
-                        return View["Auth/ChangePassword.cshtml", new ResetPasswordViewModel()];
+            Post["/auth/login", true] = async (x, ct) => {
+                var model = this.BindAndValidate<LoginViewModel>();
+                if (this.ModelValidationResult.IsValid)
+                {
+                    var result = await SignInManager.PasswordSignInAsync(model.Login, model.Password, model.RememberMe, shouldLockout: false);
+                    if (result == SignInStatus.Success)
+                    {
+                        return Response.AsRedirect(Request.Query.ReturnUrl != null ? (String)Request.Query.ReturnUrl : "~/");
                     }
                     ModelValidationResult.Errors.Add("", "Invalid login attempt");
                 }
                 ViewBag.ValidationErrors = ModelValidationResult;
-                return View["Auth/ChangePassword.cshtml", model];
+                return View["Auth/Login.cshtml", model];
+            };
+
+            Get["/auth/logout"] = _ => {
+                SignInManager.AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+                return Response.AsRedirect("~/");
             };
         }
         public ApplicationSignInManager SignInManager

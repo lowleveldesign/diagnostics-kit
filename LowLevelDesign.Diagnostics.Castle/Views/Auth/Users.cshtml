@@ -17,6 +17,9 @@
                     return false;
                 }
                 $.post('enable', { 'Enabled': state }, function (data) {
+                    if (state) {
+                        location.reload();
+                    }
                 }).fail(function () {
                     $('#globalAlert').removeClass('hidden');
                 });
