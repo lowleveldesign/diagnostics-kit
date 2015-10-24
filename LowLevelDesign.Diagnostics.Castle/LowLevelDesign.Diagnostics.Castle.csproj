@@ -202,6 +202,7 @@
     <Compile Include="Models\SharedModels.cs" />
     <Compile Include="Modules\ApplicationConfModule.cs" />
     <Compile Include="Modules\ApplicationGridModule.cs" />
+    <Compile Include="Modules\MusketeerModule.cs" />
     <Compile Include="Modules\UserAdminModule.cs" />
     <Compile Include="Modules\CollectModule.cs" />
     <Compile Include="Modules\ApplicationLogModule.cs" />
