@@ -26,7 +26,13 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         continue;
                     }
                     var app = await appconf.FindAppAsync(conf.AppPath);
-                    if (app != null && !app.IsExcluded) {
+                    if (app == null) {
+                        app = new Application {
+                            IsExcluded = true,
+                            Path = conf.AppPath
+                        }; 
+                        await appconf.AddOrUpdateAppAsync(app);
+                    } else if (app != null && !app.IsExcluded) {
                         apppaths.Add(conf.AppPath);
                     }
                     await appconf.AddOrUpdateAppServerConfigAsync(conf);
