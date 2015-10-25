@@ -30,7 +30,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
         /// Sends a log record to the diagnostics castle.
         /// </summary>
         /// <param name="logrec"></param>
-        public void SendLogRecord(LogRecord logrec) {
+        public virtual void SendLogRecord(LogRecord logrec) {
             MakePostRequest(String.Format("{0}/collect", diagnosticsAddress),
                 JsonConvert.SerializeObject(logrec, Formatting.None, JsonSettings));
         }
@@ -39,7 +39,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
         /// Sends a batch of log records to the diagnostics castle.
         /// </summary>
         /// <param name="logrecs"></param>
-        public void SendLogRecords(IEnumerable<LogRecord> logrecs) {
+        public virtual void SendLogRecords(IEnumerable<LogRecord> logrecs) {
             MakePostRequest(String.Format("{0}/collectall", diagnosticsAddress),
                 JsonConvert.SerializeObject(logrecs, Formatting.None, JsonSettings));
         }
@@ -63,7 +63,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
             }
         }
 
-        public void Dispose() {
+        public virtual void Dispose() {
         }
     }
 }
