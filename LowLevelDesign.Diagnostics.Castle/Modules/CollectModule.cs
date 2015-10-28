@@ -27,7 +27,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     return "VALIDATION ERROR";
                 }
 
-                // add new application to the configuration as excluded (it could be later renamed or unexcluded)
                 var app = await config.FindAppAsync(logrec.ApplicationPath);
                 if (app == null) {
                     app = new Application {
@@ -37,7 +36,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     await config.AddOrUpdateAppAsync(app);
                 }
 
-                // we should collect logs only for applications which are not excluded
                 if (!app.IsExcluded) {
                     await logstore.AddLogRecord(logrec);
                 } else {

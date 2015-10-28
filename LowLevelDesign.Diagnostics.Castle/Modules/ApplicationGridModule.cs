@@ -33,56 +33,54 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
                 if (model == null)
                 {
-                    var appstats = await logStore.GetApplicationStatuses(DateTime.UtcNow.AddMinutes(-15));
-                    var allapps = await appconf.GetAppsAsync();
+                    var applicationStatuses = await logStore.GetApplicationStatuses(DateTime.UtcNow.AddMinutes(-15));
+                    var allApplications = await appconf.GetAppsAsync();
 
-                    var servers = new SortedSet<String>();
-                    var apps = new Dictionary<String, Application>();
-                    var extendedAppStats = new SortedDictionary<String, IDictionary<String, LastApplicationStatus>>();
-                    foreach (var appstat in appstats)
+                    var activeServers = new SortedSet<String>();
+                    var activeApplications = new Dictionary<String, Application>();
+                    var activeApplicationStatuses = new SortedDictionary<String, IDictionary<String, LastApplicationStatus>>();
+                    foreach (var appStatus in applicationStatuses)
                     {
-                        servers.Add(appstat.Server);
+                        activeServers.Add(appStatus.Server);
 
-                        var app = allapps.FirstOrDefault(a => String.Equals(a.Path, appstat.ApplicationPath,
+                        var app = allApplications.FirstOrDefault(a => String.Equals(a.Path, appStatus.ApplicationPath,
                             StringComparison.InvariantCultureIgnoreCase));
                         if (app != null && !app.IsExcluded)
                         {
-                            String key = String.Format("{0}:{1}", app.Name, app.Path);
-                            if (!apps.ContainsKey(key))
+                            if (!activeApplications.ContainsKey(app.Path))
                             {
-                                apps.Add(key, app);
+                                activeApplications.Add(app.Path, app);
                             }
-                            IDictionary<String, LastApplicationStatus> srvstat;
-                            if (!extendedAppStats.TryGetValue(key, out srvstat))
+                            IDictionary<String, LastApplicationStatus> applicationStatusPerServer;
+                            if (!activeApplicationStatuses.TryGetValue(app.Path, out applicationStatusPerServer))
                             {
-                                srvstat = new Dictionary<String, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase);
-                                extendedAppStats.Add(key, srvstat);
+                                applicationStatusPerServer = new Dictionary<String, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase);
+                                activeApplicationStatuses.Add(app.Path, applicationStatusPerServer);
                             }
-                            srvstat.Add(appstat.Server, appstat);
+                            applicationStatusPerServer.Add(appStatus.Server, appStatus);
                         }
                     }
                     // for the rest of the applications
-                    foreach (var app in allapps)
+                    foreach (var app in allApplications)
                     {
                         if (!app.IsExcluded)
                         {
-                            String key = String.Format("{0}:{1}", app.Name, app.Path);
-                            if (!apps.ContainsKey(key))
+                            if (!activeApplications.ContainsKey(app.Path))
                             {
-                                apps.Add(key, app);
+                                activeApplications.Add(app.Path, app);
                             }
-                            if (!extendedAppStats.ContainsKey(key))
+                            if (!activeApplicationStatuses.ContainsKey(app.Path))
                             {
-                                extendedAppStats.Add(key, new Dictionary<String, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase));
+                                activeApplicationStatuses.Add(app.Path, new Dictionary<String, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase));
                             }
                         }
                     }
 
                     model = new ApplicationGridModel {
                         LastUpdateTime = DateTime.Now,
-                        Servers = servers.ToArray(),
-                        Applications = apps,
-                        ApplicationStatuses = extendedAppStats
+                        Servers = activeServers.ToArray(),
+                        Applications = activeApplications,
+                        ApplicationStatuses = activeApplicationStatuses
                     };
                     if (DefaultCacheTimeInSeconds != 0)
                     {

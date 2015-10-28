@@ -192,6 +192,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstraper.cs" />
+    <Compile Include="Caching\AppConfigurationManagerWrapper.cs" />
     <Compile Include="Config\AppSettings.cs" />
     <Compile Include="Config\IdentityConfig.cs" />
     <Compile Include="Config\GlobalConfig.cs" />
