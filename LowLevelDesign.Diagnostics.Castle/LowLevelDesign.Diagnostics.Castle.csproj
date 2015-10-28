@@ -172,6 +172,7 @@
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Auth\ChangePassword.cshtml" />
     <Content Include="Views\Shared\ValidationResults.cshtml" />
+    <Content Include="Views\About.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -196,10 +197,11 @@
     <Compile Include="Config\GlobalConfig.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Logs\LogMaintenance.cs" />
-    <Compile Include="Models\AuthModels.cs" />
-    <Compile Include="Models\ApplicationGridModels.cs" />
-    <Compile Include="Models\ApplicationLogModels.cs" />
-    <Compile Include="Models\SharedModels.cs" />
+    <Compile Include="Models\Auth.cs" />
+    <Compile Include="Models\ApplicationGrid.cs" />
+    <Compile Include="Models\ApplicationLogs.cs" />
+    <Compile Include="Models\DiagnosticsKitInformation.cs" />
+    <Compile Include="Models\Shared.cs" />
     <Compile Include="Modules\ApplicationConfModule.cs" />
     <Compile Include="Modules\ApplicationGridModule.cs" />
     <Compile Include="Modules\MusketeerModule.cs" />

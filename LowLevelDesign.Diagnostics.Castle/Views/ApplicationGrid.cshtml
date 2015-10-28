@@ -126,7 +126,7 @@
                                 <div class="shorten">
                                 <a href="~/logs/@app.GetBase64EncodedKey()/@srv" title="@srvstat.LastErrorType">
                                     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                                    <small>@srvstat.LastErrorTypeName</small>
+                                    <small>@(srvstat.LastErrorTypeName ?? "Unknown")</small>
                                 </a></div>
                             </td>
                         }
