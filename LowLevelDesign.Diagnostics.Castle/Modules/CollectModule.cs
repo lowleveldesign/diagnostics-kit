@@ -18,11 +18,11 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        public CollectModule(IAppConfigurationManager config, IValidator<LogRecord> logrecValidator, ILogStore logstore)
+        public CollectModule(IAppConfigurationManager config, IValidator<LogRecord> logRecordValidator, ILogStore logstore)
         {
             Post["/collect", true] = async (x, ct) => {
                 var logrec = this.Bind<LogRecord>(new BindingConfig { BodyOnly = true });
-                var validationResult = logrecValidator.Validate(logrec);
+                var validationResult = logRecordValidator.Validate(logrec);
                 if (!validationResult.IsValid) {
                     return "VALIDATION ERROR";
                 }
@@ -38,10 +38,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
                 if (!app.IsExcluded) {
                     await logstore.AddLogRecord(logrec);
-                } else {
-                    Log.Debug("Log record for the application '{0}' was not stored as the application is excluded.");
                 }
-
                 return "OK";
             };
             Post["/collectall", true] = async (x, ct) => {
@@ -49,7 +46,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
                 var logsToSave = new List<LogRecord>(logrecs.Length);
                 foreach (var logrec in logrecs) {
-                    var validationResult = logrecValidator.Validate(logrec);
+                    var validationResult = logRecordValidator.Validate(logrec);
                     if (validationResult.IsValid) {
                         // add new application to the configuration as excluded (it could be later renamed or unexcluded)
                         var app = await config.FindAppAsync(logrec.ApplicationPath);

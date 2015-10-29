@@ -1,17 +1,19 @@
-﻿using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
+﻿using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using LowLevelDesign.Diagnostics.Commons.Models;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
-using System.Threading.Tasks;
+using System.Configuration;
 using System.Runtime.Caching;
+using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.Castle.Caching
 {
     public class AppConfigurationManagerWrapper : IAppConfigurationManager
     {
+        private readonly static TimeSpan TimeToKeepApplicationInCache = TimeSpan.FromSeconds(
+            Int32.Parse(ConfigurationManager.AppSettings["diag:appcacheInSeconds"] ?? "120"));
+        private readonly static bool IsCachingEnabled = TimeToKeepApplicationInCache > TimeSpan.Zero;
         private const string CachePrefixForApplications = "app:";
 
         private readonly IAppConfigurationManager wrappedInstance;
@@ -24,7 +26,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Caching
 
         public Task AddOrUpdateAppAsync(Application app)
         {
-            cache.Remove(CachePrefixForApplications + app.Path);
+            if (IsCachingEnabled) {
+                cache.Remove(CachePrefixForApplications + app.Path);
+            }
             return wrappedInstance.AddOrUpdateAppAsync(app);
         }
 
@@ -35,37 +39,47 @@ namespace LowLevelDesign.Diagnostics.Castle.Caching
 
         public async Task<Application> FindAppAsync(string path)
         {
-            throw new NotImplementedException();
+            var cacheKey = CachePrefixForApplications + path;
+            if (IsCachingEnabled && cache.Contains(cacheKey)) {
+                return (Application)cache[cacheKey];
+            }
+            var app = await wrappedInstance.FindAppAsync(path);
+            if (IsCachingEnabled && app != null) {
+                cache.Add(cacheKey, app, new CacheItemPolicy {
+                    AbsoluteExpiration = DateTimeOffset.UtcNow.Add(TimeToKeepApplicationInCache)
+                });
+            }
+            return app;
         }
 
         public Task<IEnumerable<ApplicationServerConfig>> GetAppConfigsAsync(string[] appPaths, string server = null)
         {
-            throw new NotImplementedException();
+            return wrappedInstance.GetAppConfigsAsync(appPaths, server);
         }
 
         public Task<IEnumerable<Application>> GetAppsAsync()
         {
-            throw new NotImplementedException();
+            return wrappedInstance.GetAppsAsync();
         }
 
         public string GetGlobalSetting(string key)
         {
-            throw new NotImplementedException();
+            return wrappedInstance.GetGlobalSetting(key);
         }
 
         public Task<string> GetGlobalSettingAsync(string key)
         {
-            throw new NotImplementedException();
+            return wrappedInstance.GetGlobalSettingAsync(key);
         }
 
         public Task SetGlobalSettingAsync(string key, string value)
         {
-            throw new NotImplementedException();
+            return wrappedInstance.SetGlobalSettingAsync(key, value);
         }
 
         public Task UpdateAppPropertiesAsync(Application app, string[] propertiesToUpdate)
         {
-            throw new NotImplementedException();
+            return wrappedInstance.UpdateAppPropertiesAsync(app, propertiesToUpdate);
         }
     }
 }

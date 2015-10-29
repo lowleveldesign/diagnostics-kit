@@ -62,14 +62,16 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
 
         private static Type FindSingleTypeInLowLevelDesignAssemblies(Type typeToImplement, String confkey)
         {
+            var executingAssembly = Assembly.GetExecutingAssembly();
             var implementers = new List<Type>();
             var bindir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
             foreach (var asmpath in Directory.GetFiles(bindir, "LowLevelDesign.*.dll")) {
                 try {
                     var asm = Assembly.LoadFrom(asmpath);
-                    implementers.AddRange(asm.GetExportedTypes().Where(t => t.GetInterfaces().Contains(typeToImplement)));
+                    if (!executingAssembly.Equals(asm)) {
+                        implementers.AddRange(asm.GetExportedTypes().Where(t => t.GetInterfaces().Contains(typeToImplement)));
+                    }
                 } catch (Exception ex) {
-                    // just swallow and check the next one
                     Log.Debug(ex, "Failure while loading assembly from '{0}'", asmpath);
                 }
                 if (implementers.Count > 1) {

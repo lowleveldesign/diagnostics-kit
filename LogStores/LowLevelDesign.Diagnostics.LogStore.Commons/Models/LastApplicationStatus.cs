@@ -4,21 +4,23 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Models
 {
     public class LastApplicationStatus
     {
-        public String ApplicationPath { get; set; }
+        public string ApplicationPath { get; set; }
 
-        public String Server { get; set; }
+        public string Server { get; set; }
 
         public float? Cpu { get; set; }
 
         public float? Memory { get; set; }
 
-        public String LastErrorType { get; set; }
+        public DateTime? LastPerformanceDataUpdateTimeUtc { get; set; }
+
+        public string LastErrorType { get; set; }
 
         public DateTime? LastErrorTimeUtc { get; set; }
 
         public DateTime? LastUpdateTimeUtc { get; set; }
 
-        public String LastErrorTypeName
+        public string LastErrorTypeName
         {
             get
             {

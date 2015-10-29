@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
+using LowLevelDesign.Diagnostics.Castle.Caching;
 using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Castle.Logs;
 using LowLevelDesign.Diagnostics.Castle.Models;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Commons.Validators;
+using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Validators;
 using Nancy;
@@ -58,7 +60,7 @@ namespace LowLevelDesign.Diagnostics.Castle
             container.Register<IValidator<ApplicationServerConfig>, ApplicationServerConfigValidator>();
 
             /* CONFIGURATION */
-            container.Register(AppSettings.GetAppConfigurationManager());
+            container.Register<IAppConfigurationManager>(new AppConfigurationManagerWrapper(AppSettings.GetAppConfigurationManager()));
             container.Register<GlobalConfig>();
 
             /* SECURITY */

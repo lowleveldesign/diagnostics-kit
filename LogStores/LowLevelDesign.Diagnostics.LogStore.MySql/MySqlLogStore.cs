@@ -51,8 +51,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             LastApplicationStatus appstat = null;
             var apphash = GetApplicationHash(logrec.ApplicationPath);
 
-            // we need to make sure that the table for logs exists
-            Int64 logrecId = await logTable.HandleAppLog(conn, tran, AppLogTablePrefix + apphash, logrec);
+            await logTable.SaveLogRecord(conn, tran, AppLogTablePrefix + apphash, logrec);
+
             if (logrec.LogLevel >= LogRecord.ELogLevel.Error) {
                 appstat = new LastApplicationStatus {
                     ApplicationPath = logrec.ApplicationPath,

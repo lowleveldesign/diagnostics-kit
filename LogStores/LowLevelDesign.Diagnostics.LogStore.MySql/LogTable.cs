@@ -45,7 +45,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             this.currentUtcDateRetriever = currentUtcDateRetriever;
         }
 
-        public async Task<UInt32> HandleAppLog(MySqlConnection conn, MySqlTransaction tran, String tableName, LogRecord logrec)
+        public void CreateLogTableIfNotExists(MySqlConnection conn, MySqlTransaction tran, String tableName)
         {
             if (!availableTables.Contains(tableName)) {
                 lock (lck) {
@@ -66,6 +66,12 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                     }
                 }
             }
+        }
+
+        public async Task<UInt32> SaveLogRecord(MySqlConnection conn, MySqlTransaction tran, String tableName, LogRecord logrec)
+        {
+            CreateLogTableIfNotExists(conn, tran, tableName);
+
             // we need to make sure that the additional fields collection is initialized
             if (logrec.AdditionalFields == null) {
                 logrec.AdditionalFields = new Dictionary<String, Object>();

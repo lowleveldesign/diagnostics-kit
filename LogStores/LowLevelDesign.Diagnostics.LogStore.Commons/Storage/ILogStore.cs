@@ -11,21 +11,33 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Storage
         /// <summary>
         /// Adds one log record to the store.
         /// </summary>
-        /// <param name="logrec"></param>
-        Task AddLogRecord(LogRecord logrec);
+        Task AddLogRecordAsync(LogRecord logrec);
 
         /// <summary>
         /// Adds a batch of records to the store.
         /// </summary>
-        /// <param name="logrecs"></param>
-        Task AddLogRecords(IEnumerable<LogRecord> logrecs);
+        Task AddLogRecordsAsync(IEnumerable<LogRecord> logrecs);
+
+        /// <summary>
+        /// Updates application status - based on what was received 
+        /// in the log record.
+        /// 
+        /// REMARK: Only fields which do not contain nulls should be updated
+        /// </summary>
+        Task UpdateApplicationStatusAsync(LastApplicationStatus status);
+
+        /// <summary>
+        /// Updates application statuses - based on what was received
+        /// in the log records.
+        /// 
+        /// REMARK: Only fields which do not contain nulls should be updated
+        /// </summary>
+        Task UpdateApplicationStatusesAsync(IEnumerable<LastApplicationStatus> statuses);
 
         /// <summary>
         /// Retrieves logs from the store based on the passed search criteria.
         /// </summary>
-        /// <param name="searchCriteria"></param>
-        /// <returns></returns>
-        Task<LogSearchResults> FilterLogs(LogSearchCriteria searchCriteria);
+        Task<LogSearchResults> FilterLogsAsync(LogSearchCriteria searchCriteria);
 
         /// <summary>
         /// Gets application statuses - this method is used by the grid
@@ -34,7 +46,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Storage
         /// </summary>
         /// <param name="lastDateTimeUtcToQuery">Last date to filter the logs</param>
         /// <returns></returns>
-        Task<IEnumerable<LastApplicationStatus>> GetApplicationStatuses(DateTime lastDateTimeUtcToQuery);
+        Task<IEnumerable<LastApplicationStatus>> GetApplicationStatusesAsync(DateTime lastDateTimeUtcToQuery);
 
         /// <summary>
         /// Performs storage maintenance - removes old logs, compacts the 
@@ -43,6 +55,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Storage
         /// are identified by their paths. Additionaly where timespan for an application
         /// is equal to zero, its logs won't be deleted.
         /// </summary>
-        Task Maintain(TimeSpan logsKeepTime, IDictionary<String, TimeSpan> logsKeepTimePerApplication = null);
+        Task MaintainAsync(TimeSpan logsKeepTime, IDictionary<String, TimeSpan> logsKeepTimePerApplication = null);
     }
 }
