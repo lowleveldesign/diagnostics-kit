@@ -1,6 +1,6 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ApplicationGridModel>
 
-@section style {
+    @section style {
     <style type="text/css">
         .MusketeerInfo {
             display: none;
@@ -16,9 +16,9 @@
             overflow: hidden;
         }
     </style>
-}
+    }
 
-@section scripts {
+    @section scripts {
     <script type="text/javascript">
         $(function () {
             $('a.appname').on('click', function () {
@@ -68,29 +68,29 @@
             });
         });
     </script>
-}
+    }
 
-<div class="panel panel-primary">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Applications Grid <small>(last update at: @Model.LastUpdateTime.ToString("HH:mm:ss"))</small></div>
-    <div class="panel-body">
-        @if (Model.ApplicationStatuses.Count == 0) {
+    <div class="panel panel-primary">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Applications Grid <small>(last update at: @Model.LastUpdateTime.ToString("HH:mm:ss"))</small></div>
+        <div class="panel-body">
+            @if (Model.ApplicationStatuses.Count == 0) {
             <span>
                 No logs found - maybe there are some <a href="~/apps">waiting excluded applications</a> or you need to install one of the
                 <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki#2-logs-collection" target="_blank">harvesters</a> in your applications.
             </span>
-        }
-        else
-        {
+            }
+            else
+            {
             <span>
                 You may change application names, maintenance configuration or add new applications to the grid on
                 <strong><a href="~/apps">the application configuration</a></strong> page.
             </span>
-        }
-    </div>
+            }
+        </div>
 
-    @if (Model.ApplicationStatuses.Count > 0)
-    {
+        @if (Model.ApplicationStatuses.Count > 0)
+        {
         <table class="table table-fixed">
             <thead>
                 <tr>
@@ -98,7 +98,7 @@
                     <th>All servers</th>
                     @foreach (var srv in Model.Servers)
                     {
-                        <th>@srv</th>
+                    <th>@srv</th>
                     }
                 </tr>
             </thead>
@@ -119,69 +119,65 @@
                             if (appstat.Value.ContainsKey(srv))
                             {
                                 var srvstat = appstat.Value[srv];
-                                @* we will lighten the box in red for 2 min. after an error has occured *@
-                        if (srvstat.LastErrorTimeUtc.HasValue && DateTime.UtcNow.Subtract(srvstat.LastErrorTimeUtc.Value) < TimeSpan.FromMinutes(2))
-                        {
-                            <td class="danger">
-                                <div class="shorten">
-                                <a href="~/logs/@app.GetBase64EncodedKey()/@srv" title="@srvstat.LastErrorType">
-                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                                    <small>@(srvstat.LastErrorTypeName ?? "Unknown")</small>
-                                </a></div>
-                            </td>
-                        }
-                        else if (srvstat.LastUpdateTimeUtc.HasValue && DateTime.UtcNow.Subtract(srvstat.LastUpdateTimeUtc.Value) < TimeSpan.FromMinutes(8))
-                        {
-                            <td class="success">
-                                <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
-                                    <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-                                    @if (srvstat.Cpu.HasValue)
-                                    { <small>CPU: @srvstat.Cpu.Value.ToString("0.##")%</small>}
-                                    @if (srvstat.Memory.HasValue)
-                                    { <small>Mem: @((srvstat.Memory.Value / 1048576f).ToString("#,0."))MB</small>}
-                                </a>
-                            </td>
-                        }
-                        else
-                        {
-                            <td>
-                                <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
-                                    <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-                                    <small>Show logs</small>
-                                </a>
-                            </td>
+                                if (srvstat.ContainsErrorInformation())
+                                {
+                                    <td class="danger">
+                                        <div class="shorten">
+                                            <a href="~/logs/@app.GetBase64EncodedKey()/@srv" title="@srvstat.LastErrorType">
+                                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                                <small>@(srvstat.LastErrorTypeName ?? "Unknown")</small>
+                                            </a>
+                                        </div>
+                                    </td>
+                                }
+                                else if (srvstat.ContainsPerformanceData())
+                                {
+                                    <td class="success">
+                                        <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
+                                            <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+                                            <small>CPU: @srvstat.Cpu.ToString("0.##")%</small>
+                                            <small>Mem: @((srvstat.Memory / 1048576f).ToString("#,0."))MB</small>
+                                        </a>
+                                    </td>
+                                } else {
+                                    <td class="@(DateTime.UtcNow.Subtract(srvstat.LastUpdateTimeUtc) < TimeSpan.FromMinutes(2) ? "success" : "")">
+                                        <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
+                                            <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+                                            <small>Show logs</small>
+                                        </a>
+                                    </td>
+                                }
                             }
-                        }
-                        else
-                        {
-                            <td></td>
+                            else
+                            {
+                                <td></td>
                             }
                         }
                     </tr>
                 }
             </tbody>
         </table>
-    }
-</div>
+        }
+    </div>
 
-<div id="modelDialog" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"></h4>
-            </div>
-            <div class="modal-body">
-                <div class="MusketeerInfo">
-                    <div class="alert alert-warning" role="alert"><strong>I'm sorry, but no configuration data is available for this application.</strong></div>
-                    Configuration data is generated by the
-                    <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki/musketeer" target="_blank">Musketeer</a> application,
-                    which must be installed on the web application servers.
+    <div id="modelDialog" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"></h4>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <div class="modal-body">
+                    <div class="MusketeerInfo">
+                        <div class="alert alert-warning" role="alert"><strong>I'm sorry, but no configuration data is available for this application.</strong></div>
+                        Configuration data is generated by the
+                        <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki/musketeer" target="_blank">Musketeer</a> application,
+                        which must be installed on the web application servers.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>

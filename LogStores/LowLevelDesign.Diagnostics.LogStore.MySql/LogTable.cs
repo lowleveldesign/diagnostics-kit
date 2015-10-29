@@ -15,7 +15,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
     internal class LogTable
     {
         private static readonly Object lck = new Object();
-        private static readonly ISet<String> availableTables = new HashSet<String>();
+        private static readonly ISet<string> availableTables = new HashSet<string>();
 
         private readonly Func<DateTime> currentUtcDateRetriever;
 
@@ -24,18 +24,19 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             // query the mysql database and retrieve all the log tables
             using (var conn = new MySqlConnection(MySqlLogStoreConfiguration.ConnectionString)) {
                 conn.Open();
-                availableTables = new HashSet<String>(conn.Query<String>("select table_name from information_schema.tables where table_schema = @Database", conn),
+                availableTables = new HashSet<string>(conn.Query<string>("select table_name from information_schema.tables where table_schema = @Database", conn),
                                                         StringComparer.OrdinalIgnoreCase);
 
                 if (!availableTables.Contains("appstat")) {
                     // we need to create a table which will store application statuses for the grid
-                    conn.Execute("create table if not exists appstat (ApplicationHash char(32), Server varchar(200) not null, ApplicationPath varchar(2000) not null, Cpu float, Memory float null, " +
-                        "LastErrorType varchar(100), LastErrorTimeUtc datetime, LastUpdateTimeUtc datetime null, primary key (ApplicationHash, Server))");
+                    conn.Execute("create table if not exists appstat (ApplicationHash char(32), Server varchar(200) not null, ApplicationPath varchar(2000) not null, " +
+                        "Cpu float, Memory float null, LastPerformanceDataUpdateTimeUtc datetime, LastErrorType varchar(100), LastErrorTimeUtc datetime," +
+                        "LastUpdateTimeUtc datetime not null, primary key (ApplicationHash, Server))");
                 }
             }
         }
 
-        public static bool IsLogTableAvailable(String tableName)
+        public static bool IsLogTableAvailable(string tableName)
         {
             return availableTables.Contains(tableName);
         }
@@ -45,7 +46,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             this.currentUtcDateRetriever = currentUtcDateRetriever;
         }
 
-        public void CreateLogTableIfNotExists(MySqlConnection conn, MySqlTransaction tran, String tableName)
+        public void CreateLogTableIfNotExists(MySqlConnection conn, MySqlTransaction tran, string tableName)
         {
             if (!availableTables.Contains(tableName)) {
                 lock (lck) {
@@ -59,7 +60,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                             ",Url varchar(2000) null ,Referer varchar(2000) null ,ClientIP varchar(50) character set ascii null ,RequestData text null" +
                             ",ResponseData text null,ServiceName varchar(100) null ,ServiceDisplayName varchar(200) null, PerfData varchar(3000) null" +
                             ",PRIMARY KEY (TimeUtc, Server, Id), KEY(Id)) COLLATE='utf8_general_ci' PARTITION BY RANGE COLUMNS(TimeUtc)" + 
-                            String.Format("({0},{1})",
+                            string.Format("({0},{1})",
                             GetPartitionDefinition(currentUtcDate), GetPartitionDefinition(currentUtcDate.AddDays(1))),
                             transaction: tran);
                         availableTables.Add(tableName);
@@ -68,13 +69,13 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             }
         }
 
-        public async Task<UInt32> SaveLogRecord(MySqlConnection conn, MySqlTransaction tran, String tableName, LogRecord logrec)
+        public async Task<UInt32> SaveLogRecord(MySqlConnection conn, MySqlTransaction tran, string tableName, LogRecord logrec)
         {
             CreateLogTableIfNotExists(conn, tran, tableName);
 
             // we need to make sure that the additional fields collection is initialized
             if (logrec.AdditionalFields == null) {
-                logrec.AdditionalFields = new Dictionary<String, Object>();
+                logrec.AdditionalFields = new Dictionary<string, Object>();
             }
 
             // save log in the table
@@ -98,56 +99,41 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                         ProcessId = logrec.ProcessId,
                         ThreadId = logrec.ThreadId,
                         Identity = logrec.Identity,
-                        Host = logrec.AdditionalFields.TryGetValue("Host", out v) ? ((String)v).ShortenIfNecessary(100) : null,
-                        LoggedUser = logrec.AdditionalFields.TryGetValue("LoggedUser", out v) ? ((String)v).ShortenIfNecessary(200) : null,
-                        HttpStatusCode = logrec.AdditionalFields.TryGetValue("HttpStatusCode", out v) ? ((String)v).ShortenIfNecessary(15) : null,
-                        Url = logrec.AdditionalFields.TryGetValue("Url", out v) ? ((String)v).ShortenIfNecessary(2000) : null,
-                        Referer = logrec.AdditionalFields.TryGetValue("Referer", out v) ? ((String)v).ShortenIfNecessary(2000) : null,
-                        ClientIP = logrec.AdditionalFields.TryGetValue("ClientIP", out v) ? ((String)v).ShortenIfNecessary(50) : null,
-                        RequestData = logrec.AdditionalFields.TryGetValue("RequestData", out v) ? ((String)v).ShortenIfNecessary(2000) : null,
-                        ResponseData = logrec.AdditionalFields.TryGetValue("ResponseData", out v) ? ((String)v).ShortenIfNecessary(2000) : null,
-                        ServiceName = logrec.AdditionalFields.TryGetValue("ServiceName", out v) ? ((String)v).ShortenIfNecessary(100) : null,
-                        ServiceDisplayName = logrec.AdditionalFields.TryGetValue("ServiceDisplayName", out v) ? ((String)v).ShortenIfNecessary(200) : null,
+                        Host = logrec.AdditionalFields.TryGetValue("Host", out v) ? ((string)v).ShortenIfNecessary(100) : null,
+                        LoggedUser = logrec.AdditionalFields.TryGetValue("LoggedUser", out v) ? ((string)v).ShortenIfNecessary(200) : null,
+                        HttpStatusCode = logrec.AdditionalFields.TryGetValue("HttpStatusCode", out v) ? ((string)v).ShortenIfNecessary(15) : null,
+                        Url = logrec.AdditionalFields.TryGetValue("Url", out v) ? ((string)v).ShortenIfNecessary(2000) : null,
+                        Referer = logrec.AdditionalFields.TryGetValue("Referer", out v) ? ((string)v).ShortenIfNecessary(2000) : null,
+                        ClientIP = logrec.AdditionalFields.TryGetValue("ClientIP", out v) ? ((string)v).ShortenIfNecessary(50) : null,
+                        RequestData = logrec.AdditionalFields.TryGetValue("RequestData", out v) ? ((string)v).ShortenIfNecessary(2000) : null,
+                        ResponseData = logrec.AdditionalFields.TryGetValue("ResponseData", out v) ? ((string)v).ShortenIfNecessary(2000) : null,
+                        ServiceName = logrec.AdditionalFields.TryGetValue("ServiceName", out v) ? ((string)v).ShortenIfNecessary(100) : null,
+                        ServiceDisplayName = logrec.AdditionalFields.TryGetValue("ServiceDisplayName", out v) ? ((string)v).ShortenIfNecessary(200) : null,
                         PerfData = logrec.PerformanceData != null && logrec.PerformanceData.Count > 0 ? JsonConvert.SerializeObject(
                             logrec.PerformanceData).ShortenIfNecessary(3000) : null
                     }, tran)).Single();
         }
 
-        public async Task UpdateApplicationStatus(MySqlConnection conn, MySqlTransaction tran, String apphash, LastApplicationStatus status)
+        public async Task UpdateApplicationStatus(MySqlConnection conn, MySqlTransaction tran, string apphash, LastApplicationStatus status)
         {
-            var sql = new StringBuilder("update appstat set ApplicationPath = ApplicationPath");
-            if (status.LastUpdateTimeUtc.HasValue) {
-                sql.Append(",LastUpdateTimeUtc = @LastUpdateTimeUtc, Cpu = @Cpu, Memory = @Memory");
+            var columnsToUpdate = new List<string>() { "ApplicationPath", "Server", "LastUpdateTimeUtc" };
+            if (status.ContainsPerformanceData()) {
+                columnsToUpdate.AddRange(new [] { "Cpu", "Memory", "LastPerformanceDataUpdateTimeUtc" });
             }
-            if (status.LastErrorTimeUtc.HasValue) {
-                sql.Append(",LastErrorTimeUtc = @LastErrorTimeUtc, LastErrorType = @LastErrorType");
+            if (status.ContainsErrorInformation()) {
+                columnsToUpdate.AddRange(new[] { "LastErrorTimeUtc", "LastErrorType" });
             }
-            sql.Append(" where ApplicationHash = @ApplicationHash and Server = @Server");
-
-            var model = new {
-                ApplicationHash = apphash,
-                status.ApplicationPath,
-                status.Server,
-                status.Cpu,
-                status.Memory,
-                status.LastUpdateTimeUtc,
-                status.LastErrorType,
-                status.LastErrorTimeUtc
-            };
-            if (await conn.ExecuteAsync(sql.ToString(), model, tran) == 0) {
-                // we need to insert a record
-                await conn.ExecuteAsync("insert ignore into appstat (ApplicationHash, ApplicationPath, Server, Cpu, Memory, LastUpdateTimeUtc, LastErrorType, LastErrorTimeUtc)" +
-                    " values (@ApplicationHash, @ApplicationPath, @Server, @Cpu, @Memory, @LastUpdateTimeUtc, @LastErrorType, @LastErrorTimeUtc)", model, tran);
-            }
+            await conn.ExecuteAsync(string.Format("replace into appstat ({0}) values (@{1})", string.Join(",", columnsToUpdate),
+                string.Join(",@", columnsToUpdate)), status, tran);
         }
 
-        private static String GetPartitionDefinition(DateTime dt)
+        private static string GetPartitionDefinition(DateTime dt)
         {
-            return String.Format("PARTITION {0} VALUES LESS THAN ('{1:yyyy-MM-dd HH:mm}')", Partition.ForDay(dt).Name, dt.Date.AddDays(1));
+            return string.Format("PARTITION {0} VALUES LESS THAN ('{1:yyyy-MM-dd HH:mm}')", Partition.ForDay(dt).Name, dt.Date.AddDays(1));
         }
 
 
-        public async Task ManageTablePartitions(MySqlConnection conn, String tableName, TimeSpan keepTime, IEnumerable<Partition> partitions)
+        public async Task ManageTablePartitions(MySqlConnection conn, string tableName, TimeSpan keepTime, IEnumerable<Partition> partitions)
         {
             DateTime today = currentUtcDateRetriever(), tomorrow = today.AddDays(1);
             // if zero timespan is passed it means that no partition should be removed
@@ -156,7 +142,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             var futurePartition = Partition.ForDay(tomorrow);
 
             bool isCurrentPartitionCreated = false, isFuturePartitionCreated = false;
-            var partitionsToDrop = new List<String>();
+            var partitionsToDrop = new List<string>();
             foreach (var partition in partitions) {
                 if (oldestPartition.CompareTo(partition) > 0) {
                     partitionsToDrop.Add(partition.Name);
@@ -168,16 +154,16 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             }
 
             if (!isCurrentPartitionCreated) {
-                await conn.ExecuteAsync(String.Format("alter table {0} add partition (partition {1} values less than ('{2:yyyy-MM-dd HH:mm}'))",
+                await conn.ExecuteAsync(string.Format("alter table {0} add partition (partition {1} values less than ('{2:yyyy-MM-dd HH:mm}'))",
                     tableName, currentPartition.Name, today.AddDays(1)));
             }
             if (!isFuturePartitionCreated) {
-                await conn.ExecuteAsync(String.Format("alter table {0} add partition (partition {1} values less than ('{2:yyyy-MM-dd HH:mm}'))",
+                await conn.ExecuteAsync(string.Format("alter table {0} add partition (partition {1} values less than ('{2:yyyy-MM-dd HH:mm}'))",
                     tableName, futurePartition.Name, today.AddDays(2)));
             }
             // remove older partitions
             foreach (var p in partitionsToDrop) {
-                await conn.ExecuteAsync(String.Format("alter table {0} drop partition {1}", tableName, p));
+                await conn.ExecuteAsync(string.Format("alter table {0} drop partition {1}", tableName, p));
             }
         }
     }

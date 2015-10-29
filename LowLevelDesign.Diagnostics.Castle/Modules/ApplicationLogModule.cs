@@ -54,7 +54,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 levels.Add((LogRecord.ELogLevel)lvl);
             }
 
-            var searchResults = await logStore.FilterLogs(new LogSearchCriteria {
+            var searchResults = await logStore.FilterLogsAsync(new LogSearchCriteria {
                 ApplicationPath = filter.apppath,
                 Server = filter.server,
                 FromUtc = filter.dfrom.Value.ToUniversalTime(),

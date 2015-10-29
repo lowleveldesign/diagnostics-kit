@@ -19,14 +19,16 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
     {
         public void Dispose()
         {
-            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["mysqlconn"].ConnectionString)) {
+            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["mysqlconn"].ConnectionString))
+            {
                 conn.Open();
 
-                var paths = new[] { "###rather_not_existing_application_path###", "###rather_not_existing_application_path2###", 
+                var paths = new[] { "###rather_not_existing_application_path###", "###rather_not_existing_application_path2###",
                     "###rather_not_existing_application_path3###" };
                 var tableNames = new List<String>(paths.Length + paths.Length);
 
-                foreach (var path in paths) {
+                foreach (var path in paths)
+                {
                     var hash = BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(path))).Replace("-", String.Empty);
                     tableNames.Add(MySqlLogStore.AppLogTablePrefix + hash);
 
@@ -34,7 +36,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 }
 
                 // we will drop all the newly created tables in the db
-                foreach (var tbl in conn.Query<String>("select table_name from information_schema.tables where table_name in @tableNames", new { tableNames })) {
+                foreach (var tbl in conn.Query<String>("select table_name from information_schema.tables where table_name in @tableNames", new { tableNames }))
+                {
                     conn.Execute("drop table if exists " + tbl);
                 }
             }
@@ -87,9 +90,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
             };
 
             // add log
-            await mysqlLogStore.AddLogRecord(logrec);
+            await mysqlLogStore.AddLogRecordAsync(logrec);
 
-            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["mysqlconn"].ConnectionString)) {
+            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["mysqlconn"].ConnectionString))
+            {
                 conn.Open();
 
                 // check if app tables were created
@@ -98,9 +102,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 Assert.Contains(MySqlLogStore.AppLogTablePrefix + hash, tables, StringComparer.OrdinalIgnoreCase);
 
                 // check partitions
-                var expectedPartitionNames = new[] { String.Format("{0}{1:yyyyMMdd}", Partition.PartitionPrefix, utcnow.Date.AddDays(1)), 
+                var expectedPartitionNames = new[] { String.Format("{0}{1:yyyyMMdd}", Partition.PartitionPrefix, utcnow.Date.AddDays(1)),
                     String.Format("{0}{1:yyyyMMdd}", Partition.PartitionPrefix, utcnow.Date.AddDays(2)) };
-                foreach (var prefix in new[] { MySqlLogStore.AppLogTablePrefix }) {
+                foreach (var prefix in new[] { MySqlLogStore.AppLogTablePrefix })
+                {
                     var partitions = conn.Query<String>("select partition_name From information_schema.partitions where table_name = @tableName and table_schema = @db order by partition_name",
                         new { tableName = prefix + hash, db = conn.Database });
                     Assert.Equal(expectedPartitionNames, partitions);
@@ -146,15 +151,63 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 Assert.True(dbPerfLogs.TryGetValue("Memory", out r));
                 Assert.Equal(r, logrec.PerformanceData["Memory"]);
 
-                // finally check the appstat table which should have a record for our data
-                var appstats = conn.Query<LastApplicationStatus>("select * from appstat where ApplicationHash = @hash and Server = @server", new { hash, server = logrec.Server }).ToArray();
-                Assert.True(appstats.Length > 0);
-                var appstat = appstats[0];
-                Assert.Equal(appstat.LastErrorType, logrec.ExceptionType);
-                Assert.Equal(appstat.ApplicationPath, logrec.ApplicationPath);
-                Assert.Equal(appstat.Cpu, logrec.PerformanceData["CPU"]);
-                Assert.Equal(appstat.Memory, logrec.PerformanceData["Memory"]);
             }
+        }
+
+        [Fact]
+        public async Task ApplicationStatusTest()
+        {
+
+            var utcnow = DateTime.UtcNow.Date;
+            var mysqlLogStore = new MySqlLogStore(() => utcnow);
+            const string appPath = "###rather_not_existing_application_path###";
+            var hash = BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(appPath))).Replace("-", String.Empty);
+            var startDate = DateTime.UtcNow.AddMinutes(-1);
+
+            var expectedAppStatus = new LastApplicationStatus {
+                ApplicationPath = appPath,
+                Server = "SRV1",
+                LastUpdateTimeUtc = DateTime.UtcNow
+            };
+            await mysqlLogStore.UpdateApplicationStatusAsync(expectedAppStatus);
+
+            var actualAppStatus = (await mysqlLogStore.GetApplicationStatusesAsync(startDate)).FirstOrDefault(
+                st => string.Equals(st.ApplicationPath, expectedAppStatus.ApplicationPath, StringComparison.Ordinal));
+            Assert.NotNull(actualAppStatus);
+            Assert.Equal(expectedAppStatus.ApplicationPath, actualAppStatus.ApplicationPath);
+            Assert.Equal(expectedAppStatus.Cpu, 0);
+            Assert.Equal(expectedAppStatus.Memory, 0);
+            Assert.Null(actualAppStatus.LastErrorTimeUtc);
+            Assert.Null(actualAppStatus.LastPerformanceDataUpdateTimeUtc);
+
+            expectedAppStatus.LastErrorType = "TestException";
+            expectedAppStatus.LastErrorTimeUtc = DateTime.UtcNow;
+            await mysqlLogStore.UpdateApplicationStatusAsync(expectedAppStatus);
+
+            actualAppStatus = (await mysqlLogStore.GetApplicationStatusesAsync(startDate)).FirstOrDefault(
+                st => string.Equals(st.ApplicationPath, expectedAppStatus.ApplicationPath, StringComparison.Ordinal));
+            Assert.NotNull(actualAppStatus);
+            Assert.Equal(expectedAppStatus.ApplicationPath, actualAppStatus.ApplicationPath);
+            Assert.Equal(expectedAppStatus.Cpu, 0);
+            Assert.Equal(expectedAppStatus.Memory, 0);
+            Assert.Equal(expectedAppStatus.LastErrorType, actualAppStatus.LastErrorType);
+            Assert.NotNull(actualAppStatus.LastErrorTimeUtc);
+            Assert.Null(actualAppStatus.LastPerformanceDataUpdateTimeUtc);
+
+            expectedAppStatus.Cpu = 10f;
+            expectedAppStatus.Memory = 1000f;
+            expectedAppStatus.LastPerformanceDataUpdateTimeUtc = DateTime.UtcNow;
+            await mysqlLogStore.UpdateApplicationStatusAsync(expectedAppStatus);
+
+            actualAppStatus = (await mysqlLogStore.GetApplicationStatusesAsync(startDate)).FirstOrDefault(
+                st => string.Equals(st.ApplicationPath, expectedAppStatus.ApplicationPath, StringComparison.Ordinal));
+            Assert.NotNull(actualAppStatus);
+            Assert.Equal(expectedAppStatus.ApplicationPath, actualAppStatus.ApplicationPath);
+            Assert.Equal(expectedAppStatus.LastErrorType, actualAppStatus.LastErrorType);
+            Assert.NotNull(actualAppStatus.LastErrorTimeUtc);
+            Assert.Equal(expectedAppStatus.Cpu, 10f);
+            Assert.Equal(expectedAppStatus.Memory, 1000f);
+            Assert.NotNull(actualAppStatus.LastPerformanceDataUpdateTimeUtc);
         }
 
         [Fact]
@@ -201,9 +254,9 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
             };
 
             // add log
-            await mysqlLogStore.AddLogRecord(logrec);
+            await mysqlLogStore.AddLogRecordAsync(logrec);
 
-            var searchResults = await mysqlLogStore.FilterLogs(new LogSearchCriteria {
+            var searchResults = await mysqlLogStore.FilterLogsAsync(new LogSearchCriteria {
                 FromUtc = DateTime.UtcNow.AddMinutes(-10),
                 ToUtc = DateTime.UtcNow.AddMinutes(10),
                 ApplicationPath = appPath,
@@ -266,7 +319,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
             var hash = BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(appPath))).Replace("-", String.Empty);
 
 
-            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["mysqlconn"].ConnectionString)) {
+            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["mysqlconn"].ConnectionString))
+            {
                 conn.Open();
 
                 // timespan = 2 days - one partition to remove, one to create
@@ -281,10 +335,11 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                     "primary key (Id, TimeUtc)) partition by range columns (TimeUtc) ({1})", MySqlLogStore.AppLogTablePrefix + hash,
                     partitionDefs));
 
-                await mysqlLogStore.Maintain(TimeSpan.FromDays(0));
+                await mysqlLogStore.MaintainAsync(TimeSpan.FromDays(0));
 
                 // no partitions should be removed
-                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix }) {
+                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix })
+                {
 
                     var partitions = conn.Query<String>("select partition_name from information_schema.partitions where table_name = @Table and table_schema = @Database",
                         new { conn.Database, Table = tbl + hash });
@@ -297,9 +352,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                     Assert.Contains(Partition.ForDay(utcnow.AddDays(1)).Name, partitions, StringComparer.OrdinalIgnoreCase);
                 }
 
-                await mysqlLogStore.Maintain(TimeSpan.FromDays(3));
+                await mysqlLogStore.MaintainAsync(TimeSpan.FromDays(3));
 
-                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix }) {
+                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix })
+                {
 
                     var partitions = conn.Query<String>("select partition_name from information_schema.partitions where table_name = @Table and table_schema = @Database",
                         new { conn.Database, Table = tbl + hash });
@@ -315,8 +371,9 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 // drop current and future partition and check if it will be recreated
                 conn.Execute(String.Format("alter table {0} drop partition {1}", MySqlLogStore.AppLogTablePrefix + hash, Partition.ForDay(utcnow.AddDays(1)).Name));
                 conn.Execute(String.Format("alter table {0} drop partition {1}", MySqlLogStore.AppLogTablePrefix + hash, Partition.ForDay(utcnow).Name));
-                await mysqlLogStore.Maintain(TimeSpan.FromDays(3));
-                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix }) {
+                await mysqlLogStore.MaintainAsync(TimeSpan.FromDays(3));
+                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix })
+                {
 
                     var partitions = conn.Query<String>("select partition_name from information_schema.partitions where table_name = @Table and table_schema = @Database",
                         new { conn.Database, Table = tbl + hash });
@@ -326,8 +383,9 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 }
 
                 // check if configuration per table is working
-                mysqlLogStore.Maintain(TimeSpan.FromDays(3), new Dictionary<String, TimeSpan> { { appPath, TimeSpan.FromDays(2) } }).Wait();
-                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix }) {
+                mysqlLogStore.MaintainAsync(TimeSpan.FromDays(3), new Dictionary<String, TimeSpan> { { appPath, TimeSpan.FromDays(2) } }).Wait();
+                foreach (var tbl in new[] { MySqlLogStore.AppLogTablePrefix })
+                {
 
                     var partitions = conn.Query<String>("select partition_name from information_schema.partitions where table_name = @Table and table_schema = @Database",
                         new { conn.Database, Table = tbl + hash });
@@ -335,8 +393,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                     Assert.DoesNotContain(Partition.ForDay(utcnow.AddDays(-3)).Name, partitions, StringComparer.OrdinalIgnoreCase);
                 }
 
-                await Assert.ThrowsAsync<ArgumentException>(async () => await mysqlLogStore.Maintain(TimeSpan.FromDays(-2)));
-                await Assert.ThrowsAsync<ArgumentException>(async () => await mysqlLogStore.Maintain(TimeSpan.FromDays(2),
+                await Assert.ThrowsAsync<ArgumentException>(async () => await mysqlLogStore.MaintainAsync(TimeSpan.FromDays(-2)));
+                await Assert.ThrowsAsync<ArgumentException>(async () => await mysqlLogStore.MaintainAsync(TimeSpan.FromDays(2),
                     new Dictionary<String, TimeSpan> { { appPath, TimeSpan.FromDays(-1) } }));
             }
         }

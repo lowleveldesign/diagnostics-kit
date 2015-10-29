@@ -28,65 +28,51 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             logTable = new LogTable(currentUtcDateRetriever);
         }
 
-        public async Task AddLogRecord(LogRecord logrec)
+        public async Task AddLogRecordAsync(LogRecord logrec)
         {
             using (var conn = new MySqlConnection(MySqlLogStoreConfiguration.ConnectionString)) {
                 await conn.OpenAsync();
-                await AddLogRecord(conn, null, logrec);
+                await AddLogRecordAsync(conn, null, logrec);
             }
         }
 
-        public async Task AddLogRecords(IEnumerable<LogRecord> logrecs)
+        public async Task AddLogRecordsAsync(IEnumerable<LogRecord> logrecs)
         {
             using (var conn = new MySqlConnection(MySqlLogStoreConfiguration.ConnectionString)) {
                 await conn.OpenAsync();
                 foreach (var logrec in logrecs) {
-                    await AddLogRecord(conn, null, logrec);
+                    await AddLogRecordAsync(conn, null, logrec);
                 }
             }
         }
 
-        private async Task AddLogRecord(MySqlConnection conn, MySqlTransaction tran, LogRecord logrec)
+        private async Task AddLogRecordAsync(MySqlConnection conn, MySqlTransaction tran, LogRecord logrec)
         {
-            LastApplicationStatus appstat = null;
             var apphash = GetApplicationHash(logrec.ApplicationPath);
-
             await logTable.SaveLogRecord(conn, tran, AppLogTablePrefix + apphash, logrec);
+        }
 
-            if (logrec.LogLevel >= LogRecord.ELogLevel.Error) {
-                appstat = new LastApplicationStatus {
-                    ApplicationPath = logrec.ApplicationPath,
-                    Server = logrec.Server,
-                    LastErrorTimeUtc = logrec.TimeUtc,
-                    LastErrorType = logrec.ExceptionType
-                };
-            }
-
-            // performance logs need to be handled differently
-            if (logrec.PerformanceData != null && logrec.PerformanceData.Count > 0) {
-                if (appstat == null) {
-                    appstat = new LastApplicationStatus {
-                        ApplicationPath = logrec.ApplicationPath,
-                        Server = logrec.Server
-                    };
-                }
-                appstat.LastUpdateTimeUtc = logrec.TimeUtc;
-                float v;
-                if (logrec.PerformanceData.TryGetValue("CPU", out v)) {
-                    appstat.Cpu = v;
-                }
-                if (logrec.PerformanceData.TryGetValue("Memory", out v)) {
-                    appstat.Memory = v;
-                }
-            }
-
-            if (appstat != null) {
-                // we need to update the application statuses table
-                await logTable.UpdateApplicationStatus(conn, tran, apphash, appstat);
+        public async Task UpdateApplicationStatusAsync(LastApplicationStatus appStatus)
+        {
+            var apphash = GetApplicationHash(appStatus.ApplicationPath);
+            using (var conn = new MySqlConnection(MySqlLogStoreConfiguration.ConnectionString)) {
+                await conn.OpenAsync();
+                await logTable.UpdateApplicationStatus(conn, null, apphash, appStatus);
             }
         }
 
-        public async Task<LogSearchResults> FilterLogs(LogSearchCriteria searchCriteria)
+        public async Task UpdateApplicationStatusesAsync(IEnumerable<LastApplicationStatus> appStatuses)
+        {
+            using (var conn = new MySqlConnection(MySqlLogStoreConfiguration.ConnectionString)) {
+                await conn.OpenAsync();
+                foreach (var appStatus in appStatuses) {
+                    var apphash = GetApplicationHash(appStatus.ApplicationPath);
+                    await logTable.UpdateApplicationStatus(conn, null, apphash, appStatus);
+                }
+            }
+        }
+
+        public async Task<LogSearchResults> FilterLogsAsync(LogSearchCriteria searchCriteria)
         {
             var hash = GetApplicationHash(searchCriteria.ApplicationPath);
             if (!LogTable.IsLogTableAvailable(AppLogTablePrefix + hash)) {
@@ -151,7 +137,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             }
         }
 
-        public async Task<IEnumerable<LastApplicationStatus>> GetApplicationStatuses(DateTime lastDateUtcToQuery)
+        public async Task<IEnumerable<LastApplicationStatus>> GetApplicationStatusesAsync(DateTime lastDateUtcToQuery)
         {
             using (var conn = new MySqlConnection(MySqlLogStoreConfiguration.ConnectionString)) {
                 await conn.OpenAsync();
@@ -161,7 +147,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             }
         }
 
-        public async Task Maintain(TimeSpan logsKeepTime, IDictionary<string, TimeSpan> logsKeepTimePerApplication = null)
+        public async Task MaintainAsync(TimeSpan logsKeepTime, IDictionary<string, TimeSpan> logsKeepTimePerApplication = null)
         {
             if (logsKeepTime.TotalDays < 0 || logsKeepTimePerApplication != null &&
                 logsKeepTimePerApplication.Values.Any(t => t.TotalDays < 0)) {

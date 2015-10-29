@@ -8,6 +8,7 @@ using Nancy.ModelBinding;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
+using System;
 using System.Collections.Generic;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
@@ -18,7 +19,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        public CollectModule(IAppConfigurationManager config, IValidator<LogRecord> logRecordValidator, ILogStore logstore)
+        public CollectModule(IAppConfigurationManager config, IValidator<LogRecord> logRecordValidator, ILogStore logStore)
         {
             Post["/collect", true] = async (x, ct) => {
                 var logrec = this.Bind<LogRecord>(new BindingConfig { BodyOnly = true });
@@ -37,7 +38,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 }
 
                 if (!app.IsExcluded) {
-                    await logstore.AddLogRecord(logrec);
+                    await logStore.AddLogRecordAsync(logrec);
+                    await logStore.UpdateApplicationStatusAsync(
+                        CreateApplicationStatusFromLogRecord(logrec));
                 }
                 return "OK";
             };
@@ -45,6 +48,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 var logrecs = this.Bind<LogRecord[]>(new BindingConfig { BodyOnly = true });
 
                 var logsToSave = new List<LogRecord>(logrecs.Length);
+                var appStatuses = new List<LastApplicationStatus>(logrecs.Length);
                 foreach (var logrec in logrecs) {
                     var validationResult = logRecordValidator.Validate(logrec);
                     if (validationResult.IsValid) {
@@ -61,6 +65,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         // we should collect logs only for applications which are not excluded
                         if (!app.IsExcluded) {
                             logsToSave.Add(logrec);
+                            appStatuses.Add(CreateApplicationStatusFromLogRecord(logrec));
                         } else {
                             Log.Debug("Log record for the application '{0}' was not stored as the application is excluded.");
                         }
@@ -71,10 +76,41 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         }
                     }
                 }
-                await logstore.AddLogRecords(logsToSave);
+
+                if (logsToSave.Count > 0) {
+                    await logStore.AddLogRecordsAsync(logsToSave);
+                    await logStore.UpdateApplicationStatusesAsync(appStatuses);
+                }
 
                 return "OK";
             };
+        }
+
+        private LastApplicationStatus CreateApplicationStatusFromLogRecord(LogRecord logrec)
+        {
+            var appStatus = new LastApplicationStatus {
+                ApplicationPath = logrec.ApplicationPath,
+                Server = logrec.Server,
+                LastUpdateTimeUtc = DateTime.UtcNow
+            };
+
+            if (logrec.LogLevel >= LogRecord.ELogLevel.Error) {
+                appStatus.LastErrorTimeUtc = logrec.TimeUtc;
+                appStatus.LastErrorType = logrec.ExceptionType;
+            }
+
+            if (logrec.PerformanceData != null && logrec.PerformanceData.Count > 0) {
+                appStatus.LastPerformanceDataUpdateTimeUtc = DateTime.UtcNow;
+                float v;
+                if (logrec.PerformanceData.TryGetValue("CPU", out v)) {
+                    appStatus.Cpu = v;
+                }
+                if (logrec.PerformanceData.TryGetValue("Memory", out v)) {
+                    appStatus.Memory = v;
+                }
+            }
+
+            return appStatus;
         }
     }
 }

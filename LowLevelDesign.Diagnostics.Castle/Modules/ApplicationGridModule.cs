@@ -33,7 +33,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
                 if (model == null)
                 {
-                    var applicationStatuses = await logStore.GetApplicationStatuses(DateTime.UtcNow.AddMinutes(-15));
+                    var applicationStatuses = await logStore.GetApplicationStatusesAsync(DateTime.UtcNow.AddMinutes(-15));
                     var allApplications = await appconf.GetAppsAsync();
 
                     var activeServers = new SortedSet<String>();

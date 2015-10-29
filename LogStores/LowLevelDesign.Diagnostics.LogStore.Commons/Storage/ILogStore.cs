@@ -22,7 +22,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Storage
         /// Updates application status - based on what was received 
         /// in the log record.
         /// 
-        /// REMARK: Only fields which do not contain nulls should be updated
+        /// REMARK: Only group of fields might be updated.
         /// </summary>
         Task UpdateApplicationStatusAsync(LastApplicationStatus status);
 
@@ -30,7 +30,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Storage
         /// Updates application statuses - based on what was received
         /// in the log records.
         /// 
-        /// REMARK: Only fields which do not contain nulls should be updated
+        /// REMARK: Only group of fields might be updated.
         /// </summary>
         Task UpdateApplicationStatusesAsync(IEnumerable<LastApplicationStatus> statuses);
 
