@@ -51,8 +51,8 @@
       <HintPath>..\packages\LowLevelDesign.Diagnostics.Commons.0.3.0.4\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LowLevelDesign.Diagnostics.LogStore.Commons, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LowLevelDesign.Diagnostics.LogStore.Commons.0.4.0.0\lib\net452\LowLevelDesign.Diagnostics.LogStore.Commons.dll</HintPath>
+    <Reference Include="LowLevelDesign.Diagnostics.LogStore.Commons, Version=0.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LowLevelDesign.Diagnostics.LogStore.Commons.0.5.0.0\lib\net452\LowLevelDesign.Diagnostics.LogStore.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -196,7 +196,7 @@
     <Compile Include="Config\AppSettings.cs" />
     <Compile Include="Config\IdentityConfig.cs" />
     <Compile Include="Config\GlobalConfig.cs" />
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Logs\LogMaintenance.cs" />
     <Compile Include="Models\Auth.cs" />
     <Compile Include="Models\ApplicationGrid.cs" />
@@ -219,6 +219,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="Search\KeywordsParser.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,9 +1,17 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ApplicationLogFilterModel>
 
-@section style {
+    @section style {
     <style type="text/css">
         .form-inline .form-group {
             margin: 5px 3px;
+        }
+
+        .table-fixed {
+            table-layout: fixed;
+        }
+
+        td.odd {
+            background-color: #DDE9FF;
         }
 
         .hidden {
@@ -14,200 +22,149 @@
             white-space: normal;
         }
     </style>
-}
+    }
 
-@section scripts {
+    @section scripts {
     <script type="text/javascript">
         $(function () {
             $('.lnk_message').on('click', function () {
                 $(this).closest('tr').next('tr.tr_message:first').toggleClass('hidden');
                 return false;
             });
-            $('.lnk_exception').on('click', function () {
-                $(this).closest('tr').nextAll('tr.tr_exception:first').toggleClass('hidden');
-                return false;
-            });
-            $('.lnk_perf').on('click', function () {
-                $(this).closest('tr').nextAll('tr.tr_perf:first').toggleClass('hidden');
-                return false;
-            });
-            $('.lnk_more').on('click', function () {
-                $(this).closest('tr').nextAll('tr.tr_more:first').toggleClass('hidden');
-                return false;
-            });
 
             $('#lnk_collapseall').on('click', function () {
                 $('tr.tr_message').addClass('hidden');
-                $('tr.tr_exception').addClass('hidden');
-                $('tr.tr_perf').addClass('hidden');
-                $('tr.tr_more').addClass('hidden');
                 return false;
             });
             $('#lnk_expandall').on('click', function () {
                 $('tr.tr_message').removeClass('hidden');
-                $('tr.tr_exception').removeClass('hidden');
-                $('tr.tr_perf').removeClass('hidden');
-                $('tr.tr_more').removeClass('hidden');
                 return false;
             });
             $('#lnk_expandmessages').on('click', function () {
                 $('tr.tr_message').removeClass('hidden');
                 return false;
             });
-            $('#lnk_expandexceptions').on('click', function () {
-                $('tr.tr_exception').removeClass('hidden');
+            $('#lnk_keywordshelp').on('click', function () {
+                $('#keywordshelp').toggleClass('hidden');
+                return false;
+            });
+            $('#keywordshelp button').on('click', function () {
+                $('#keywordshelp').toggleClass('hidden');
                 return false;
             });
         });
     </script>
-}
-
-@functions {
-    String GetBootstrapClassForLog(LogRecord.ELogLevel level)
-    {
-        switch (level) {
-            case LogRecord.ELogLevel.Warning:
-                return "warning";
-            case LogRecord.ELogLevel.Error:
-            case LogRecord.ELogLevel.Critical:
-                return "danger";
-            case LogRecord.ELogLevel.Info:
-                return "info";
-            default:
-                return String.Empty;
-        }
     }
-}
 
-<div class="panel panel-primary">
-    <!-- Default panel contents -->
-    <div class="panel-heading">
-        Showing logs of the <strong title="@Model.apppath">@Model.appname</strong> application from
-        <strong>@(Model.server == null ? "all servers" : Model.server)</strong>
-    </div>
-    <div class="panel-body">
-        <form class="form-inline" method="get">
-            <div class="form-group">
-                <label for="dfrom" class="control-label">Date from:</label>
-                <input id="dfrom" name="dfrom" type="text" class="form-control" value="@Model.dfrom" />
-                <label for="dto" class="control-label">to:</label>
-                <input id="dto" name="dto" type="text" class="form-control" value="@Model.dto" />
-            </div>
-            <div class="form-group">
-                <label for="lfrom">Level from:</label>
-                <select id="lfrom" name="lfrom" class="form-control">
-                    @foreach (var opt in ApplicationLogFilterModel.Levels) {
-                        if (opt.Item1 == Model.lfrom) {
-                            <option selected="selected" value="@opt.Item1">@opt.Item2</option>
-                        } else {
-                            <option value="@opt.Item1">@opt.Item2</option>
+    <div class="panel panel-primary">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            Showing logs of the <strong title="@Model.apppath">@Model.appname</strong> application from
+            <strong>@(Model.server == null ? "all servers" : Model.server)</strong>
+        </div>
+        <div class="panel-body">
+            <form class="form-inline" method="get">
+                <div class="form-group">
+                    <label for="dfrom" class="control-label">Date from:</label>
+                    <input id="dfrom" name="dfrom" type="text" class="form-control" value="@Model.dfrom" />
+                    <label for="dto" class="control-label">to:</label>
+                    <input id="dto" name="dto" type="text" class="form-control" value="@Model.dto" />
+                </div>
+                <div class="form-group">
+                    <label for="lfrom">Level from:</label>
+                    <select id="lfrom" name="lfrom" class="form-control">
+                        @foreach (var opt in ApplicationLogFilterModel.Levels) {
+                            if (opt.Item1 == Model.lfrom) {
+                                <option selected="selected" value="@opt.Item1">@opt.Item2</option>
+                            } else {
+                                <option value="@opt.Item1">@opt.Item2</option>
+                            }
                         }
-                    }
-                </select>
-                <label for="lto">to:</label>
-                <select id="lto" name="lto" class="form-control">
-                    @foreach (var opt in ApplicationLogFilterModel.Levels) {
-                        if (opt.Item1 == Model.lto) {
-                            <option selected="selected" value="@opt.Item1">@opt.Item2</option>
-                        } else {
-                            <option value="@opt.Item1">@opt.Item2</option>
+                    </select>
+                    <label for="lto">to:</label>
+                    <select id="lto" name="lto" class="form-control">
+                        @foreach (var opt in ApplicationLogFilterModel.Levels) {
+                            if (opt.Item1 == Model.lto) {
+                                <option selected="selected" value="@opt.Item1">@opt.Item2</option>
+                            } else {
+                                <option value="@opt.Item1">@opt.Item2</option>
+                            }
                         }
-                    }
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="logger" class="control-label">Logger:</label>
-                <input id="logger" name="logger" type="text" class="form-control" style="width: 300px" value="@Model.logger" />
-            </div>
-            <div class="form-group">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="logger" class="control-label">Logger:</label>
+                    <input id="logger" name="logger" type="text" class="form-control" style="width: 250px" value="@Model.logger" />
+                </div>
+                <div class="form-group">
 
-                <label for="keywords" class="control-label">Keywords:</label>
-                <input id="keywords" name="keywords" type="text" class="form-control" style="width: 400px" value="@Model.keywords" />
+                    <label for="keywords" class="control-label">
+                        Keywords <a id="lnk_keywordshelp" href="#"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>:
+                    </label>
+                    <input id="keywords" name="keywords" type="text" class="form-control" style="width: 400px" value="@Model.keywords" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon glyphicon-filter"></span> Filter
+                </button>
+            </form>
+            <div id="keywordshelp" class="alert alert-info hidden" role="alert">
+                <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+                You may freely type any text you want, but only log stores supporting full-text search will give you expected results.
+                However, you may use some special keywords to search specific fields of the log records. The syntax is
+                <strong>keyword:'search string'</strong>. Accepted keywords are: <strong>http</strong> (HTTP status code),
+                <strong>url</strong> (called URL), <strong>ip</strong> (client IP address), <strong>service</strong> (Windows service name).
             </div>
-            <button type="submit" class="btn btn-default">Filter</button>
-        </form>
-    </div>
+        </div>
 
-    @if (ViewBag.Logs != null) {
+        @if (ViewBag.Logs != null) {
         var result = (ApplicationLogSearchResults)ViewBag.Logs;
-        int i = 0;
+        int loopCount = 0;
         <ul class="nav nav-pills">
             <li role="presentation" class="dropdown"><a id="lnk_expandall" href="#">Expand all</a></li>
-            <li role="presentation" class="dropdown"><a id="lnk_expandmessages" href="#">Expand messages</a></li>
-            <li role="presentation" class="dropdown"><a id="lnk_expandexceptions" href="#">Expand exceptions</a></li>
             <li role="presentation" class="dropdown"><a id="lnk_collapseall" href="#">Collapse all</a></li>
         </ul>
-        <table class="table">
+        <table class="table table-condensed">
             <thead>
                 <tr>
-                    <th>Time</th>
-                    <th>Log level</th>
-                    <th>Logger</th>
-                    <th>Message</th>
-                    <th>Exeption</th>
-                    <th>Performance</th>
-                    <th>Additional data</th>
+                    <th class="col-sm-2">Time</th>
+                    <th class="col-sm-1">Log level</th>
+                    <th class="col-sm-2">Logger</th>
+                    <th class="col-sm-7">Message</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var l in result.FoundItems) {
-                    var bootstrapClass = GetBootstrapClassForLog(l.LogLevel);
+                    loopCount++;
                     <tr>
-                        <td class="@bootstrapClass"><strong>@l.TimeUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm.fff")</strong></td>
-                        <td class="@bootstrapClass">@l.LogLevel.ToString()</td>
-                        <td><div class="shorten">@l.LoggerName</div></td>
-                        <td><div class="shorten"><a href="#" class="lnk_message" title="Click to expand">@l.Message</a></div></td>
-                        <td><div class="shorten"><a href="#" class="lnk_exception" title="Click to expand">@l.ExceptionType</a></div></td>
-                        <td>
-                            @if (l.PerformanceData != null && l.PerformanceData.Count > 0) {
-                                <a href="#" class="lnk_perf" title="Click to expand">
-                                    CPU: @l.PerformanceData.GetCounterValueIfAvailable("CPU") | Mem: @l.PerformanceData.GetCounterValueIfAvailable("Memory")
-                                </a>
-                            }
-                        </td>
-                        <td>
-                            @if (l.AdditionalFields != null && l.AdditionalFields.Count > 0) {
-                                <a href="#" class="lnk_more" title="Click to display additional data">more &gt;&gt;</a>
-                            }
+                        <td class="@Extensions.ReturnIfOdd(loopCount, "odd")"><strong>@l.TimeUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm.fff")</strong></td>
+                        <td class="@Extensions.ReturnIfOdd(loopCount, "odd")"><span class="label label-@(l.GetBootstrapClassForLevel())">@l.LogLevel.ToString()</span></td>
+                        <td class="@Extensions.ReturnIfOdd(loopCount, "odd")"><div class="shorten">@l.LoggerName</div></td>
+                        <td class="@Extensions.ReturnIfOdd(loopCount, "odd")">
+                            <div class="shorten">
+                                @if (l.HasPerformanceStats()) {
+                                    <span class="label label-primary">@l.GetCounterValueIfAvailable("CPU")</span>
+                                    <span class="label label-primary">@l.GetCounterValueIfAvailable("Memory")</span>
+                                }&nbsp;<a href="#" class="lnk_message" title="Click to expand">@l.Message</a>
+                            </div>
                         </td>
                     </tr>
                     <tr class="tr_message hidden">
-                        <td colspan="7">
-                            Message: @l.Message
-                        </td>
-                    </tr>
-                    <tr class="tr_exception hidden">
-                        <td colspan="7">
-                            @if (!String.IsNullOrEmpty(l.ExceptionType)) {
-<pre>
-Exception type: @l.ExceptionType
-Exception message: @l.ExceptionMessage
-Exception additional info: @l.ExceptionAdditionalInfo
-</pre>
-                            } else { <text>No exception</text> }
-                        </td>
-                    </tr>
-                    <tr class="tr_perf hidden">
-                        <td colspan="7">
-                            Process Id: @l.ProcessId, Thread Id: @l.ThreadId<br />
-                            @if (l.PerformanceData != null && l.PerformanceData.Count > 0) {
-                                foreach (var pd in l.PerformanceData) {
-                                    <text>@pd.Key: @pd.Value.ToString("#,0.00")</text><br />
+                        <td colspan="4" class="@Extensions.ReturnIfOdd(loopCount, "odd")">
+                            <div class="loginfo">
+                                <strong>Server:</strong> @l.Server<br />
+                                @if (l.HasExceptionInformation()) {
+                                    <hr />
+                                    <strong>Exception type:</strong> @l.ExceptionType<br />
+                                    <strong>Exception message:</strong> @l.ExceptionMessage<br />
+                                    <strong>Exception additional info:</strong> @l.ExceptionAdditionalInfo<br />
                                 }
-                            }
-                        </td>
-                    </tr>
-                    <tr class="tr_more hidden">
-                        <td colspan="7">
-                            @if (l.AdditionalFields != null && l.AdditionalFields.Count > 0) {
-<pre>
-    @foreach (var ad in l.AdditionalFields) {
-                                <text>@ad.Key: @(ad.Value + "\r\n")</text>
-    }
-</pre>
-                            } else {
-                                <text>No additional data</text>
-                            }
+                                @if (l.AdditionalFields != null && l.AdditionalFields.Count > 0) {
+                                    <hr />
+                                    @foreach (var ad in l.AdditionalFields) {
+                                        <text><strong>@ad.Key:</strong> @(ad.Value + "\r\n")</text><br />
+                                    }
+                                }
+                            </div>
                         </td>
                     </tr>
                 }
@@ -222,5 +179,5 @@ Exception additional info: @l.ExceptionAdditionalInfo
                 <a href="@Request.Url.BasePath@Request.Path@Request.Url.ReplaceQueryParameterValue("off", result.Offset + result.Limit)">Older &gt;&gt;</a>
             }
         </p>
-    }
-</div>
+        }
+    </div>

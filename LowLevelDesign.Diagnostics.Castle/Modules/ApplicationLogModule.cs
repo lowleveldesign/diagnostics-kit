@@ -1,5 +1,6 @@
 ﻿using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Castle.Models;
+using LowLevelDesign.Diagnostics.Castle.Search;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
@@ -17,7 +18,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public sealed class ApplicationLogModule : NancyModule
     {
-        private const int MaxLogsCount = 30;
+        private const int MaxLogsCount = 35;
 
         public ApplicationLogModule(GlobalConfig globals, ILogStore logStore, IAppConfigurationManager config)
         {
@@ -60,7 +61,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 FromUtc = filter.dfrom.Value.ToUniversalTime(),
                 ToUtc = filter.dto.Value.ToUniversalTime(),
                 Logger = filter.logger,
-                Keywords = filter.keywords,
+                Keywords = KeywordsParser.Parse(filter.keywords),
                 Levels = levels.ToArray(),
                 Limit = MaxLogsCount + 1,
                 Offset = offset
