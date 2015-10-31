@@ -79,6 +79,9 @@ namespace LowLevelDesign.Diagnostics.Castle.Caching
 
         public Task UpdateAppPropertiesAsync(Application app, string[] propertiesToUpdate)
         {
+            if (IsCachingEnabled) {
+                cache.Remove(CachePrefixForApplications + app.Path);
+            }
             return wrappedInstance.UpdateAppPropertiesAsync(app, propertiesToUpdate);
         }
     }

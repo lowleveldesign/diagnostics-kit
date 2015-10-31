@@ -16,11 +16,11 @@ using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
-    public sealed class ApplicationLogModule : NancyModule
+    public sealed class ApplicationLogsModule : NancyModule
     {
         private const int MaxLogsCount = 35;
 
-        public ApplicationLogModule(GlobalConfig globals, ILogStore logStore, IAppConfigurationManager config)
+        public ApplicationLogsModule(GlobalConfig globals, ILogStore logStore, IAppConfigurationManager config)
         {
             if (globals.IsAuthenticationEnabled())
             {
@@ -41,7 +41,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
 
                 ViewBag.Logs = await FilterLogsAsync(logStore, model, model.off);
 
-                return View["ApplicationLog.cshtml", model];
+                return View["ApplicationLogs.cshtml", model];
             };
         }
 

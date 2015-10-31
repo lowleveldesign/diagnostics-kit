@@ -30,6 +30,15 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.Null(keywordsParsed.ClientIp);
             Assert.Null(keywordsParsed.FreeText);
 
+            s = "testurl:test lkjsdflksjf ghttp:sdfsf";
+            keywordsParsed = KeywordsParser.Parse(s);
+            Assert.NotNull(keywordsParsed);
+            Assert.Null(keywordsParsed.Url);
+            Assert.Null(keywordsParsed.Service);
+            Assert.Null(keywordsParsed.HttpStatus);
+            Assert.Null(keywordsParsed.ClientIp);
+            Assert.Equal(s, keywordsParsed.FreeText);
+
             s = "   url:'test url with space' 1test 2test service:'service name with space' '";
             keywordsParsed = KeywordsParser.Parse(s);
             Assert.Equal("test url with space", keywordsParsed.Url);
@@ -44,7 +53,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.Equal("test", keywordsParsed.Service);
             Assert.Null(keywordsParsed.HttpStatus);
             Assert.Null(keywordsParsed.ClientIp);
-            Assert.Equal(" 1test2", keywordsParsed.FreeText);
+            Assert.Equal(" url: 1test2", keywordsParsed.FreeText);
 
             s = " url:' service:'test' 1test2";
             keywordsParsed = KeywordsParser.Parse(s);
@@ -52,7 +61,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.Null(keywordsParsed.Service);
             Assert.Null(keywordsParsed.HttpStatus);
             Assert.Null(keywordsParsed.ClientIp);
-            Assert.Equal("test' 1test2", keywordsParsed.FreeText);
+            Assert.Equal("est' 1test2", keywordsParsed.FreeText); // TODO: we consider this valid?
 
 
             s = "test test2 url:";

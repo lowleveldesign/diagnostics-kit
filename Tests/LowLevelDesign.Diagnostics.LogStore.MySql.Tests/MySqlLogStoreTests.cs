@@ -263,7 +263,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                 Levels = new[] { LogRecord.ELogLevel.Error, LogRecord.ELogLevel.Info },
                 Limit = 10,
                 Offset = 0,
-                Server = "TestServer"
+                Server = "TestServer",
+                Keywords = new KeywordsParsed() { Url = "http://testhost.com" }
             });
 
             Assert.NotNull(searchResults.FoundItems);

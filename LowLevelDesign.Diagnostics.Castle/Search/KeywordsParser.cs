@@ -55,9 +55,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Search
         {
             var buffer = new StringBuilder(txt);
             buffer = buffer.Remove(keywordSearchResult.Start, keywordSearchResult.End - keywordSearchResult.Start);
-            if (keywordSearchResult.Start > 0) {
-                buffer.Insert(keywordSearchResult.Start, ' ');
-            } else {
+            if (keywordSearchResult.Start == 0) {
                 buffer.Remove(keywordSearchResult.Start, 1);
             }
             return buffer.ToString();

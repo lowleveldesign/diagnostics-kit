@@ -165,7 +165,7 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Applications.cshtml" />
-    <Content Include="Views\ApplicationLog.cshtml" />
+    <Content Include="Views\ApplicationLogs.cshtml" />
     <None Include="Properties\PublishProfiles\Local-Debug.pubxml" />
     <None Include="Properties\PublishProfiles\Local.pubxml" />
     <Content Include="Views\Auth\Users.cshtml" />
@@ -208,7 +208,7 @@
     <Compile Include="Modules\MusketeerModule.cs" />
     <Compile Include="Modules\UserAdminModule.cs" />
     <Compile Include="Modules\CollectModule.cs" />
-    <Compile Include="Modules\ApplicationLogModule.cs" />
+    <Compile Include="Modules\ApplicationLogsModule.cs" />
     <Compile Include="Modules\InfoModule.cs" />
     <Compile Include="Modules\MaintenanceModule.cs" />
     <Compile Include="Modules\UserProfileModule.cs" />
