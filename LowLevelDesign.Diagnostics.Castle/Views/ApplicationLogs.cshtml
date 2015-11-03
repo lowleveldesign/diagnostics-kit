@@ -18,8 +18,16 @@
             display: none;
         }
 
-        .shorten {
+        .breakwords {
             white-space: normal;
+            word-break: break-all;
+        }
+
+        .truncate {
+          width:700px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
     </style>
     }
@@ -138,19 +146,21 @@
                     <tr>
                         <td class="@Extensions.ReturnIfOdd(loopCount, "odd")"><strong>@l.TimeUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm.fff")</strong></td>
                         <td class="@Extensions.ReturnIfOdd(loopCount, "odd")"><span class="label label-@(l.GetBootstrapClassForLevel())">@l.LogLevel.ToString()</span></td>
-                        <td class="@Extensions.ReturnIfOdd(loopCount, "odd")"><div class="shorten">@l.LoggerName</div></td>
+                        <td class="@Extensions.ReturnIfOdd(loopCount, "odd")"><div class="truncate">@l.LoggerName</div></td>
                         <td class="@Extensions.ReturnIfOdd(loopCount, "odd")">
-                            <div class="shorten">
+                            <div class="truncate">
                                 @if (l.HasPerformanceStats()) {
                                     <span class="label label-primary">@l.GetCounterValueIfAvailable("CPU")</span>
                                     <span class="label label-primary">@l.GetCounterValueIfAvailable("Memory")</span>
-                                }&nbsp;<a href="#" class="lnk_message" title="Click to expand">@l.Message</a>
+                                }&nbsp;
+                                <a href="#" class="lnk_message" title="Click to expand">@l.Message</a>
                             </div>
                         </td>
                     </tr>
                     <tr class="tr_message hidden">
                         <td colspan="4" class="@Extensions.ReturnIfOdd(loopCount, "odd")">
-                            <div class="loginfo">
+                            <div class="loginfo breakwords">
+                                <strong>Messsage:</strong>@l.Message<br />
                                 <strong>Server:</strong> @l.Server<br />
                                 @if (l.HasExceptionInformation()) {
                                     <hr />
