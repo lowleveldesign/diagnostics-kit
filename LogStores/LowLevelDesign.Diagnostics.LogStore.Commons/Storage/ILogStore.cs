@@ -28,7 +28,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Storage
 
         /// <summary>
         /// Updates application statuses - based on what was received
-        /// in the log records.
+        /// in the log records. Statuses must be unique per application.
         /// 
         /// REMARK: Only group of fields might be updated.
         /// </summary>

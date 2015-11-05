@@ -5,14 +5,16 @@ using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
 using Nancy;
 using Nancy.ModelBinding;
-using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public class MusketeerModule : NancyModule
     {
+        private static readonly TraceSource logger = new TraceSource("LowLevelDesign.Diagnostics.Castle");
+
         public MusketeerModule(IAppConfigurationManager appconf, ILogStore logStore,
             IValidator<Application> appvalidator, IValidator<ApplicationServerConfig> appconfvalidator)
         {
@@ -22,7 +24,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 foreach (var conf in configs) {
                     var validationResult = appconfvalidator.Validate(conf);
                     if (!validationResult.IsValid) {
-                        Log.Error("Validation failed for config {@0}, errors: {1}", conf, validationResult.Errors);
+                        logger.TraceEvent(TraceEventType.Error, 0, "Validation failed for config {@0}, errors: {1}", conf, validationResult.Errors);
                         continue;
                     }
                     var app = await appconf.FindAppAsync(conf.AppPath);

@@ -36,14 +36,14 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     var applicationStatuses = await logStore.GetApplicationStatusesAsync(DateTime.UtcNow.AddMinutes(-15));
                     var allApplications = await appconf.GetAppsAsync();
 
-                    var activeServers = new SortedSet<String>();
-                    var activeApplications = new Dictionary<String, Application>();
-                    var activeApplicationStatuses = new SortedDictionary<String, IDictionary<String, LastApplicationStatus>>();
+                    var activeServers = new SortedSet<string>();
+                    var activeApplications = new Dictionary<string, Application>();
+                    var activeApplicationStatuses = new SortedDictionary<string, IDictionary<string, LastApplicationStatus>>();
                     foreach (var appStatus in applicationStatuses)
                     {
                         activeServers.Add(appStatus.Server);
 
-                        var app = allApplications.FirstOrDefault(a => String.Equals(a.Path, appStatus.ApplicationPath,
+                        var app = allApplications.FirstOrDefault(a => string.Equals(a.Path, appStatus.ApplicationPath,
                             StringComparison.InvariantCultureIgnoreCase));
                         if (app != null && !app.IsExcluded)
                         {
@@ -51,10 +51,10 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                             {
                                 activeApplications.Add(app.Path, app);
                             }
-                            IDictionary<String, LastApplicationStatus> applicationStatusPerServer;
+                            IDictionary<string, LastApplicationStatus> applicationStatusPerServer;
                             if (!activeApplicationStatuses.TryGetValue(app.Path, out applicationStatusPerServer))
                             {
-                                applicationStatusPerServer = new Dictionary<String, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase);
+                                applicationStatusPerServer = new Dictionary<string, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase);
                                 activeApplicationStatuses.Add(app.Path, applicationStatusPerServer);
                             }
                             applicationStatusPerServer.Add(appStatus.Server, appStatus);
@@ -71,7 +71,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                             }
                             if (!activeApplicationStatuses.ContainsKey(app.Path))
                             {
-                                activeApplicationStatuses.Add(app.Path, new Dictionary<String, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase));
+                                activeApplicationStatuses.Add(app.Path, new Dictionary<string, LastApplicationStatus>(StringComparer.OrdinalIgnoreCase));
                             }
                         }
                     }

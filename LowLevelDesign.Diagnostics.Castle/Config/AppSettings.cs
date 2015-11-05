@@ -1,10 +1,10 @@
 ﻿using LowLevelDesign.Diagnostics.LogStore.Commons.Auth;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Config;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -13,11 +13,13 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
 {
     internal static class AppSettings
     {
+        private static readonly TraceSource logger = new TraceSource("LowLevelDesign.Diagnostics.Castle");
+
         // Diagnostics defaults - we should use them only if other options are not available
-        private const String defaultTypesNamespace = "LowLevelDesign.Diagnostics.LogStore.Defaults";
-        private const String UserMgrKey = "diag:usermgr";
-        private const String LogStoreKey = "diag:logstore";
-        private const String ConfMgrKey = "diag:confmgr";
+        private const string defaultTypesNamespace = "LowLevelDesign.Diagnostics.LogStore.Defaults";
+        private const string UserMgrKey = "diag:usermgr";
+        private const string LogStoreKey = "diag:logstore";
+        private const string ConfMgrKey = "diag:confmgr";
 
         public static readonly byte DefaultNoOfDaysToKeepLogs = Byte.Parse(ConfigurationManager.AppSettings["diag:defaultNoOfDaysToKeepLogs"] ?? "2");
         public static readonly int DefaultGridCacheTimeInSeconds = Int32.Parse(ConfigurationManager.AppSettings["diag:gridcacheInSeconds"] ?? "30");
@@ -28,9 +30,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
 
         static AppSettings()
         {
-            // Logging configuration
-            Log.Logger = new LoggerConfiguration().WriteTo.Trace().CreateLogger();
-
             /* CONFIGURATION */
             var typeName = ConfigurationManager.AppSettings[ConfMgrKey];
             Type type;
@@ -72,7 +71,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
                         implementers.AddRange(asm.GetExportedTypes().Where(t => t.GetInterfaces().Contains(typeToImplement)));
                     }
                 } catch (Exception ex) {
-                    Log.Debug(ex, "Failure while loading assembly from '{0}'", asmpath);
+                    logger.TraceEvent(TraceEventType.Error, 0, "Failure while loading assembly from '{0}', ex: {1}", asmpath, ex);
                 }
                 if (implementers.Count > 1) {
                     // we may skip the default one if present

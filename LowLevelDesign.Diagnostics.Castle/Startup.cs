@@ -40,8 +40,6 @@ namespace LowLevelDesign.Diagnostics.Castle
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
             });
-
-            //app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
         }
     }
 }

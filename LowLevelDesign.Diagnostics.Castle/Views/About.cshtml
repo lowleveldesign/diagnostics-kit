@@ -1,25 +1,27 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<DiagnosticsKitInformation>
 
-<div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-10">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Diagnostics Kit release information</h3>
+<div class="container">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Diagnostics Kit release information</h3>
+                </div>
+                <div class="panel-body">
+                    <p>If you run into any problems with Diagnostics Kit don't hesitate to <a href="mailto:support@lowleveldesign.org"><strong>contact us</strong></a> 
+                    or issue a ticket in <a href="https://github.com/lowleveldesign/diagnostics-kit/issues" target="_blank">the github repository</a>.</p>
+                    <p>Next to your problem description please provide the following information:</p>
+                </div>
+                <table class="table table-fixed">
+                    <tr><td><strong>Version:</strong></td><td>@Model.Version</td></tr>
+                    <tr><td><strong>Log store:</strong></td><td>@Model.UsedLogStore</td></tr>
+                    <tr><td><strong>Configuration manager:</strong></td><td>@Model.UsedAppConfigurationManager</td></tr>
+                    <tr><td><strong>Users manager:</strong></td><td>@Model.UsedAppUserManager</td></tr>
+                    <tr><td><strong>Authorization:</strong></td><td>@(Model.IsAuthenticationEnabled ? "YES" : "NO")</td></tr>
+                </table>
             </div>
-            <div class="panel-body">
-                <p>If you run into any problems with Diagnostics Kit don't hesitate to <a href="support@lowleveldesign.org">contact us</a> or issue a ticket
-                in <a href="https://github.com/lowleveldesign/diagnostics-kit/issues" target="_blank">the github repository</a>.</p>
-                <p>Next to your problem description please provide the following information:</p>
-            </div>
-            <table class="table table-fixed">
-                <tr><td><strong>Version:</strong></td><td>@Model.Version</td></tr>
-                <tr><td><strong>Log store:</strong></td><td>@Model.UsedLogStore</td></tr>
-                <tr><td><strong>Configuration manager:</strong></td><td>@Model.UsedAppConfigurationManager</td></tr>
-                <tr><td><strong>Users manager:</strong></td><td>@Model.UsedAppUserManager</td></tr>
-                <tr><td><strong>Authorization:</strong></td><td>@(Model.IsAuthenticationEnabled ? "YES" : "NO")</td></tr>
-            </table>
         </div>
+        <div class="col-md-1"></div>
     </div>
-    <div class="col-md-1"></div>
 </div>

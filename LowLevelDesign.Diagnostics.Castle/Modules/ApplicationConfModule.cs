@@ -7,7 +7,6 @@ using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Security;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;

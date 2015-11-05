@@ -1,77 +1,85 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ApplicationGridModel>
 
-    @section style {
-    <style type="text/css">
-        .MusketeerInfo {
-            display: none;
-        }
-
-        .table-fixed {
-            table-layout: fixed;
-        }
-
-        .shorten {
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-    </style>
+@section style {
+<style type="text/css">
+    .MusketeerInfo {
+        display: none;
     }
 
-    @section scripts {
-    <script type="text/javascript">
-        $(function () {
-            $('a.appname').on('click', function () {
-                var encpath = $(this).attr('data-encpath');
-                var name = $(this).text();
+    .table-fixed {
+        table-layout: fixed;
+    }
 
-                // check if we don't already have such a dialog
-                if ($('#info' + encpath).length) {
-                    $('#info' + encpath).modal();
-                } else {
-                    $.get('conf/appsrvconfig/' + encpath, function (data) {
-                        // create a new modal
-                        var clonedDlg = $('#modelDialog').clone();
-                        clonedDlg.attr('id', 'info' + encpath);
-                        // fill modal content
-                        $('h4', clonedDlg).text(name);
-                        if (data && data.length > 0) {
-                            $(data).each(function (ind, elem) {
-                                var html = "<div class=\"panel panel-primary\">" + "<div class=\"panel-heading\"><strong>Server: " +
-                                elem.server + "</strong></div><div class=\"panel-body\">";
+    .shorten {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
 
-                                if (elem.appPoolName) {
-                                    html += "<p>Application pool: <strong>" + elem.appPoolName + "</strong></p>";
+    td.center {
+        text-align: center
+    }
+
+    .appname {
+        word-break: break-word
+    }
+</style>
+}
+
+@section scripts {
+<script type="text/javascript">
+    $(function () {
+        $('a.appname').on('click', function () {
+            var encpath = $(this).attr('data-encpath');
+            var name = $(this).text();
+
+            // check if we don't already have such a dialog
+            if ($('#info' + encpath).length) {
+                $('#info' + encpath).modal();
+            } else {
+                $.get('conf/appsrvconfig/' + encpath, function (data) {
+                    // create a new modal
+                    var clonedDlg = $('#modelDialog').clone();
+                    clonedDlg.attr('id', 'info' + encpath);
+                    // fill modal content
+                    $('h4', clonedDlg).text(name);
+                    if (data && data.length > 0) {
+                        $(data).each(function (ind, elem) {
+                            var html = "<div class=\"panel panel-primary\">" + "<div class=\"panel-heading\"><strong>Server: " +
+                            elem.server + "</strong></div><div class=\"panel-body\">";
+
+                            if (elem.appPoolName) {
+                                html += "<p>Application pool: <strong>" + elem.appPoolName + "</strong></p>";
+                            }
+                            html += "<p>Application path: <strong>" + elem.appPath + "</strong></p>";
+
+                            if (elem.bindings && elem.bindings.length > 0) {
+                                "<ul class=\"list-group\"><li class=\"list-group-item list-group-item-info\">Bindings</li>";
+                                for (var i = 0; i < elem.bindings.length; i++) {
+                                    html += "<li class=\"list-group-item\">" + elem.bindings[i] + "</li>";
                                 }
-                                html += "<p>Application path: <strong>" + elem.appPath + "</strong></p>";
+                                html += "</ul>";
+                            }
+                            html += "</div></div>";
+                            $('.modal-body', clonedDlg).append(html);
+                        })
+                    } else {
+                        $('.MusketeerInfo', clonedDlg).show();
+                    }
 
-                                if (elem.bindings && elem.bindings.length > 0) {
-                                    "<ul class=\"list-group\"><li class=\"list-group-item list-group-item-info\">Bindings</li>";
-                                    for (var i = 0; i < elem.bindings.length; i++) {
-                                        html += "<li class=\"list-group-item\">" + elem.bindings[i] + "</li>";
-                                    }
-                                    html += "</ul>";
-                                }
-                                html += "</div></div>";
-                                $('.modal-body', clonedDlg).append(html);
-                            })
-                        } else {
-                            $('.MusketeerInfo', clonedDlg).show();
-                        }
-
-                        clonedDlg.after('#modelDialog');
-                        clonedDlg.modal();
-                    }, 'json').fail(function () {
-                        alert('Error occurred while connecting the server. Please try again.');
-                    });
-                }
-            });
+                    clonedDlg.after('#modelDialog');
+                    clonedDlg.modal();
+                }, 'json').fail(function () {
+                    alert('Error occurred while connecting the server. Please try again.');
+                });
+            }
         });
-    </script>
-    }
+    });
+</script>
+}
 
+<div class="container-fluid">
     <div class="panel panel-primary">
-        <!-- Default panel contents -->
         <div class="panel-heading">Applications Grid <small>(last update at: @Model.LastUpdateTime.ToString("HH:mm:ss"))</small></div>
         <div class="panel-body">
             @if (Model.ApplicationStatuses.Count == 0) {
@@ -91,7 +99,7 @@
 
         @if (Model.ApplicationStatuses.Count > 0)
         {
-        <table class="table table-fixed">
+        <table class="table table-bordered table-condensed">
             <thead>
                 <tr>
                     <th>Application</th>
@@ -108,10 +116,9 @@
                     var app = Model.Applications[appstat.Key];
                     <tr>
                         <td><a href="#" class="appname" title="Show application settings" data-encpath="@app.GetBase64EncodedKey()">@app.Name</a></td>
-                        <td>
-                            <a href="~/logs/@app.GetBase64EncodedKey()" title="Show application logs">
+                        <td class="center">
+                            <a class="btn btn-sm btn-default" href="~/logs/@app.GetBase64EncodedKey()" title="Show application logs">
                                 <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-                                <small>Show logs</small>
                             </a>
                         </td>
                         @foreach (var srv in Model.Servers)
@@ -121,29 +128,24 @@
                                 var srvstat = appstat.Value[srv];
                                 if (srvstat.ContainsErrorInformation())
                                 {
-                                    <td class="danger">
-                                        <div class="shorten">
-                                            <a href="~/logs/@app.GetBase64EncodedKey()/@srv" title="@srvstat.LastErrorType">
-                                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                                                <small>@(srvstat.LastErrorTypeName ?? "Unknown")</small>
-                                            </a>
-                                        </div>
+                                    <td class="center danger">
+                                        <a class="btn btn-sm btn-danger" href="~/logs/@app.GetBase64EncodedKey()/@srv" title="@(srvstat.LastErrorTypeName ?? "Unknown")">
+                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                        </a>
                                     </td>
                                 }
                                 else if (srvstat.ContainsPerformanceData())
                                 {
-                                    <td class="success">
-                                        <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
-                                            <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-                                            <small>CPU: @srvstat.Cpu.ToString("0.##")%</small>
-                                            <small>Mem: @((srvstat.Memory / 1048576f).ToString("#,0."))MB</small>
+                                    <td class="center success">
+                                        <a class="btn btn-sm btn-default" href="~/logs/@app.GetBase64EncodedKey()/@srv" title="Show application logs">
+                                            <small>@srvstat.Cpu.ToString("0")%</small>,
+                                            <small>@((srvstat.Memory / 1048576f).ToString("#,0."))MB</small>
                                         </a>
                                     </td>
                                 } else {
-                                    <td class="@(DateTime.UtcNow.Subtract(srvstat.LastUpdateTimeUtc) < TimeSpan.FromMinutes(2) ? "success" : "")">
-                                        <a href="~/logs/@app.GetBase64EncodedKey()/@srv">
+                                    <td class="center @(DateTime.UtcNow.Subtract(srvstat.LastUpdateTimeUtc) < TimeSpan.FromSeconds(60) ? "success" : "")">
+                                        <a class="btn btn-sm btn-default" href="~/logs/@app.GetBase64EncodedKey()/@srv" title="Show application logs">
                                             <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-                                            <small>Show logs</small>
                                         </a>
                                     </td>
                                 }
@@ -181,3 +183,4 @@
             </div>
         </div>
     </div>
+</div>

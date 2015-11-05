@@ -13,16 +13,22 @@ using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
 using Nancy.Conventions;
 using Nancy.Diagnostics;
+using Nancy.Json;
 using Nancy.TinyIoc;
-using Serilog;
+using System.Diagnostics;
 
 namespace LowLevelDesign.Diagnostics.Castle
 {
     public class Bootstraper : DefaultNancyBootstrapper
     {
+        private static readonly TraceSource logger = new TraceSource("LowLevelDesign.Diagnostics.Castle");
+
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
             base.ApplicationStartup(container, pipelines);
+
+            // We will send big JSON payloads
+            JsonSettings.MaxJsonLength = int.MaxValue;
 
             // Authentication
             var authconf = new StatelessAuthenticationConfiguration(ctx => {
@@ -33,11 +39,10 @@ namespace LowLevelDesign.Diagnostics.Castle
 
             // Diagnostics
 #if !DEBUG
-            StaticConfiguration.DisableErrorTraces = false;
-            DiagnosticsHook.Disable(pipelines);
+            StaticConfiguration.DisableErrorTraces = true;
 #endif
             pipelines.OnError += (ctx, err) => {
-                Log.Error(err, "Global application error occurred when serving request: {0}", ctx.Request.Url);
+                logger.TraceEvent(TraceEventType.Error, 0, "Global application error occurred when serving request: {0}, ex: {1}", ctx.Request.Url, err);
                 return null;
             };
 

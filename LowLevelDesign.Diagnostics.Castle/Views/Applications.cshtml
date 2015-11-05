@@ -106,72 +106,74 @@
     </script>
 }
 
-<div class="row">
-    <div class="panel panel-primary">
-        <div class="panel-heading">Applications</div>
-        <div class="panel-body">
-            <div id="globalAlert" class="alert alert-danger alert-dismissible hidden" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                There was <strong>a network problem</strong> while trying to update the application info. Please try again and if the problem
-                persists contact the application administrator.
-            </div>
-            <p>
-                The table below displays applications for which we have received logs or configuration information. By default all applications
-                are disabled and logs coming for them are rejected. You may here change that behavior <strong>by enabling</strong> interesting applications.
-                Additionally you may <strong>configure the log maintenance</strong> (for how many days logs should be kept). If a given application is not interesting
-                for you you may <strong>remove it</strong> - it won't ever again appear in the table.
-            </p>
-            <!-- Table -->
-            <table class="table table-striped table-bordered table-condensed">
-                <thead>
-                    <tr>
-                        <th>Enabled</th>
-                        <th>Application path</th>
-                        <th>Application name</th>
-                        <th>Logs keep time</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var app in Model) {
-                        <tr data-path="@app.Path">
-                            <td>
-                                <input type="checkbox" data-apppath="@app.Path" data-size="mini" data-on-text="YES"
-                                       data-off-text="NO" data-on-color="success" checked="@(!app.IsExcluded)" />
-                            </td>
-                            <td>@app.Path</td>
-                            <td><a name="appname" href="#" title="click to change" data-apppath="@app.Path">@app.Name</a></td>
-                            <td>
-                                <a name="appmaintain" href="#" data-apppath="@app.Path" data-value="@app.DaysToKeepLogs" title="click to change">
-                                    @if (app.DaysToKeepLogs.HasValue) {
-                                        switch (app.DaysToKeepLogs.Value) {
-                                            case 0:
-                                                <text>Forever</text>
-                                                break;
-                                            case 1:
-                                                <text>1 day</text>
-                                                break;
-                                            default:
-                                                <text>@app.DaysToKeepLogs days</text>
-                                                break;
-
-                                        }
-                                    }
-                                </a>
-                            </td>
-                            <td>
-                                <button name="apphide" href="#" title="click to hide" class="btn btn-xs btn-danger" data-apppath="@app.Path">
-                                    <span class="glyphicon glyphicon-trash"></span>
-                                    Remove
-                                </button>
-                            </td>
+<div class="container">
+    <div class="row">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Applications</div>
+            <div class="panel-body">
+                <div id="globalAlert" class="alert alert-danger alert-dismissible hidden" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    There was <strong>a network problem</strong> while trying to update the application info. Please try again and if the problem
+                    persists contact the application administrator.
+                </div>
+                <p>
+                    The table below displays applications for which we have received logs or configuration information. By default all applications
+                    are disabled and logs coming for them are rejected. You may here change that behavior <strong>by enabling</strong> interesting applications.
+                    Additionally you may <strong>configure the log maintenance</strong> (for how many days logs should be kept). If a given application is not interesting
+                    for you you may <strong>remove it</strong> - it won't ever again appear in the table.
+                </p>
+                <!-- Table -->
+                <table class="table table-striped table-bordered table-condensed">
+                    <thead>
+                        <tr>
+                            <th>Enabled</th>
+                            <th>Application path</th>
+                            <th>Application name</th>
+                            <th>Logs keep time</th>
+                            <th></th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-            <p>
-                <a href="~/">&lt;&lt; Go back to the grid</a>.
-            </p>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model) {
+                            <tr data-path="@app.Path">
+                                <td>
+                                    <input type="checkbox" data-apppath="@app.Path" data-size="mini" data-on-text="YES"
+                                           data-off-text="NO" data-on-color="success" checked="@(!app.IsExcluded)" />
+                                </td>
+                                <td>@app.Path</td>
+                                <td><a name="appname" href="#" title="click to change" data-apppath="@app.Path">@app.Name</a></td>
+                                <td>
+                                    <a name="appmaintain" href="#" data-apppath="@app.Path" data-value="@app.DaysToKeepLogs" title="click to change">
+                                        @if (app.DaysToKeepLogs.HasValue) {
+                                            switch (app.DaysToKeepLogs.Value) {
+                                                case 0:
+                                                    <text>Forever</text>
+                                                    break;
+                                                case 1:
+                                                    <text>1 day</text>
+                                                    break;
+                                                default:
+                                                    <text>@app.DaysToKeepLogs days</text>
+                                                    break;
+
+                                            }
+                                        }
+                                    </a>
+                                </td>
+                                <td>
+                                    <button name="apphide" href="#" title="click to hide" class="btn btn-xs btn-danger" data-apppath="@app.Path">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                        Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <p>
+                    <a href="~/">&lt;&lt; Go back to the grid</a>.
+                </p>
+            </div>
         </div>
     </div>
 </div>
@@ -196,8 +198,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button id="btnSaveAppname" type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -230,3 +232,4 @@
         </div>
     </div>
 </div>
+

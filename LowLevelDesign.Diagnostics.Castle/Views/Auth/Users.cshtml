@@ -152,168 +152,170 @@
     </script>
 }
 
-<div class="panel panel-primary">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Access control configuration</div>
-    <div class="panel-body">
-        <div id="globalAlert" class="alert alert-danger alert-dismissible hidden" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            There was <strong>a problem</strong> while trying to update the user info. Please try again and if the problem
-            persists contact the application administrator.
+<div class="container">
+    <div class="panel panel-primary">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Access control configuration</div>
+        <div class="panel-body">
+            <div id="globalAlert" class="alert alert-danger alert-dismissible hidden" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                There was <strong>a problem</strong> while trying to update the user info. Please try again and if the problem
+                persists contact the application administrator.
+            </div>
+            <p>
+                <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki/1.5.authentication" target="_blank">Access control</a> is:
+                <input id="authEnabledSwitch" type="checkbox" data-size="mini" data-on-text="ON" data-off-text="OFF" data-on-color="success"
+                       checked="@((bool)ViewBag.AuthEnabled)" />
+            </p>
+            <p>
+                A list of users which have access to the applications grid can be found below. To register a new user go to
+                <button name="registeruser" class="btn btn-xs btn-default">the registration form</button>.
+            </p>
         </div>
-        <p>
-            <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki/1.5.authentication" target="_blank">Access control</a> is:
-            <input id="authEnabledSwitch" type="checkbox" data-size="mini" data-on-text="ON" data-off-text="OFF" data-on-color="success"
-                   checked="@((bool)ViewBag.AuthEnabled)" />
-        </p>
-        <p>
-            A list of users which have access to the applications grid can be found below. To register a new user go to
-            <button name="registeruser" class="btn btn-xs btn-default">the registration form</button>.
-        </p>
-    </div>
-    <table id="users" class="table table-hover">
-        <tbody>
-            @foreach (var u in Model) {
-                <tr id="tr@(u.Id)">
-                    <td>
-                        @u.UserName @if (u.IsAdmin) { <span name="adminbadge" class="label label-success">Administrator</span> }
-                    </td>
+        <table id="users" class="table table-hover">
+            <tbody>
+                @foreach (var u in Model) {
+                    <tr id="tr@(u.Id)">
+                        <td>
+                            @u.UserName @if (u.IsAdmin) { <span name="adminbadge" class="label label-success">Administrator</span> }
+                        </td>
+                        <td class="text-right text-nowrap">
+                            <button name="resetpasswd" class="btn btn-xs btn-info" data-userid="@u.Id" data-username="@u.UserName">
+                                Change Password
+                            </button>
+                            <button name="rmuser" class="btn btn-xs btn-danger" data-userid="@u.Id" data-username="@u.UserName">
+                                <span class="glyphicon glyphicon-trash"></span>
+                                Remove
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <table id="template" class="hidden">
+            <tbody>
+                <tr id="td{userid}">
+                    <td>{username} <span name="adminbadge" class="label label-success hidden">Administrator</span></td>
                     <td class="text-right text-nowrap">
-                        <button name="resetpasswd" class="btn btn-xs btn-info" data-userid="@u.Id" data-username="@u.UserName">
+                        <button name="resetpasswd" class="btn btn-xs btn-info" data-userid="{userid}" data-username="{username}">
                             Change Password
                         </button>
-                        <button name="rmuser" class="btn btn-xs btn-danger" data-userid="@u.Id" data-username="@u.UserName">
+                        <button name="rmuser" class="btn btn-xs btn-danger" data-userid="{userid}" data-username="{username}">
                             <span class="glyphicon glyphicon-trash"></span>
                             Remove
                         </button>
                     </td>
                 </tr>
-            }
-        </tbody>
-    </table>
-    <table id="template" class="hidden">
-        <tbody>
-            <tr id="td{userid}">
-                <td>{username} <span name="adminbadge" class="label label-success hidden">Administrator</span></td>
-                <td class="text-right text-nowrap">
-                    <button name="resetpasswd" class="btn btn-xs btn-info" data-userid="{userid}" data-username="{username}">
-                        Change Password
-                    </button>
-                    <button name="rmuser" class="btn btn-xs btn-danger" data-userid="{userid}" data-username="{username}">
-                        <span class="glyphicon glyphicon-trash"></span>
-                        Remove
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
 
 
-<div id="userRemoveModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"></h4>
-            </div>
-            <div class="modal-body">
-                <p>After removal the user won't be able to sign into the application.</p>
-            </div>
-            <div class="modal-footer">
-                <button name="rmbtn" type="button" class="btn btn-danger">Remove</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    <div id="userRemoveModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <p>After removal the user won't be able to sign into the application.</p>
+                </div>
+                <div class="modal-footer">
+                    <button name="rmbtn" type="button" class="btn btn-danger">Remove</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div id="noAdminModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">No Administrator account found.</h4>
-            </div>
-            <div class="modal-body">
-                <p>
-                    <strong>Please register an Administrator account</strong> - you can't enable access control when there is
-                    no Administrator account configured in the application. More information can be found in the
-                    <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki/1.5.authentication" target="_blank">documentation</a>.
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+    <div id="noAdminModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">No Administrator account found.</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <strong>Please register an Administrator account</strong> - you can't enable access control when there is
+                        no Administrator account configured in the application. More information can be found in the
+                        <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki/1.5.authentication" target="_blank">documentation</a>.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div id="changePasswordModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Change password</h4>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-danger hidden" role="alert"></div>
-                <form method="post" action="~/auth/adminresetpasswd">
-                    <input name="Id" type="hidden" value="" />
-                    <div class="form-group">
-                        <label for="Password">New password</label>
-                        <input type="password" class="form-control" name="Password" placeholder="New password" value="" />
-                    </div>
-                    <div class="form-group">
-                        <label for="ConfirmPassword">Confirm password</label>
-                        <input type="password" class="form-control" name="ConfirmPassword" placeholder="Confirm password" value="" />
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button name="confirm" type="button" class="btn btn-primary">Submit</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div id="registerNewUserModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Register new user</h4>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-danger hidden" role="alert"></div>
-                <form method="post" action="~/auth/register">
-                    <div class="form-group">
-                        <label for="Login">Login</label>
-                        <input type="text" class="form-control" id="Login" name="Login" placeholder="Login" value="" />
-                    </div>
-                    <div class="form-group">
-                        <div class="checkbox">
-                            <label>
-                                <input name="IsAdmin" id="IsAdmin" type="checkbox" value="true" />
-                                Is Administrator
-                            </label>
+    <div id="changePasswordModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Change password</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger hidden" role="alert"></div>
+                    <form method="post" action="~/auth/adminresetpasswd">
+                        <input name="Id" type="hidden" value="" />
+                        <div class="form-group">
+                            <label for="Password">New password</label>
+                            <input type="password" class="form-control" name="Password" placeholder="New password" value="" />
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="Password">Password</label>
-                        <input type="password" class="form-control" id="Password" name="Password" placeholder="Password" value="" />
-                    </div>
-                    <div class="form-group">
-                        <label for="ConfirmPassword">Confirm password</label>
-                        <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" placeholder="Confirm password" value="" />
-                    </div>
-                </form>
+                        <div class="form-group">
+                            <label for="ConfirmPassword">Confirm password</label>
+                            <input type="password" class="form-control" name="ConfirmPassword" placeholder="Confirm password" value="" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button name="confirm" type="button" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button name="confirm" type="button" class="btn btn-primary">Submit</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+    </div>
+
+
+    <div id="registerNewUserModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Register new user</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger hidden" role="alert"></div>
+                    <form method="post" action="~/auth/register">
+                        <div class="form-group">
+                            <label for="Login">Login</label>
+                            <input type="text" class="form-control" id="Login" name="Login" placeholder="Login" value="" />
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input name="IsAdmin" id="IsAdmin" type="checkbox" value="true" />
+                                    Is Administrator
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Password">Password</label>
+                            <input type="password" class="form-control" id="Password" name="Password" placeholder="Password" value="" />
+                        </div>
+                        <div class="form-group">
+                            <label for="ConfirmPassword">Confirm password</label>
+                            <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" placeholder="Confirm password" value="" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button name="confirm" type="button" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
             </div>
         </div>
     </div>

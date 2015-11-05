@@ -1,27 +1,29 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<LoginViewModel>
 
-<div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Welcome!</h3>
-            </div>
-            <div class="panel-body">
-                @Html.Partial("Shared/ValidationResults.cshtml")
-                <form method="post" action="">
-                    <div class="form-group">
-                        <label for="Login">Login</label>
-                        <input type="text" class="form-control" id="Login" name="Login" placeholder="Login" value="@Model.Login" />
-                    </div>
-                    <div class="form-group">
-                        <label for="Password">Password</label>
-                        <input type="password" class="form-control" id="Password" name="Password" placeholder="Password" value="@Model.Password" />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Welcome!</h3>
+                </div>
+                <div class="panel-body">
+                    @Html.Partial("Shared/ValidationResults.cshtml")
+                    <form method="post" action="">
+                        <div class="form-group">
+                            <label for="Login">Login</label>
+                            <input type="text" class="form-control" id="Login" name="Login" placeholder="Login" value="@Model.Login" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Password">Password</label>
+                            <input type="password" class="form-control" id="Password" name="Password" placeholder="Password" value="@Model.Password" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
             </div>
         </div>
+        <div class="col-md-3"></div>
     </div>
-    <div class="col-md-3"></div>
 </div>
