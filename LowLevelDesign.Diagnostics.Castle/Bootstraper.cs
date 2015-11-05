@@ -40,6 +40,7 @@ namespace LowLevelDesign.Diagnostics.Castle
             // Diagnostics
 #if !DEBUG
             StaticConfiguration.DisableErrorTraces = true;
+            DiagnosticsHook.Disable(pipelines);
 #endif
             pipelines.OnError += (ctx, err) => {
                 logger.TraceEvent(TraceEventType.Error, 0, "Global application error occurred when serving request: {0}, ex: {1}", ctx.Request.Url, err);

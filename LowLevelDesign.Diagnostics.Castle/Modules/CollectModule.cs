@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
@@ -28,8 +29,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 if (!validationResult.IsValid) {
                     return "VALIDATION ERROR";
                 }
-                logrec.ApplicationPath = logrec.ApplicationPath.TrimEnd('\\', '/');
-
+                logrec.ApplicationPath = Path.GetDirectoryName(logrec.ApplicationPath);
                 var app = await config.FindAppAsync(logrec.ApplicationPath);
                 if (app == null) {
                     app = new Application {
@@ -38,7 +38,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     };
                     await config.AddOrUpdateAppAsync(app);
                 }
-
                 if (!app.IsExcluded) {
                     await logStore.AddLogRecordAsync(logrec);
                     await logStore.UpdateApplicationStatusAsync(
@@ -53,7 +52,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 foreach (var logrec in logrecs) {
                     var validationResult = logRecordValidator.Validate(logrec);
                     if (validationResult.IsValid) {
-                        logrec.ApplicationPath = logrec.ApplicationPath.TrimEnd('\\', '/');
+                        logrec.ApplicationPath = Path.GetDirectoryName(logrec.ApplicationPath);
                         // add new application to the configuration as excluded (it could be later renamed or unexcluded)
                         var app = await config.FindAppAsync(logrec.ApplicationPath);
                         if (app == null) {

@@ -92,20 +92,20 @@
       <HintPath>..\packages\Nancy.1.4.0\lib\net40\Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Nancy.Authentication.Stateless, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.Authentication.Stateless.1.3.0\lib\net40\Nancy.Authentication.Stateless.dll</HintPath>
+    <Reference Include="Nancy.Authentication.Stateless, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Authentication.Stateless.1.4.0\lib\net40\Nancy.Authentication.Stateless.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Nancy.Owin, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.Owin.1.3.0\lib\net40\Nancy.Owin.dll</HintPath>
+    <Reference Include="Nancy.Owin, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Owin.1.4.0\lib\net40\Nancy.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Nancy.Validation.DataAnnotations, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.Validation.DataAnnotations.1.3.0\lib\net40\Nancy.Validation.DataAnnotations.dll</HintPath>
+    <Reference Include="Nancy.Validation.DataAnnotations, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Validation.DataAnnotations.1.4.0\lib\net40\Nancy.Validation.DataAnnotations.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Nancy.ViewEngines.Razor, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.Viewengines.Razor.1.3.0\lib\net40\Nancy.ViewEngines.Razor.dll</HintPath>
+    <Reference Include="Nancy.ViewEngines.Razor, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Viewengines.Razor.1.4.0\lib\net40\Nancy.ViewEngines.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -250,9 +250,9 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>
-if $(ConfigurationName) == Debug (
-xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.1.3.0\BuildProviders\Nancy.ViewEngines.Razor.BuildProviders.dll" "$(ProjectDir)bin\"
-xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.1.3.0\lib\Net40\Nancy.ViewEngines.Razor.dll" "$(ProjectDir)bin\"
+if "$(ConfigurationName)" == Debug (
+xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.1.4.0\BuildProviders\Nancy.ViewEngines.Razor.BuildProviders.dll" "$(ProjectDir)bin\"
+xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.1.4.0\lib\Net40\Nancy.ViewEngines.Razor.dll" "$(ProjectDir)bin\"
 )</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

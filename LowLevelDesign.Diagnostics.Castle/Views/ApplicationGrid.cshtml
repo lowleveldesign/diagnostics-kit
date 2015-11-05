@@ -29,6 +29,10 @@
 @section scripts {
 <script type="text/javascript">
     $(function () {
+        window.setTimeout(function () {
+            window.location.reload();
+        }, 20000);
+
         $('a.appname').on('click', function () {
             var encpath = $(this).attr('data-encpath');
             var name = $(this).text();

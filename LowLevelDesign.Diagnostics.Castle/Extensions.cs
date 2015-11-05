@@ -37,6 +37,22 @@ namespace LowLevelDesign.Diagnostics.Castle
             }
         }
 
+        public static string GetLogMessage(this LogRecord logrec)
+        {
+            if (!string.IsNullOrEmpty(logrec.Message)) {
+                return logrec.Message;
+            }
+            if (string.Equals("IISLog", logrec.LoggerName, StringComparison.Ordinal) 
+                && logrec.AdditionalFields != null) {
+                object httpStatus;
+                logrec.AdditionalFields.TryGetValue("HttpStatusCode", out httpStatus);
+                object url;
+                logrec.AdditionalFields.TryGetValue("Url", out url);
+                return string.Format("HTTP: {0}, url: {1}", httpStatus, url);
+            }
+            return string.Empty;
+        }
+
         public static string GetCounterValueIfAvailable(this LogRecord logrec, string counter)
         {
             var data = logrec.PerformanceData;
