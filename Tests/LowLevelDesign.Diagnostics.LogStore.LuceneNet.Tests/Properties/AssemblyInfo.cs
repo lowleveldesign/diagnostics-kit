@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("StoragePerformanceTests")]
+[assembly: AssemblyTitle("LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("StoragePerformanceTests")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCompany("Qbrick AB")]
+[assembly: AssemblyProduct("LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests")]
+[assembly: AssemblyCopyright("Copyright © Qbrick AB 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("56817b92-429d-4185-aeb9-e576075d6cd0")]
+[assembly: Guid("ba62103a-dce0-4207-97c1-89f43a6f1c83")]
 
 // Version information for an assembly consists of the following four values:
 //
