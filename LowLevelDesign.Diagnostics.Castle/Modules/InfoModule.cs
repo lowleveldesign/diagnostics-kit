@@ -11,7 +11,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
         {
             Get["/about"] = _ => {
                 var result = new DiagnosticsKitInformation {
-                    Version = typeof(LogRecord).Assembly.GetName().Version.ToString(),
+                    Version = SelfInformation.ApplicationVersion,
                     UsedLogStore = AppSettings.GetLogStore().GetType().AssemblyQualifiedName,
                     UsedAppConfigurationManager = AppSettings.GetAppConfigurationManager().GetType().AssemblyQualifiedName,
                     UsedAppUserManager = AppSettings.GetAppUserManager().GetType().AssemblyQualifiedName,
