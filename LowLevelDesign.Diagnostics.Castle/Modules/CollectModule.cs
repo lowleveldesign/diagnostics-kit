@@ -29,7 +29,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 if (!validationResult.IsValid) {
                     return "VALIDATION ERROR";
                 }
-                logrec.ApplicationPath = Path.GetDirectoryName(logrec.ApplicationPath);
+                logrec.ApplicationPath = logrec.ApplicationPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                 var app = await config.FindAppAsync(logrec.ApplicationPath);
                 if (app == null) {
                     app = new Application {
@@ -52,7 +52,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 foreach (var logrec in logrecs) {
                     var validationResult = logRecordValidator.Validate(logrec);
                     if (validationResult.IsValid) {
-                        logrec.ApplicationPath = Path.GetDirectoryName(logrec.ApplicationPath);
+                        logrec.ApplicationPath = logrec.ApplicationPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                         // add new application to the configuration as excluded (it could be later renamed or unexcluded)
                         var app = await config.FindAppAsync(logrec.ApplicationPath);
                         if (app == null) {

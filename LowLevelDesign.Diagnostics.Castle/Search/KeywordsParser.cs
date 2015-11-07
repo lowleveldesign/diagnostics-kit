@@ -37,7 +37,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Search
                     if (keywordSearchResult != SearchKeywordResult.NotFound)
                     {
                         foundKeywords[keyword] = keywordSearchResult.KeywordValue;
-                        txt = ReplaceFoundKeywordWithSpace(keywordSearchResult, txt);
+                        txt = ReplaceFoundKeywordAndSpaceAroungItWithSpace(keywordSearchResult, txt);
                     }
                 }
 
@@ -50,12 +50,16 @@ namespace LowLevelDesign.Diagnostics.Castle.Search
             return result;
         }
 
-        private static string ReplaceFoundKeywordWithSpace(SearchKeywordResult keywordSearchResult, string txt)
+        private static string ReplaceFoundKeywordAndSpaceAroungItWithSpace(SearchKeywordResult keywordSearchResult, string txt)
         {
             var buffer = new StringBuilder(txt);
-            buffer = buffer.Remove(keywordSearchResult.Start, keywordSearchResult.End - keywordSearchResult.Start);
-            if (keywordSearchResult.Start == 0) {
-                buffer.Remove(keywordSearchResult.Start, 1);
+            // remove space before the keyword (if exists)
+            int start = keywordSearchResult.Start > 0 ? keywordSearchResult.Start - 1 : 0;
+            // remove space after the keyword (if exists)
+            int end = keywordSearchResult.End < txt.Length - 1 ? keywordSearchResult.End + 1 : txt.Length - 1;
+            buffer = buffer.Remove(start, end - start + 1);
+            if (start > 0 && buffer.Length > 0) {
+                buffer.Insert(start, ' ');
             }
             return buffer.ToString();
         }
@@ -80,19 +84,19 @@ namespace LowLevelDesign.Diagnostics.Castle.Search
                                 Keyword = keyword,
                                 KeywordValue = txt.Substring(potentialKeywordValuePosition+ 1, 
                                                     keywordValueEndPosition - potentialKeywordValuePosition - 1),
-                                Start = Math.Max(0, potentialKeywordPosition - 1),
-                                End = Math.Min(keywordValueEndPosition + 1, txt.Length - 1)
+                                Start = potentialKeywordPosition,
+                                End = keywordValueEndPosition
                             };
                         }
                     } else if (!Char.IsWhiteSpace(txt[potentialKeywordValuePosition])) {
-                        int keywordValueEndPosition = FindNextWhitespacePosition(txt, potentialKeywordValuePosition);
+                        int keywordValueEndPosition = FindKeywordEndPosition(txt, potentialKeywordValuePosition);
                         if (keywordValueEndPosition >= 0) {
                             return new SearchKeywordResult {
                                 Keyword = keyword,
                                 KeywordValue = txt.Substring(potentialKeywordValuePosition, 
-                                                    keywordValueEndPosition - potentialKeywordValuePosition),
-                                Start = Math.Max(0, potentialKeywordPosition - 1),
-                                End = Math.Min(keywordValueEndPosition, txt.Length - 1)
+                                                    keywordValueEndPosition - potentialKeywordValuePosition + 1),
+                                Start = potentialKeywordPosition,
+                                End = keywordValueEndPosition
                             };
                         }
                     }
@@ -103,14 +107,14 @@ namespace LowLevelDesign.Diagnostics.Castle.Search
             return SearchKeywordResult.NotFound;
         }
 
-        private static int FindNextWhitespacePosition(string txt, int startPosition)
+        private static int FindKeywordEndPosition(string txt, int startPosition)
         {
             for (int i = startPosition; i < txt.Length; i++) {
                 if (Char.IsWhiteSpace(txt[i])) {
-                    return i;
+                    return i - 1;
                 }
             }
-            return -1;
+            return txt.Length - 1;
         }
     }
 }

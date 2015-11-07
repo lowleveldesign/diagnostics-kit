@@ -21,6 +21,14 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.Null(keywordsParsed.Service);
             Assert.Equal("test test2 bla bla2 ", keywordsParsed.FreeText);
 
+            s = "http:200.0.1";
+            keywordsParsed = KeywordsParser.Parse(s);
+            Assert.Equal("200.0.1", keywordsParsed.HttpStatus);
+            Assert.Null(keywordsParsed.ClientIp);
+            Assert.Null(keywordsParsed.Url);
+            Assert.Null(keywordsParsed.Service);
+            Assert.Equal("", keywordsParsed.FreeText);
+
             s = null;
             keywordsParsed = KeywordsParser.Parse(s);
             Assert.NotNull(keywordsParsed);
