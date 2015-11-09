@@ -89,7 +89,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                         });
                     }
                 }
-
                 return View["ApplicationGrid.cshtml", model];
             };
 

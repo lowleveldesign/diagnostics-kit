@@ -10,6 +10,11 @@
         table-layout: fixed;
     }
 
+    .LimitedHeight {
+        max-height: 550px; 
+        overflow: auto
+    }
+
     .shorten {
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -31,52 +36,45 @@
     $(function () {
         window.setTimeout(function () {
             window.location.reload();
-        }, 1000);
+        }, 30000);
 
         $('a.appname').on('click', function () {
             var encpath = $(this).attr('data-encpath');
             var name = $(this).text();
+            $.get('@Html.RenderContext.ParsePath("~/conf/appsrvconfig/")' + encpath, function (data) {
+                // fill modal content
+                var dlg = $('#modelDialog');
+                $('h4', dlg).text(name);
+                $('.ConfigurationPane', dlg).empty();
+                if (data && data.length > 0) {
+                    $(data).each(function (ind, elem) {
+                        var html = "<div class=\"panel panel-primary\">" + "<div class=\"panel-heading\"><strong>Server: " +
+                        elem.server + "</strong></div><div class=\"panel-body\">";
 
-            // check if we don't already have such a dialog
-            if ($('#info' + encpath).length) {
-                $('#info' + encpath).modal();
-            } else {
-                $.get('conf/appsrvconfig/' + encpath, function (data) {
-                    // create a new modal
-                    var clonedDlg = $('#modelDialog').clone();
-                    clonedDlg.attr('id', 'info' + encpath);
-                    // fill modal content
-                    $('h4', clonedDlg).text(name);
-                    if (data && data.length > 0) {
-                        $(data).each(function (ind, elem) {
-                            var html = "<div class=\"panel panel-primary\">" + "<div class=\"panel-heading\"><strong>Server: " +
-                            elem.server + "</strong></div><div class=\"panel-body\">";
+                        if (elem.appPoolName) {
+                            html += "<p>Application pool: <strong>" + elem.appPoolName + "</strong></p>";
+                        }
+                        html += "<p>Application path: <strong>" + elem.appPath + "</strong></p>";
 
-                            if (elem.appPoolName) {
-                                html += "<p>Application pool: <strong>" + elem.appPoolName + "</strong></p>";
+                        if (elem.bindings && elem.bindings.length > 0) {
+                            "<ul class=\"list-group\"><li class=\"list-group-item list-group-item-info\">Bindings</li>";
+                            for (var i = 0; i < elem.bindings.length; i++) {
+                                html += "<li class=\"list-group-item\">" + elem.bindings[i] + "</li>";
                             }
-                            html += "<p>Application path: <strong>" + elem.appPath + "</strong></p>";
-
-                            if (elem.bindings && elem.bindings.length > 0) {
-                                "<ul class=\"list-group\"><li class=\"list-group-item list-group-item-info\">Bindings</li>";
-                                for (var i = 0; i < elem.bindings.length; i++) {
-                                    html += "<li class=\"list-group-item\">" + elem.bindings[i] + "</li>";
-                                }
-                                html += "</ul>";
-                            }
-                            html += "</div></div>";
-                            $('.modal-body', clonedDlg).append(html);
-                        })
-                    } else {
-                        $('.MusketeerInfo', clonedDlg).show();
-                    }
-
-                    clonedDlg.after('#modelDialog');
-                    clonedDlg.modal();
-                }, 'json').fail(function () {
-                    alert('Error occurred while connecting the server. Please try again.');
-                });
-            }
+                            html += "</ul>";
+                        }
+                        html += "</div></div>";
+                        $('.ConfigurationPane', dlg).append(html);
+                    });
+                } else {
+                    $('.MusketeerInfo', dlg).show();
+                }
+                dlg.modal();
+                $('.LimitedHeight', dlg).scrollTop(0);
+            }, 'json').fail(function () {
+                alert('Error occurred while connecting the server. Please try again.');
+            });
+            return false;
         });
     });
 </script>
@@ -165,25 +163,27 @@
         </table>
         }
     </div>
+</div>
 
-    <div id="modelDialog" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"></h4>
+<div id="modelDialog" class="modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body LimitedHeight">
+                <div class="MusketeerInfo">
+                    <div class="alert alert-warning" role="alert"><strong>I'm sorry, but no configuration data is available for this application.</strong></div>
+                    Configuration data is generated by the
+                    <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki/musketeer" target="_blank">Musketeer</a> application,
+                    which must be installed on the web application servers.
                 </div>
-                <div class="modal-body">
-                    <div class="MusketeerInfo">
-                        <div class="alert alert-warning" role="alert"><strong>I'm sorry, but no configuration data is available for this application.</strong></div>
-                        Configuration data is generated by the
-                        <a href="https://github.com/lowleveldesign/diagnostics-kit/wiki/musketeer" target="_blank">Musketeer</a> application,
-                        which must be installed on the web application servers.
-                    </div>
+                <div class="ConfigurationPane">
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
