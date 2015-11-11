@@ -1,6 +1,5 @@
 ﻿using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -27,7 +26,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
         /// Updates selected properties for an app. Path must be provided 
         /// in the app object.
         /// </summary>
-        Task UpdateAppPropertiesAsync(Application app, String[] propertiesToUpdate);
+        Task UpdateAppPropertiesAsync(Application app, string[] propertiesToUpdate);
 
         /// <summary>
         /// Retruns an ordered by path list of applications for which we have already received logs
@@ -43,7 +42,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
         /// <param name="appPaths">Applications for which we need configuration settings</param>
         /// <param name="server">Server which interests us (or null if we want to return configurations on all servers)</param>
         /// <returns></returns>
-        Task<IEnumerable<ApplicationServerConfig>> GetAppConfigsAsync(String[] appPaths, String server = null);
+        Task<IEnumerable<ApplicationServerConfig>> GetAppConfigsAsync(string[] appPaths, string server = null);
 
         /// <summary>
         /// Adds or updates application server configuration.
@@ -56,13 +55,13 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
         /// Sets global setting value. If value for a given key exists
         /// it will be overwritten. 
         /// </summary>
-        Task SetGlobalSettingAsync(String key, String value);
+        Task SetGlobalSettingAsync(string key, string value);
 
         /// <summary>
         /// Gets value of the global setting. Returns null 
         /// if the key does not exist.
         /// </summary>
-        Task<String> GetGlobalSettingAsync(String key);
+        Task<string> GetGlobalSettingAsync(string key);
 
         /// <summary>
         /// Gets value of the global setting synchronously. 
@@ -70,6 +69,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.Commons.Config
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        String GetGlobalSetting(String key);
+        string GetGlobalSetting(string key);
     }
 }

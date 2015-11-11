@@ -50,6 +50,11 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 // and send back their configuration
                 return await appconf.GetAppConfigsAsync(apps.Select(app => app.Path).ToArray());
             };
+            Get["conf/appsrvconfigs", true] = async (x, ct) => {
+                var activeAppPaths = (await appconf.GetAppsAsync()).Where(
+                    app => !app.IsHidden && !app.IsExcluded).Select(app => app.Path).ToArray();
+                return Response.AsJson(await appconf.GetAppConfigsAsync(activeAppPaths));
+            };
         }
 
         private static async Task<String> UpdateAppPropertiesAsync(IAppConfigurationManager appconf,
