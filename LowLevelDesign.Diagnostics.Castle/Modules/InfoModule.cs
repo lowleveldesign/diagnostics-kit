@@ -17,7 +17,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     UsedAppUserManager = AppSettings.GetAppUserManager().GetType().AssemblyQualifiedName,
                     IsAuthenticationEnabled = globalSettings.IsAuthenticationEnabled()
                 };
-                return View["About.cshtml", result];
+                return Negotiate.WithView("About.cshtml").WithModel(result);
             };
         }
     }

@@ -56,6 +56,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests\LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests.csproj", "{BA62103A-DCE0-4207-97C1-89F43A6F1C83}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bishop", "Bishop", "{3DC4B847-F6A0-48AA-B6AD-F79F59E62916}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Bishop", "Bishop\LowLevelDesign.Diagnostics.Bishop\LowLevelDesign.Diagnostics.Bishop.csproj", "{171E4DA3-2D4F-4A0B-A775-25A657437B35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.BishopUpdateShim", "Bishop\LowLevelDesign.Diagnostics.BishopUpdateShim\LowLevelDesign.Diagnostics.BishopUpdateShim.csproj", "{33C920BF-33A6-4246-984A-5CDF9524E191}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Bishop.Tests", "Tests\LowLevelDesign.Diagnostics.Bishop.Tests\LowLevelDesign.Diagnostics.Bishop.Tests.csproj", "{ECB23941-7C7D-4054-914B-6F99972F3282}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -142,6 +150,18 @@ Global
 		{BA62103A-DCE0-4207-97C1-89F43A6F1C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA62103A-DCE0-4207-97C1-89F43A6F1C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA62103A-DCE0-4207-97C1-89F43A6F1C83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{171E4DA3-2D4F-4A0B-A775-25A657437B35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{171E4DA3-2D4F-4A0B-A775-25A657437B35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{171E4DA3-2D4F-4A0B-A775-25A657437B35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{171E4DA3-2D4F-4A0B-A775-25A657437B35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33C920BF-33A6-4246-984A-5CDF9524E191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33C920BF-33A6-4246-984A-5CDF9524E191}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33C920BF-33A6-4246-984A-5CDF9524E191}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33C920BF-33A6-4246-984A-5CDF9524E191}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECB23941-7C7D-4054-914B-6F99972F3282}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECB23941-7C7D-4054-914B-6F99972F3282}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECB23941-7C7D-4054-914B-6F99972F3282}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECB23941-7C7D-4054-914B-6F99972F3282}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -164,6 +184,9 @@ Global
 		{3DC7E0FD-41A6-4924-BA85-19D7852513B0} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{B769B100-2318-4A28-89D4-EB23B8682FE6} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{BA62103A-DCE0-4207-97C1-89F43A6F1C83} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
+		{171E4DA3-2D4F-4A0B-A775-25A657437B35} = {3DC4B847-F6A0-48AA-B6AD-F79F59E62916}
+		{33C920BF-33A6-4246-984A-5CDF9524E191} = {3DC4B847-F6A0-48AA-B6AD-F79F59E62916}
+		{ECB23941-7C7D-4054-914B-6F99972F3282} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35;packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Logging.5.0.505.1\lib\NET35
