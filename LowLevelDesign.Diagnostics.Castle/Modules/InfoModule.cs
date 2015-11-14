@@ -1,14 +1,19 @@
 ﻿using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Castle.Models;
-using LowLevelDesign.Diagnostics.Commons.Models;
 using Nancy;
+using System.IO;
+using System.Linq;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
     public class InfoModule : NancyModule
     {
-        public InfoModule(GlobalConfig globalSettings)
+        private readonly IRootPathProvider pathProvider;
+
+        public InfoModule(GlobalConfig globalSettings, IRootPathProvider pathProvider)
         {
+            this.pathProvider = pathProvider;
+
             Get["/about"] = _ => {
                 var result = new DiagnosticsKitInformation {
                     Version = SelfInformation.ApplicationVersion,
@@ -19,6 +24,38 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                 };
                 return Negotiate.WithView("About.cshtml").WithModel(result);
             };
+
+            Get["/about-musketeer"] = _ => {
+                return new ApplicationUpdate {
+                    UpdateForApplication = FindUpdate("musketeer_"),
+                    UpdateForApplicationShim = FindUpdate("musketeershim_")
+                };
+            };
+
+            Get["/about-bishop"] = _ => {
+                return new ApplicationUpdate {
+                    UpdateForApplication = FindUpdate("bishop_"),
+                    UpdateForApplicationShim = FindUpdate("bishopshim_")
+                };
+            };
+        }
+
+        private UpdateAvailability FindUpdate(string updatePrefix)
+        {
+            var update = new UpdateAvailability();
+
+            var updatesBaseUrl = string.Format("{0}{1}/content/updates/", Request.Url.SiteBase, Request.Url.BasePath);
+            var updatesFolder = Path.Combine(pathProvider.GetRootPath(), "Content", "updates");
+            if (Directory.Exists(updatesFolder)) {
+                var updateFilePath = Directory.GetFiles(updatesFolder, updatePrefix + "*.zip").OrderByDescending(
+                    f => f).FirstOrDefault();
+                if (updateFilePath != null) {
+                    update.Version = Path.GetFileNameWithoutExtension(updateFilePath).Remove(0, updatePrefix.Length);
+                    update.FullUrlToUpdate = updatesBaseUrl + Path.GetFileName(updateFilePath);
+                }
+            }
+
+            return update;
         }
     }
 }

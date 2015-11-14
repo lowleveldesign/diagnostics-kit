@@ -10,6 +10,8 @@ build-nuget-package.bat
 *.sln.docstates
 .vs
 
+LowLevelDesign.Diagnostics.Castle/Content/updates/*
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
