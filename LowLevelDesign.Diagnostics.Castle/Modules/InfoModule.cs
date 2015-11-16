@@ -26,17 +26,17 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
             };
 
             Get["/about-musketeer"] = _ => {
-                return new ApplicationUpdate {
+                return Response.AsJson(new ApplicationUpdate {
                     UpdateForApplication = FindUpdate("musketeer_"),
                     UpdateForApplicationShim = FindUpdate("musketeershim_")
-                };
+                });
             };
 
             Get["/about-bishop"] = _ => {
-                return new ApplicationUpdate {
+                return Response.AsJson(new ApplicationUpdate {
                     UpdateForApplication = FindUpdate("bishop_"),
                     UpdateForApplicationShim = FindUpdate("bishopshim_")
-                };
+                });
             };
         }
 
