@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -14,6 +15,8 @@ namespace LowLevelDesign.Diagnostics.Bishop.Config
         private byte[] encryptedPassword;
 
         private IEnumerable<RequestTransformation> transformations = new RequestTransformation[0];
+
+        private IEnumerable<HttpsLocalRedirect> httpsRedirects = new HttpsLocalRedirect[0];
 
         public Uri DiagnosticsUrl { get; set; }
 
@@ -39,9 +42,21 @@ namespace LowLevelDesign.Diagnostics.Bishop.Config
             set { transformations = value; }
         }
 
+        public IEnumerable<HttpsLocalRedirect> HttpsRedirects
+        {
+            get { return httpsRedirects; }
+            set { httpsRedirects = value; }
+        }
+
         public void Save(string configFilePath)
         {
             File.WriteAllText(configFilePath, JsonConvert.SerializeObject(this));
+        }
+
+        public int FindLocalPortForHttpsRedirection(int remotePort)
+        {
+            var httpRedirect = httpsRedirects.Where(r => r.RemoteHttpsPort == remotePort).FirstOrDefault();
+            return httpRedirect == null ? 0 : httpRedirect.LocalHttpPort;
         }
 
         public static PluginSettings Load(string configFilePath)

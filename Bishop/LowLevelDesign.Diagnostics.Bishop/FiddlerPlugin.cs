@@ -1,25 +1,131 @@
 ﻿using Fiddler;
 using LowLevelDesign.Diagnostics.Bishop.Config;
+using LowLevelDesign.Diagnostics.Bishop.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace LowLevelDesign.Diagnostics.Bishop
 {
     public class FiddlerPlugin : IAutoTamper
     {
+        private readonly string configurationFilePath = Path.Combine(Path.GetDirectoryName(
+            Assembly.GetExecutingAssembly().Location), "bishop.conf");
+
         private PluginSettings settings;
         private Tamperer tamperer;
+        private bool isLoaded;
+        private bool shouldInterceptHttps;
 
-        public void AutoTamperRequestAfter(Session oSession)
+        public void OnLoad()
         {
+            try {
+                settings = PluginSettings.Load(configurationFilePath);
+                // FIXME ask for Diagnostics Kit 
+                // FIXME connect with the Diagnostics Castle
+
+                // load menu items for Bishop
+                FiddlerApplication.UI.Menu.MenuItems.Add(PrepareMenu());
+                isLoaded = true;
+            } catch (Exception ex) {
+                MessageBox.Show("There was a problem while loading the Bishop plugin. Please check the Fiddler log for details", 
+                    "Bishop is dead.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FiddlerApplication.Log.LogFormat("Bishop error: {0}", ex);
+            }
+        }
+
+        private MenuItem PrepareMenu()
+        {
+            var bishopMenu = new MenuItem("&Bishop");
+
+            // HTTPS -> HTTP emulator
+            var it = new MenuItem("&Emulate HTTPS (localhost)") {
+                Name = "miEnableTlsEdgeRouter",
+                RadioCheck = false,
+                Checked = false
+            };
+            it.Click += (o, ev) => {
+                var mi = (MenuItem)o;
+                shouldInterceptHttps = mi.Checked = !mi.Checked;
+            };
+            bishopMenu.MenuItems.Add(it);
+
+            bishopMenu.MenuItems.Add(it);
+            it = new MenuItem("-");
+            bishopMenu.MenuItems.Add(it);
+
+            // options dialog
+            //it = new MenuItem("&Options...");
+            //it.Click += Options_Click;
+            //bishopMenu.MenuItems.Add(it);
+
+            // about dialog
+            it = new MenuItem("About Bishop...");
+            it.Click += (o, ev) => MessageBox.Show("Version: " + GetType().Assembly.GetName().Version, 
+                "Bishop", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            bishopMenu.MenuItems.Add(it);
+
+            // help
+            it = new MenuItem("Help...");
+            it.Click += (o, ev) => Process.Start(new ProcessStartInfo(
+                "https://github.com/lowleveldesign/diagnostics-kit/wiki/5.1.bishop"));
+            bishopMenu.MenuItems.Add(it);
+
+            return bishopMenu;
         }
 
         public void AutoTamperRequestBefore(Session oSession)
         {
-            
+            if (!isLoaded) {
+                return;
+            }
+            var request = new RequestDescriptor(oSession);
+
+            if (request.IsHttpsConnect)
+            {
+                HandleHttpsConnect(request);
+                return;
+            }
+
+            var tamperParams = ApplyHttpsRedirectionIfAvailable(request);
+        }
+
+        private void HandleHttpsConnect(RequestDescriptor request)
+        {
+            if (request.IsLocal && shouldInterceptHttps) {
+                FiddlerApplication.Log.LogFormat("[Goniec][Thread: {0}] Performing handshake on behalf of the application.", 
+                    Thread.CurrentThread.ManagedThreadId);
+                request.FiddlerSession.oFlags["x-replywithtunnel"] = "true";
+            } else {
+                FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] Forwarding handshake.", 
+                    Thread.CurrentThread.ManagedThreadId);
+            }
+        }
+
+        private TamperParameters ApplyHttpsRedirectionIfAvailable(RequestDescriptor request)
+        {
+            var result = new TamperParameters();
+            if (request.IsLocal && request.IsHttps && shouldInterceptHttps)
+            {
+                var localPort = settings.FindLocalPortForHttpsRedirection(request.FiddlerSession.port);
+                if (localPort > 0) {
+                    request.FiddlerSession.oRequest.headers.Add("X-OriginalBaseUri", 
+                        string.Format("https://{0}", request.FiddlerSession.host));
+                    result.ServerTcpAddressWithPort = string.Format("localhost:{0}", localPort);
+                }
+            }
+            return result;
+        }
+
+        public void AutoTamperRequestAfter(Session oSession)
+        {
         }
 
         public void AutoTamperResponseAfter(Session oSession)
@@ -38,13 +144,5 @@ namespace LowLevelDesign.Diagnostics.Bishop
         {
         }
 
-        public void OnLoad()
-        {
-            // FIXME load the configuration file
-
-            // ask for Diagnostics Kit 
-
-            // connect with the Diagnostics Castle
-        }
     }
 }

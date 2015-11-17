@@ -26,6 +26,19 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
             }
         }
 
+        private class HttpsRedirectEqualityComparer : IEqualityComparer<HttpsLocalRedirect>
+        {
+            public bool Equals(HttpsLocalRedirect x, HttpsLocalRedirect y)
+            {
+                return x.LocalHttpPort == y.LocalHttpPort && x.RemoteHttpsPort == y.RemoteHttpsPort;
+            }
+
+            public int GetHashCode(HttpsLocalRedirect obj)
+            {
+                return (obj.LocalHttpPort + obj.RemoteHttpsPort).GetHashCode();
+            }
+        }
+
         private readonly ITestOutputHelper output;
         private readonly string configFilePath;
 
@@ -43,7 +56,9 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
             Assert.NotNull(expectedSettings);
             Assert.Null(expectedSettings.DiagnosticsUrl);
             Assert.NotNull(expectedSettings.UserDefinedTransformations);
+            Assert.NotNull(expectedSettings.HttpsRedirects);
             Assert.Equal(0, expectedSettings.UserDefinedTransformations.Count());
+            Assert.Equal(0, expectedSettings.HttpsRedirects.Count());
 
             expectedSettings.DiagnosticsUrl = new Uri("http://diagnostics.test.com/test");
             expectedSettings.IsAuthenticationRequired = true;
@@ -62,6 +77,16 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
                     RegexToMatch = ".*"
                 },
             };
+            expectedSettings.HttpsRedirects = new[] {
+                new HttpsLocalRedirect {
+                    LocalHttpPort = 2000,
+                    RemoteHttpsPort = 444
+                },
+                new HttpsLocalRedirect {
+                    LocalHttpPort = 2001,
+                    RemoteHttpsPort = 445
+                }
+            };
             expectedSettings.Save(configFilePath);
 
             output.WriteLine(File.ReadAllText(configFilePath));
@@ -73,6 +98,8 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
             Assert.Equal(expectedPassword, actualSettings.GetPassword());
             Assert.Equal(expectedSettings.UserDefinedTransformations, actualSettings.UserDefinedTransformations,
                 new RequestTransformationEqualityComparer());
+            Assert.Equal(expectedSettings.HttpsRedirects, actualSettings.HttpsRedirects,
+                new HttpsRedirectEqualityComparer());
         }
 
         public void Dispose()

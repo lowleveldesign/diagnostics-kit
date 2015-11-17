@@ -2,10 +2,8 @@
 {
     public sealed class TamperParameters
     {
-        public string ServerTcpAddress { get; set; }
+        public string ServerTcpAddressWithPort { get; set; }
 
         public string HostHeader { get; set;  }
-
-
     }
 }
