@@ -1,8 +1,11 @@
 ﻿using LowLevelDesign.Diagnostics.Castle.Config;
 using LowLevelDesign.Diagnostics.Castle.Models;
 using Nancy;
+using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace LowLevelDesign.Diagnostics.Castle.Modules
 {
@@ -51,11 +54,21 @@ namespace LowLevelDesign.Diagnostics.Castle.Modules
                     f => f).FirstOrDefault();
                 if (updateFilePath != null) {
                     update.Version = Path.GetFileNameWithoutExtension(updateFilePath).Remove(0, updatePrefix.Length);
+                    update.FileHash = CalculateFileHash(updateFilePath);
                     update.FullUrlToUpdate = updatesBaseUrl + Path.GetFileName(updateFilePath);
                 }
             }
 
             return update;
+        }
+
+        private static string CalculateFileHash(string filePath)
+        {
+            using (var md5 = MD5.Create()) {
+                using (var stream = File.OpenRead(filePath)) {
+                    return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", string.Empty);
+                }
+            }
         }
     }
 }

@@ -17,6 +17,8 @@
     {
         public string Version { get; set; }
 
+        public string FileHash { get; set; }
+
         public string FullUrlToUpdate { get; set; }
     }
 
