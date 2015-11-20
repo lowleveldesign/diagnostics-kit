@@ -1,4 +1,4 @@
-﻿namespace LowLevelDesign.Diagnostics.Bishop.Models
+﻿namespace LowLevelDesign.Diagnostics.Bishop.Config
 {
     public sealed class HttpsLocalRedirect
     {
@@ -9,9 +9,9 @@
 
     public sealed class RequestTransformation
     {
-        public string RegexToMatch { get; set; }
+        public string RegexToMatchAgainstPathAndQuery { get; set; }
 
-        public string DestinationUrl { get; set; }
+        public string DestinationPathAndQuery { get; set; }
 
         public string DestinationHostHeader { get; set; }
     }

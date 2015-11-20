@@ -1,6 +1,6 @@
 ﻿using Fiddler;
 
-namespace LowLevelDesign.Diagnostics.Bishop.Models
+namespace LowLevelDesign.Diagnostics.Bishop.Common
 {
     public sealed class RequestDescriptor
     {
@@ -21,6 +21,12 @@ namespace LowLevelDesign.Diagnostics.Bishop.Models
         public bool IsHttps { get { return fiddlerSession.isHTTPS; } }
 
         public bool IsHttpsConnect { get { return isHttpsConnect; } }
+
+        public string FullUrl { get { return fiddlerSession.fullUrl; } }
+
+        public string PathAndQuery { get { return fiddlerSession.PathAndQuery; } }
+
+        public string Host { get { return FiddlerSession.host; } }
 
         public Session FiddlerSession { get { return fiddlerSession; } }
     }

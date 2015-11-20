@@ -15,14 +15,14 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
         {
             public bool Equals(RequestTransformation x, RequestTransformation y)
             {
-                return string.Equals(x.DestinationUrl, y.DestinationUrl) &&
+                return string.Equals(x.DestinationPathAndQuery, y.DestinationPathAndQuery) &&
                     string.Equals(x.DestinationHostHeader, y.DestinationHostHeader) &&
-                    string.Equals(x.RegexToMatch, y.RegexToMatch);
+                    string.Equals(x.RegexToMatchAgainstPathAndQuery, y.RegexToMatchAgainstPathAndQuery);
             }
 
             public int GetHashCode(RequestTransformation obj)
             {
-                return (obj.DestinationUrl ?? string.Empty).GetHashCode();
+                return (obj.DestinationPathAndQuery ?? string.Empty).GetHashCode();
             }
         }
 
@@ -68,13 +68,13 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
             expectedSettings.UserDefinedTransformations = new RequestTransformation[] {
                 new RequestTransformation {
                     DestinationHostHeader = "testheader1",
-                    DestinationUrl = "http://testurl1",
-                    RegexToMatch = ".*"
+                    DestinationPathAndQuery = "http://testurl1",
+                    RegexToMatchAgainstPathAndQuery = ".*"
                 },
                 new RequestTransformation {
                     DestinationHostHeader = "testheader2",
-                    DestinationUrl = "http://testurl2",
-                    RegexToMatch = ".*"
+                    DestinationPathAndQuery = "http://testurl2",
+                    RegexToMatchAgainstPathAndQuery = ".*"
                 },
             };
             expectedSettings.HttpsRedirects = new[] {

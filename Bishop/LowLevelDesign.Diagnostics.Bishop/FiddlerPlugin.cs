@@ -1,6 +1,7 @@
 ﻿using Fiddler;
+using LowLevelDesign.Diagnostics.Bishop.Common;
 using LowLevelDesign.Diagnostics.Bishop.Config;
-using LowLevelDesign.Diagnostics.Bishop.Models;
+using LowLevelDesign.Diagnostics.Bishop.Tampering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -107,7 +108,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
         private void HandleHttpsConnect(RequestDescriptor request)
         {
             if (request.IsLocal && shouldInterceptHttps) {
-                FiddlerApplication.Log.LogFormat("[Goniec][Thread: {0}] Performing handshake on behalf of the application.", 
+                FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] Performing handshake on behalf of the application.", 
                     Thread.CurrentThread.ManagedThreadId);
                 request.FiddlerSession.oFlags["x-replywithtunnel"] = "true";
             } else {

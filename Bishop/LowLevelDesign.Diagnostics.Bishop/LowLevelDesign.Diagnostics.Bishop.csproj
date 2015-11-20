@@ -65,10 +65,10 @@
     <Compile Include="Config\PluginSettings.cs" />
     <Compile Include="FiddlerPlugin.cs" />
     <Compile Include="HttpCastleConnector.cs" />
-    <Compile Include="Models\Configuration.cs" />
-    <Compile Include="Models\RequestDescriptor.cs" />
-    <Compile Include="Tamperer.cs" />
-    <Compile Include="Models\TamperParameters.cs" />
+    <Compile Include="Config\Configuration.cs" />
+    <Compile Include="Common\RequestDescriptor.cs" />
+    <Compile Include="Tampering\TamperingRulesContainer.cs" />
+    <Compile Include="Tampering\TamperParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
