@@ -20,7 +20,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
             Assembly.GetExecutingAssembly().Location), "bishop.conf");
 
         private PluginSettings settings;
-        private Tamperer tamperer;
+        private TamperingRulesContainer tamperer;
         private bool isLoaded;
         private bool shouldInterceptHttps;
 
@@ -33,6 +33,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
 
                 // load menu items for Bishop
                 FiddlerApplication.UI.Menu.MenuItems.Add(PrepareMenu());
+
                 isLoaded = true;
             } catch (Exception ex) {
                 MessageBox.Show("There was a problem while loading the Bishop plugin. Please check the Fiddler log for details", 
@@ -94,7 +95,13 @@ namespace LowLevelDesign.Diagnostics.Bishop
                 return;
             }
 
-            var tamperParams = ApplyHttpsRedirectionIfAvailable(request);
+            var tamperParams = new TamperParameters();
+            ApplyHttpsRedirectionIfEnabled(request, tamperParams);
+            ApplyTamperingRules(request, tamperParams);
+
+            if (tamperParams.ShouldTamperRequest) {
+                TamperRequest(request, tamperParams);
+            }
         }
 
         private void HandleHttpsConnect(RequestDescriptor request)
@@ -109,19 +116,45 @@ namespace LowLevelDesign.Diagnostics.Bishop
             }
         }
 
-        private TamperParameters ApplyHttpsRedirectionIfAvailable(RequestDescriptor request)
+        private void ApplyHttpsRedirectionIfEnabled(RequestDescriptor request, TamperParameters tamperParams)
         {
-            var result = new TamperParameters();
             if (request.IsLocal && request.IsHttps && shouldInterceptHttps)
             {
                 var localPort = settings.FindLocalPortForHttpsRedirection(request.FiddlerSession.port);
                 if (localPort > 0) {
                     request.FiddlerSession.oRequest.headers.Add("X-OriginalBaseUri", 
                         string.Format("https://{0}", request.FiddlerSession.host));
-                    result.ServerTcpAddressWithPort = string.Format("localhost:{0}", localPort);
+                    tamperParams.ServerTcpAddressWithPort = string.Format("localhost:{0}", localPort);
                 }
             }
-            return result;
+        }
+
+        private void ApplyTamperingRules(RequestDescriptor request, TamperParameters tamperParams)
+        {
+            // FIXME loop through the rules and find the matching one
+        }
+
+        private void TamperRequest(RequestDescriptor request, TamperParameters tamperParams)
+        {
+            var fiddlerSession = request.FiddlerSession;
+            FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] Tampering request: {1}", Thread.CurrentThread.ManagedThreadId, fiddlerSession.url);
+
+            var fullUrl = fiddlerSession.fullUrl.Replace(fiddlerSession.host, tamperParams.ServerTcpAddressWithPort);
+            if (!string.IsNullOrEmpty(tamperParams.HostHeader))
+            {
+                fiddlerSession.fullUrl = "http://" + tamperParams.HostHeader + fiddlerSession.PathAndQuery;
+                // fullUrl won't be a host but rather host header with different IP
+                fullUrl = fiddlerSession.fullUrl;
+            }
+            else if (fiddlerSession.isHTTPS)
+            {
+                fiddlerSession.fullUrl = fiddlerSession.fullUrl.Replace("https://", "http://");
+            }
+            fiddlerSession["X-OverrideHost"] = tamperParams.ServerTcpAddressWithPort;
+            fiddlerSession.bypassGateway = true;
+            FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] IP changed to {1}", Thread.CurrentThread.ManagedThreadId, 
+                tamperParams.ServerTcpAddressWithPort);
+            FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] Url set to {1}", Thread.CurrentThread.ManagedThreadId, fullUrl);
         }
 
         public void AutoTamperRequestAfter(Session oSession)

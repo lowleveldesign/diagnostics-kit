@@ -4,16 +4,16 @@ using System;
 
 namespace LowLevelDesign.Diagnostics.Bishop
 {
-    public class Tamperer
+    public class TamperingRulesContainer
     {
         private readonly PluginSettings settings;
 
-        public Tamperer(PluginSettings settings)
+        public TamperingRulesContainer(PluginSettings settings)
         {
             this.settings = settings;
         }
 
-        public TamperParameters FindMatchingRedirectConfiguration()
+        public TamperParameters FindMatchingTamperParameters()
         {
             throw new NotImplementedException();
         }
