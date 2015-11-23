@@ -2,13 +2,13 @@
 
 namespace LowLevelDesign.Diagnostics.Bishop.Common
 {
-    public sealed class RequestDescriptor
+    public sealed class Request : IRequest
     {
         private readonly bool isLocal;
         private readonly bool isHttpsConnect;
         private readonly Session fiddlerSession;
 
-        public RequestDescriptor(Session oSession)
+        public Request(Session oSession)
         {
             isLocal = oSession.HostnameIs("localhost") || oSession.HostnameIs("127.0.0.1") || 
                 oSession.HostnameIs("[::1]");
@@ -26,7 +26,9 @@ namespace LowLevelDesign.Diagnostics.Bishop.Common
 
         public string PathAndQuery { get { return fiddlerSession.PathAndQuery; } }
 
-        public string Host { get { return FiddlerSession.host; } }
+        public string Host { get { return fiddlerSession.host; } }
+
+        public int Port { get { return fiddlerSession.port; } }
 
         public Session FiddlerSession { get { return fiddlerSession; } }
     }

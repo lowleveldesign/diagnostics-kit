@@ -62,11 +62,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\IRequest.cs" />
     <Compile Include="Config\PluginSettings.cs" />
     <Compile Include="FiddlerPlugin.cs" />
     <Compile Include="HttpCastleConnector.cs" />
     <Compile Include="Config\Configuration.cs" />
-    <Compile Include="Common\RequestDescriptor.cs" />
+    <Compile Include="Common\Request.cs" />
     <Compile Include="Tampering\TamperingRulesContainer.cs" />
     <Compile Include="Tampering\TamperParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

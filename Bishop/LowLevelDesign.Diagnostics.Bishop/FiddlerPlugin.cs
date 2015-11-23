@@ -88,7 +88,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
             if (!isLoaded) {
                 return;
             }
-            var request = new RequestDescriptor(oSession);
+            var request = new Request(oSession);
 
             if (request.IsHttpsConnect)
             {
@@ -105,38 +105,39 @@ namespace LowLevelDesign.Diagnostics.Bishop
             }
         }
 
-        private void HandleHttpsConnect(RequestDescriptor request)
+        private void HandleHttpsConnect(IRequest request)
         {
             if (request.IsLocal && shouldInterceptHttps) {
                 FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] Performing handshake on behalf of the application.", 
                     Thread.CurrentThread.ManagedThreadId);
-                request.FiddlerSession.oFlags["x-replywithtunnel"] = "true";
+                //FIXME: request.FiddlerSession.oFlags["x-replywithtunnel"] = "true";
             } else {
                 FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] Forwarding handshake.", 
                     Thread.CurrentThread.ManagedThreadId);
             }
         }
 
-        private void ApplyHttpsRedirectionIfEnabled(RequestDescriptor request, TamperParameters tamperParams)
+        private void ApplyHttpsRedirectionIfEnabled(IRequest request, TamperParameters tamperParams)
         {
             if (request.IsLocal && request.IsHttps && shouldInterceptHttps)
             {
-                var localPort = settings.FindLocalPortForHttpsRedirection(request.FiddlerSession.port);
+                var localPort = settings.FindLocalPortForHttpsRedirection(request.Port);
                 if (localPort > 0) {
-                    request.FiddlerSession.oRequest.headers.Add("X-OriginalBaseUri", 
-                        string.Format("https://{0}", request.FiddlerSession.host));
+                    // FIXME: request.FiddlerSession.oRequest.headers.Add("X-OriginalBaseUri", string.Format("https://{0}", request.FiddlerSession.host));
                     tamperParams.ServerTcpAddressWithPort = string.Format("localhost:{0}", localPort);
                 }
             }
         }
 
-        private void ApplyTamperingRules(RequestDescriptor request, TamperParameters tamperParams)
+        private void ApplyTamperingRules(IRequest request, TamperParameters tamperParams)
         {
             // FIXME loop through the rules and find the matching one
         }
 
-        private void TamperRequest(RequestDescriptor request, TamperParameters tamperParams)
+        private void TamperRequest(IRequest request, TamperParameters tamperParams)
         {
+            // FIXME
+            /*
             var fiddlerSession = request.FiddlerSession;
             FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] Tampering request: {1}", Thread.CurrentThread.ManagedThreadId, fiddlerSession.url);
 
@@ -155,7 +156,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
             fiddlerSession.bypassGateway = true;
             FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] IP changed to {1}", Thread.CurrentThread.ManagedThreadId, 
                 tamperParams.ServerTcpAddressWithPort);
-            FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] Url set to {1}", Thread.CurrentThread.ManagedThreadId, fullUrl);
+            FiddlerApplication.Log.LogFormat("[Bishop][Thread: {0}] Url set to {1}", Thread.CurrentThread.ManagedThreadId, fullUrl);*/
         }
 
         public void AutoTamperRequestAfter(Session oSession)

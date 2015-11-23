@@ -1,5 +1,4 @@
 ﻿using LowLevelDesign.Diagnostics.Bishop.Config;
-using LowLevelDesign.Diagnostics.Bishop.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace LowLevelDesign.Diagnostics.Bishop.Tests
 {
-    public class ConfigurationTests : IDisposable
+    public class BishopConfigurationTests : IDisposable
     {
         private class RequestTransformationEqualityComparer : IEqualityComparer<RequestTransformation>
         {
@@ -42,7 +41,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
         private readonly ITestOutputHelper output;
         private readonly string configFilePath;
 
-        public ConfigurationTests(ITestOutputHelper output)
+        public BishopConfigurationTests(ITestOutputHelper output)
         {
             configFilePath = Path.GetTempFileName();
             this.output = output;
