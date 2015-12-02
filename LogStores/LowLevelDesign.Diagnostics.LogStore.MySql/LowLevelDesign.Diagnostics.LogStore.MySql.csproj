@@ -37,8 +37,8 @@
     <Reference Include="FluentValidation">
       <HintPath>..\..\..\diagnostics-kit\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
     </Reference>
-    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.3.0.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.0.3.0.5\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
+    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.1.0.0.0\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LowLevelDesign.Diagnostics.LogStore.Commons, Version=0.5.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -49,8 +49,8 @@
       <HintPath>..\..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.9.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\..\..\diagnostics-kit\packages\MySql.Data.6.9.7\lib\net45\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MySql.Data.6.9.8\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

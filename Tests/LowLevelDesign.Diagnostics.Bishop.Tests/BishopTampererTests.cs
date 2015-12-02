@@ -35,7 +35,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
         [Fact]
         public void TestRules()
         {
-            var tamperingRules = new TamperingRulesContainer(settings);
+            var tamperingRules = new CustomTamperingRulesContainer(settings);
             TamperParameters tamperParameters;
 
             var req = CreateRequestDescriptorFromUri(new Uri(

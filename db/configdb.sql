@@ -10,6 +10,7 @@ create table ApplicationConfigs (
     PathHash binary(16) not null,
     Path varchar(2000) not null,
     Server varchar(200) not null,
+    ServerFqdnOrIp varchar(255) not null,
     Binding varchar(3000) not null,
     AppPoolName varchar(500),
     AppType char(3),

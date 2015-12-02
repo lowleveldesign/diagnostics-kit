@@ -21,7 +21,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
             Assembly.GetExecutingAssembly().Location), "bishop.conf");
 
         private PluginSettings settings;
-        private TamperingRulesContainer tamperer;
+        private CustomTamperingRulesContainer tamperer;
         private bool isLoaded;
         private bool shouldInterceptHttps;
 
@@ -29,7 +29,9 @@ namespace LowLevelDesign.Diagnostics.Bishop
         {
             try {
                 settings = PluginSettings.Load(configurationFilePath);
-                // FIXME ask for Diagnostics Kit 
+                tamperer = new CustomTamperingRulesContainer(settings);
+
+                // FIXME ask for Diagnostics Kit url
                 // FIXME connect with the Diagnostics Castle
 
                 // load menu items for Bishop
@@ -99,6 +101,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
             var tamperParams = new TamperParameters();
             ApplyHttpsRedirectionIfEnabled(request, tamperParams);
             ApplyTamperingRules(request, tamperParams);
+            RedirectToASpecificServerIfSelected(request, tamperParams);
 
             if (tamperParams.ShouldTamperRequest) {
                 TamperRequest(request, tamperParams);
@@ -132,6 +135,11 @@ namespace LowLevelDesign.Diagnostics.Bishop
         private void ApplyTamperingRules(IRequest request, TamperParameters tamperParams)
         {
             // FIXME loop through the rules and find the matching one
+        }
+
+        private void RedirectToASpecificServerIfSelected(Request request, TamperParameters tamperParams)
+        {
+            // FIXME redirect to a specific server
         }
 
         private void TamperRequest(IRequest request, TamperParameters tamperParams)

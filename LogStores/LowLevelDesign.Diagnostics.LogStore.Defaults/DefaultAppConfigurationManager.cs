@@ -182,19 +182,21 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
         {
             public byte[] PathHash { get; set; }
 
-            public String Path { get; set; }
+            public string Path { get; set; }
 
-            public String Server { get; set; }
+            public string Server { get; set; }
 
-            public String Binding { get; set; }
+            public string ServerFqdnOrIp { get; set; }
 
-            public String AppPoolName { get; set; }
+            public string Binding { get; set; }
 
-            public String ServiceName { get; set; }
+            public string AppPoolName { get; set; }
 
-            public String DisplayName { get; set; }
+            public string ServiceName { get; set; }
 
-            public String AppType { get; set; }
+            public string DisplayName { get; set; }
+
+            public string AppType { get; set; }
         }
 
 
@@ -207,7 +209,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                 PathHash = GetApplicationHash(config.AppPath),
                 Path = config.AppPath,
                 Server = config.Server,
-                Binding = String.Join("|", config.Bindings),
+                ServerFqdnOrIp = config.ServerFqdnOrIp,
+                Binding = string.Join("|", config.Bindings),
                 AppPoolName = config.AppPoolName,
                 AppType = config.AppType,
                 ServiceName = config.ServiceName,
@@ -223,8 +226,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                         "AppType = @AppType, ServiceName = @ServiceName, DisplayName = @DisplayName where PathHash = @PathHash and Server = @Server", c);
                     if (rec == 0) {
                         // no application found - we need to insert it
-                        conn.Execute("insert into ApplicationConfigs (PathHash, Path, Server, Binding, AppPoolName, AppType, ServiceName, DisplayName) values " +
-                                        "(@PathHash, @Path, @Server, @Binding, @AppPoolName, @AppType, @ServiceName, @DisplayName)", c);
+                        conn.Execute("insert into ApplicationConfigs (PathHash, Path, Server, ServerFqdnOrIp, Binding, AppPoolName, AppType, ServiceName, DisplayName) values " +
+                                        "(@PathHash, @Path, @Server, @ServerFqdnOrIp, @Binding, @AppPoolName, @AppType, @ServiceName, @DisplayName)", c);
                     }
                 }
             }
@@ -253,6 +256,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                         AppPath = c.Path,
                         AppPoolName = c.AppPoolName,
                         Server = c.Server,
+                        ServerFqdnOrIp = c.ServerFqdnOrIp,
                         Bindings = c.Binding.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries),
                         AppType = c.AppType,
                         ServiceName = c.ServiceName,

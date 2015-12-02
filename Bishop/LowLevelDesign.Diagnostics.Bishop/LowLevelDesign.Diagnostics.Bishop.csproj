@@ -42,8 +42,8 @@
       <HintPath>..\..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=0.3.0.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.0.3.0.5\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
+    <Reference Include="LowLevelDesign.Diagnostics.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.Commons.1.0.0.0\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -68,7 +68,8 @@
     <Compile Include="HttpCastleConnector.cs" />
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Common\Request.cs" />
-    <Compile Include="Tampering\TamperingRulesContainer.cs" />
+    <Compile Include="Tampering\CustomTamperingRulesContainer.cs" />
+    <Compile Include="Tampering\ServerRedirectionRulesContainer.cs" />
     <Compile Include="Tampering\TamperParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

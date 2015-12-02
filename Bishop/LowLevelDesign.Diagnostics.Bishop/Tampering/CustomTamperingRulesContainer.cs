@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace LowLevelDesign.Diagnostics.Bishop.Tampering
 {
-    public class TamperingRulesContainer
+    public sealed class CustomTamperingRulesContainer
     {
         private sealed class RequestTransformationWithCompiledRegex
         {
@@ -21,7 +21,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
 
         private readonly IEnumerable<RequestTransformationWithCompiledRegex> transformations;
 
-        public TamperingRulesContainer(PluginSettings settings)
+        public CustomTamperingRulesContainer(PluginSettings settings)
         {
             transformations = new List<RequestTransformationWithCompiledRegex>(
                 settings.UserDefinedTransformations.Select(s => new RequestTransformationWithCompiledRegex {
