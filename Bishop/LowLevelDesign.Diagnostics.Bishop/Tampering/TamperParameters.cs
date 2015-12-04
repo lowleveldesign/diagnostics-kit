@@ -2,6 +2,8 @@
 {
     public sealed class TamperingContext
     {
+        public string Protocol { get; set; }
+
         public string ServerTcpAddressWithPort { get; set; }
 
         public string HostHeader { get; set;  }
@@ -17,7 +19,8 @@
 
         public bool ShouldTamperRequest
         {
-            get { return ServerTcpAddressWithPort != null || HostHeader != null; }
+            get { return ServerTcpAddressWithPort != null || HostHeader != null ||
+                    PathAndQuery != null; }
         }
     }
 }
