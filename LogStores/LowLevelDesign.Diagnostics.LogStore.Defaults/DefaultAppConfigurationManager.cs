@@ -223,7 +223,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
                 lock (lck) {
                     // try to update the record or insert it
                     var rec = conn.Execute("update ApplicationConfigs set Path = @Path, Binding = @Binding, AppPoolName = @AppPoolName, " +
-                        "AppType = @AppType, ServiceName = @ServiceName, DisplayName = @DisplayName where PathHash = @PathHash and Server = @Server", c);
+                        "AppType = @AppType, ServiceName = @ServiceName, DisplayName = @DisplayName, ServerFqdnOrIp = @ServerFqdnOrIp " + 
+                        "where PathHash = @PathHash and Server = @Server", c);
                     if (rec == 0) {
                         // no application found - we need to insert it
                         conn.Execute("insert into ApplicationConfigs (PathHash, Path, Server, ServerFqdnOrIp, Binding, AppPoolName, AppType, ServiceName, DisplayName) values " +

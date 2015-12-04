@@ -71,6 +71,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             var appconf = new ApplicationServerConfig {
                 AppPath = app.Path,
                 Server = "TEST2",
+                ServerFqdnOrIp = "test2.ad.com",
                 Bindings = new [] { "*:80:", "127.0.0.1:80:", ":80:www.test.com" },
                 AppType = ApplicationServerConfig.WebAppType,
                 ServiceName = "Test.Service",
@@ -82,6 +83,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Tests
             Assert.Equal(appconf.AppPath, dbconf.AppPath);
             Assert.Equal(appconf.AppPoolName, dbconf.AppPoolName);
             Assert.Equal(appconf.Server, dbconf.Server);
+            Assert.Equal(appconf.ServerFqdnOrIp, dbconf.ServerFqdnOrIp);
             Assert.Contains(appconf.Bindings[0], dbconf.Bindings);
             Assert.Contains(appconf.Bindings[1], dbconf.Bindings);
             Assert.Contains(appconf.Bindings[2], dbconf.Bindings);

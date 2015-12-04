@@ -86,6 +86,8 @@ namespace LowLevelDesign.Diagnostics.Castle
         protected override void ConfigureConventions(NancyConventions conventions)
         {
             base.ConfigureConventions(conventions);
+
+            conventions.StaticContentsConventions.AddFile("/favicon.png", "/Content/favicon.png");
         }
     }
 }

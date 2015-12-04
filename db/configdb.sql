@@ -38,4 +38,3 @@ create table UserClaims (
 );
 
 create unique nonclustered index NCIX_Users_UserName on Users(UserName);
-create unique nonclustered index NCIX_Users_Email on Users(Email);

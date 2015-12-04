@@ -25,6 +25,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
                         DestinationPathAndQuery = "/small"
                     },
                     new RequestTransformation {
+                        RegexToMatchAgainstHost = "test.com",
                         RegexToMatchAgainstPathAndQuery = @"advert/(\d+)\??",
                         DestinationPathAndQuery = "advert?id=$1&"
                     },
@@ -36,13 +37,13 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
         public void TestRules()
         {
             var tamperingRules = new CustomTamperingRulesContainer(settings);
-            TamperParameters tamperParameters;
+            TamperingContext tamperParameters;
 
             var req = CreateRequestDescriptorFromUri(new Uri(
                 "http://wwww.test.com/sample-request?test=testval&test2=testval2"));
 
-            tamperParameters = new TamperParameters();
-            tamperingRules.ApplyMatchingTamperParameters(req, tamperParameters);
+            tamperParameters = new TamperingContext();
+            tamperingRules.ApplyMatchingTamperingRules(req, tamperParameters);
             Assert.Null(tamperParameters.ServerTcpAddressWithPort);
             Assert.Equal(tamperParameters.HostHeader, "www.test2.com", StringComparer.Ordinal);
             Assert.Equal("/small?test=testval&test2=testval2", tamperParameters.PathAndQuery, StringComparer.Ordinal);
@@ -50,17 +51,17 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
             req = CreateRequestDescriptorFromUri(new Uri(
                 "http://wwww.test.com/prefix/advert/12345?test=testval"));
 
-            tamperParameters = new TamperParameters();
-            tamperingRules.ApplyMatchingTamperParameters(req, tamperParameters);
+            tamperParameters = new TamperingContext();
+            tamperingRules.ApplyMatchingTamperingRules(req, tamperParameters);
             Assert.Null(tamperParameters.ServerTcpAddressWithPort);
             Assert.Null(tamperParameters.HostHeader);
             Assert.Equal("/prefix/advert?id=12345&test=testval", tamperParameters.PathAndQuery, StringComparer.Ordinal);
 
 
-            tamperParameters = new TamperParameters();
+            tamperParameters = new TamperingContext();
             req = CreateRequestDescriptorFromUri(new Uri(
                 "http://wwww.test.com/prefix/sample-request/12345?test=testval"));
-            tamperingRules.ApplyMatchingTamperParameters(req, tamperParameters);
+            tamperingRules.ApplyMatchingTamperingRules(req, tamperParameters);
             Assert.Null(tamperParameters.ServerTcpAddressWithPort);
             Assert.Null(tamperParameters.HostHeader);
             Assert.Null(tamperParameters.PathAndQuery);

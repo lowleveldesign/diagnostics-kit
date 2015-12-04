@@ -33,10 +33,27 @@
 
 @section scripts {
 <script type="text/javascript">
-    $(function () {
-        window.setTimeout(function () {
+    var timeoutId = null;
+    var reloadFunction = function() { 
+        return window.setTimeout(function () {
             window.location.reload();
-        }, 30000);
+        }, 10000)
+    };
+
+    $(function () {
+        timeoutId = reloadFunction();
+
+        $('#reloadSwitch').on('click', function () {
+            if (timeoutId === null) {
+                timeoutId = reloadFunction();
+                $(this).text("disable automatic refresh");
+            } else {
+                window.clearTimeout(timeoutId);
+                $(this).text("enable automatic refresh");
+                timeoutId = null;
+            }
+            return false;
+        });
 
         $('a.appname').on('click', function () {
             var encpath = $(this).attr('data-encpath');
@@ -49,7 +66,7 @@
                 if (data && data.length > 0) {
                     $(data).each(function (ind, elem) {
                         var html = "<div class=\"panel panel-primary\">" + "<div class=\"panel-heading\"><strong>Server: " +
-                        elem.server + "</strong></div><div class=\"panel-body\">";
+                        elem.server + "</strong> (" + elem.serverFqdnOrIp + ")</div><div class=\"panel-body\">";
 
                         if (elem.appPoolName) {
                             html += "<p>Application pool: <strong>" + elem.appPoolName + "</strong></p>";
@@ -82,7 +99,10 @@
 
 <div class="container-fluid">
     <div class="panel panel-primary">
-        <div class="panel-heading">Applications Grid <small>(last update at: @Model.LastUpdateTime.ToString("HH:mm:ss"))</small></div>
+        <div class="panel-heading">
+            <h3 class="panel-title">Applications Grid (last update at: @Model.LastUpdateTime.ToString("HH:mm:ss") - 
+            <a  href="#" id="reloadSwitch">disable automatic refresh</a>)</h3>
+        </div>
         <div class="panel-body">
             @if (Model.ApplicationStatuses.Count == 0) {
             <span>

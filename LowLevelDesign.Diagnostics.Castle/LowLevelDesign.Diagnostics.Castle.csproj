@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\bootstrap-switch.min.css" />
+    <Content Include="Content\favicon.png" />
     <Content Include="Content\js\bootstrap-switch.min.js" />
     <Content Include="packages.config" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />

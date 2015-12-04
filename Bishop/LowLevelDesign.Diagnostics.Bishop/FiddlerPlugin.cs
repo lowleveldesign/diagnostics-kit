@@ -98,7 +98,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
                 return;
             }
 
-            var tamperParams = new TamperParameters();
+            var tamperParams = new TamperingContext();
             ApplyHttpsRedirectionIfEnabled(request, tamperParams);
             ApplyTamperingRules(request, tamperParams);
             RedirectToASpecificServerIfSelected(request, tamperParams);
@@ -120,7 +120,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
             }
         }
 
-        private void ApplyHttpsRedirectionIfEnabled(IRequest request, TamperParameters tamperParams)
+        private void ApplyHttpsRedirectionIfEnabled(IRequest request, TamperingContext tamperParams)
         {
             if (request.IsLocal && request.IsHttps && shouldInterceptHttps)
             {
@@ -132,17 +132,17 @@ namespace LowLevelDesign.Diagnostics.Bishop
             }
         }
 
-        private void ApplyTamperingRules(IRequest request, TamperParameters tamperParams)
+        private void ApplyTamperingRules(IRequest request, TamperingContext tamperParams)
         {
             // FIXME loop through the rules and find the matching one
         }
 
-        private void RedirectToASpecificServerIfSelected(Request request, TamperParameters tamperParams)
+        private void RedirectToASpecificServerIfSelected(Request request, TamperingContext tamperParams)
         {
             // FIXME redirect to a specific server
         }
 
-        private void TamperRequest(IRequest request, TamperParameters tamperParams)
+        private void TamperRequest(IRequest request, TamperingContext tamperParams)
         {
             // FIXME
             /*
