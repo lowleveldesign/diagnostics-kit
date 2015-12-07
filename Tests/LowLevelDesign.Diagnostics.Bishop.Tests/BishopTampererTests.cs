@@ -33,11 +33,12 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
                     },
                     new RequestTransformation {
                         RegexToMatchAgainstHost = "testip.com",
-                        DestinationIpAddresses = new [] { "192.168.1.10" }
+                        DestinationIpAddresses = new [] { "192.168.1.10" },
+                        Protocol = "http"
                     },
                     new RequestTransformation {
                         RegexToMatchAgainstHost = "testport.com",
-                        DestinationPorts = new short[] { 6060 }
+                        DestinationPorts = new ushort[] { 6060 }
                     },
                     new RequestTransformation {
                         RegexToMatchAgainstHost = "www.test.com",
@@ -123,6 +124,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
         public void TestServerRedirectionRules()
         {
             TestIpRedirect();
+            TestIpHttpsRedirect();
             TestPortRedirect();
             TestHostRedirect();
             Test2StepHostRedirect();
@@ -141,6 +143,20 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
             Assert.Equal("http", tamperingContext.Protocol);
             Assert.Equal("192.168.1.10:80", tamperingContext.ServerTcpAddressWithPort);
         }
+
+        private void TestIpHttpsRedirect()
+        {
+            var req = CreateRequestDescriptorFromUri(new Uri("https://www.testip.com/testurl?withpar1=v1&withpar2=v2"));
+            var tamperingContext = new TamperingContext();
+            tamperingRules.ApplyMatchingTamperingRules(req, tamperingContext);
+            serverRedirectionRules.ApplyMatchingTamperingRules(req, tamperingContext, selectedServer);
+            Assert.True(tamperingContext.ShouldTamperRequest);
+            Assert.Null(tamperingContext.PathAndQuery);
+            Assert.Null(tamperingContext.HostHeader);
+            Assert.Equal("https", tamperingContext.Protocol);
+            Assert.Equal("192.168.1.10:443", tamperingContext.ServerTcpAddressWithPort);
+        }
+
         private void TestPortRedirect()
         {
             var req = CreateRequestDescriptorFromUri(new Uri("http://www.testport.com/testurl?withpar1=v1&withpar2=v2"));
@@ -184,6 +200,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
             mreq.SetupGet(req => req.FullUrl).Returns(uri.AbsoluteUri);
             mreq.SetupGet(req => req.Host).Returns(uri.Host);
             mreq.SetupGet(req => req.PathAndQuery).Returns(uri.PathAndQuery);
+            mreq.SetupGet(req => req.Protocol).Returns(uri.Scheme);
             return mreq.Object;
         }
     }

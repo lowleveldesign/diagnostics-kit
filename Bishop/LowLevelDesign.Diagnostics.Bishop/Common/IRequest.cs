@@ -15,5 +15,7 @@
         string Host { get; }
 
         int Port { get; }
+
+        string Protocol { get; }
     }
 }

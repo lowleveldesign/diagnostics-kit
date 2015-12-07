@@ -21,6 +21,8 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
             public string DestinationHostHeader { get; set; }
 
             public string[] DestinationIpAddresses { get; set; }
+
+            public ushort[] DestinationPorts { get; set; }
         }
 
         private static readonly Regex RegexMatchingEverything = new Regex(".*", RegexOptions.Compiled);
@@ -34,7 +36,8 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
                     RegexToMatchAgainstPathAndQuery = CreateCompiledRegex(s.RegexToMatchAgainstPathAndQuery),
                     DestinationHostHeader = s.DestinationHostHeader,
                     DestinationPathAndQuery = s.DestinationPathAndQuery,
-                    DestinationIpAddresses = s.DestinationIpAddresses
+                    DestinationIpAddresses = s.DestinationIpAddresses,
+                    DestinationPorts = s.DestinationPorts
                 }));
 
         }
@@ -54,16 +57,17 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
                 var hostMatch = transform.RegexToMatchAgainsHost.Match(request.Host);
                 var pathAndQueryMatch = transform.RegexToMatchAgainstPathAndQuery.Match(request.PathAndQuery);
                 if (hostMatch.Success && pathAndQueryMatch.Success) {
-                    var matchedPathAndQuerty = new StringBuilder(transform.DestinationPathAndQuery);
+                    var matchedPathAndQuery = new StringBuilder(transform.DestinationPathAndQuery);
                     for(int i = 1; i < pathAndQueryMatch.Groups.Count; i++) {
-                        matchedPathAndQuerty = matchedPathAndQuerty.Replace("$" + i, pathAndQueryMatch.Groups[i].Value);
+                        matchedPathAndQuery = matchedPathAndQuery.Replace("$" + i, pathAndQueryMatch.Groups[i].Value);
                     }
-                    matchedPathAndQuerty.Insert(0, request.PathAndQuery.Substring(0, pathAndQueryMatch.Index));
-                    matchedPathAndQuerty.Append(request.PathAndQuery.Substring(pathAndQueryMatch.Index + pathAndQueryMatch.Length));
+                    matchedPathAndQuery.Insert(0, request.PathAndQuery.Substring(0, pathAndQueryMatch.Index));
+                    matchedPathAndQuery.Append(request.PathAndQuery.Substring(pathAndQueryMatch.Index + pathAndQueryMatch.Length));
 
-                    context.PathAndQuery = matchedPathAndQuerty.ToString();
+                    context.PathAndQuery = matchedPathAndQuery.Length == 0 ? null : matchedPathAndQuery.ToString();
                     context.HostHeader = transform.DestinationHostHeader;
                     context.CustomServerIpAddresses = transform.DestinationIpAddresses;
+                    context.CustomServerPorts = transform.DestinationPorts;
                     break;
                 }
             }

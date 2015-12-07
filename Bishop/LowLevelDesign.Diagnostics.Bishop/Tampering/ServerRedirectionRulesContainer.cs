@@ -2,6 +2,7 @@
 using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace LowLevelDesign.Diagnostics.Bishop.Tampering
@@ -14,7 +15,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
 
             public string HostnameOrIpAddress { get; set; }
 
-            public int Port { get; set; }
+            public ushort Port { get; set; }
 
             public string HostForHeader { get; set; }
         }
@@ -30,6 +31,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
                 List<ApplicationBinding> bindings;
                 if (!serverAppsBindings.TryGetValue(appConfig.Server, out bindings)) {
                     bindings = new List<ApplicationBinding>();
+                    serverAppsBindings.Add(appConfig.Server, bindings);
                 }
                 foreach (var bindingString in appConfig.Bindings) {
                     bindings.Add(ParseBindingString(appConfig.ServerFqdnOrIp, bindingString));
@@ -39,34 +41,47 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
 
         private static ApplicationBinding ParseBindingString(string serverFqdnOrIp, string bindingString)
         {
-            var bindingTokens = bindingString.Split(':');
-            var binding = new ApplicationBinding();
+            var binding = new ApplicationBinding {
+                Protocol = FindProtocol(bindingString)
+            };
+            if (binding.Protocol == null) {
+                return binding;
+            }
+
+            var bindingTokens = bindingString.Remove(0, (binding.Protocol + "://").Length).Split(':');
             if (bindingTokens.Length > 0)
             {
-                if (bindingTokens[0].StartsWith("http://", StringComparison.Ordinal)) {
-                    binding.Protocol = "http";
-                    binding.HostnameOrIpAddress = bindingTokens[0].Remove(0, "http://".Length);
-                } else if (bindingTokens[0].StartsWith("https://", StringComparison.Ordinal)) {
-                    binding.Protocol = "https";
-                    binding.HostnameOrIpAddress = bindingTokens[0].Remove(0, "https://".Length);
-                }
-                if (string.Equals(binding.HostnameOrIpAddress, "*", StringComparison.Ordinal)) {
+                if (string.IsNullOrEmpty(bindingTokens[0]) || 
+                    string.Equals(bindingTokens[0], "*", StringComparison.Ordinal)) {
                     binding.HostnameOrIpAddress = serverFqdnOrIp;
+                } else {
+                    binding.HostnameOrIpAddress = bindingTokens[0];
                 }
                 if (binding.Protocol != null)
                 {
                     if (bindingTokens.Length > 1)
                     {
-                        int port;
-                        int.TryParse(bindingTokens[1], out port);
+                        ushort port;
+                        ushort.TryParse(bindingTokens[1], out port);
                         binding.Port = port;
                     }
                     if (bindingTokens.Length > 2) {
-                        binding.HostForHeader = bindingTokens[2];
+                        binding.HostForHeader = string.IsNullOrEmpty(bindingTokens[2]) ? null : bindingTokens[2];
                     }
                 }
             }
             return binding;
+        }
+
+        private static string FindProtocol(string bindingString)
+        {
+            if (bindingString.StartsWith("http://", StringComparison.Ordinal)) {
+                return "http";
+            }
+            if (bindingString.StartsWith("https://", StringComparison.Ordinal)) {
+                return "https";
+            }
+            return null;
         }
 
         public void ApplyMatchingTamperingRules(IRequest request, TamperingContext context, string selectedServer)
@@ -77,25 +92,38 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
                 SortedList<int, ApplicationBinding> matchedBindings = new SortedList<int, ApplicationBinding>();
                 foreach (var binding in bindings) {
                     int matchingPoints = 0;
-                    if (context.CustomServerIpAddresses.Contains(binding.HostnameOrIpAddress)) {
+                    if (context.IsIpAddressValidForRedirection(binding.HostnameOrIpAddress)) {
+                        matchingPoints += 3;
+                    }
+                    if (context.IsPortValidForRedirection(binding.Port)) {
+                        matchingPoints += 3;
+                    }
+                    if (IsHostMatchingBinding(binding, context.HostHeader ?? request.Host)) { 
                         matchingPoints += 2;
                     }
-                    if (request.Host.IndexOf(binding.HostForHeader, StringComparison.InvariantCultureIgnoreCase) >= 0) {
+                    if (string.Equals(binding.Protocol, request.Protocol, StringComparison.OrdinalIgnoreCase)) {
                         matchingPoints += 1;
                     }
-                    if (matchingPoints > 0) {
+                    if (matchingPoints > 1 && !matchedBindings.ContainsKey(matchingPoints)) {
                         matchedBindings.Add(matchingPoints, binding);
                     }
                 }
 
-                if (bindings.Any()) {
-                    var bestFoundBinding = bindings.Last();
+                if (matchedBindings.Any()) {
+                    var bestFoundBinding = matchedBindings.Values.Last();
+                    context.Protocol = context.Protocol ?? bestFoundBinding.Protocol;
                     context.ServerTcpAddressWithPort = string.Format("{0}:{1}", bestFoundBinding.HostnameOrIpAddress, 
                         bestFoundBinding.Port);
                     context.HostHeader = bestFoundBinding.HostForHeader;
                 }
-                //FIXME what about https ??
             }
+        }
+
+        private static bool IsHostMatchingBinding(ApplicationBinding binding, string host)
+        {
+            Debug.Assert(host != null);
+            return !string.IsNullOrEmpty(binding.HostForHeader) &&
+                host.IndexOf(binding.HostForHeader, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
 
         public IEnumerable<string> AvailableServers {

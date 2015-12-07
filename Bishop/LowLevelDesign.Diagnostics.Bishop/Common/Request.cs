@@ -31,5 +31,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Common
         public int Port { get { return fiddlerSession.port; } }
 
         public Session FiddlerSession { get { return fiddlerSession; } }
+
+        public string Protocol { get { return fiddlerSession.isHTTPS ? "https" : "http";  } }
     }
 }

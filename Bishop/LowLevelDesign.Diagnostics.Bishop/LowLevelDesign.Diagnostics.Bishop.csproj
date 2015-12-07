@@ -70,7 +70,7 @@
     <Compile Include="Common\Request.cs" />
     <Compile Include="Tampering\CustomTamperingRulesContainer.cs" />
     <Compile Include="Tampering\ServerRedirectionRulesContainer.cs" />
-    <Compile Include="Tampering\TamperParameters.cs" />
+    <Compile Include="Tampering\TamperingContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

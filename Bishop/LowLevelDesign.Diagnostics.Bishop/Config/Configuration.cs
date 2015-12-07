@@ -10,7 +10,9 @@
     public sealed class RequestTransformation
     {
         private string[] destinationIpAddresses = new string[0];
-        private short[] destinationPorts = new short[0];
+        private ushort[] destinationPorts = new ushort[0];
+
+        public string Protocol { get; set; }
 
         public string RegexToMatchAgainstHost { get; set; }
 
@@ -26,9 +28,9 @@
             set { destinationIpAddresses = value; }
         }
 
-        public short[] DestinationPorts
+        public ushort[] DestinationPorts
         {
-            get { return DestinationPorts; }
+            get { return destinationPorts; }
             set { destinationPorts = value; }
         }
     }
