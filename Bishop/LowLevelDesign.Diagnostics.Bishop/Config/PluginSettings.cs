@@ -19,8 +19,6 @@ namespace LowLevelDesign.Diagnostics.Bishop.Config
 
         public Uri DiagnosticsUrl { get; set; }
 
-        public bool IsAuthenticationRequired { get; set; }
-
         public string UserName { get; set; }
 
         public void SetPassword(string password)

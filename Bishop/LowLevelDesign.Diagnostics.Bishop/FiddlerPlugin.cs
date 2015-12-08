@@ -22,8 +22,11 @@ namespace LowLevelDesign.Diagnostics.Bishop
 
         private PluginSettings settings;
         private CustomTamperingRulesContainer tamperer;
+        private ServerRedirectionRulesContainer serverRedirector;
         private bool isLoaded;
         private bool shouldInterceptHttps;
+        private string selectedServer;
+        private bool tamperRequests;
 
         public void OnLoad()
         {
@@ -33,6 +36,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
 
                 // FIXME ask for Diagnostics Kit url
                 // FIXME connect with the Diagnostics Castle
+                serverRedirector = new ServerRedirectionRulesContainer(null);
 
                 // load menu items for Bishop
                 FiddlerApplication.UI.Menu.MenuItems.Add(PrepareMenu());
@@ -98,13 +102,15 @@ namespace LowLevelDesign.Diagnostics.Bishop
                 return;
             }
 
-            var tamperParams = new TamperingContext();
-            ApplyHttpsRedirectionIfEnabled(request, tamperParams);
-            ApplyTamperingRules(request, tamperParams);
-            RedirectToASpecificServerIfSelected(request, tamperParams);
+            var tamperingContext = new TamperingContext();
+            ApplyHttpsRedirectionIfEnabled(request, tamperingContext);
+            tamperer.ApplyMatchingTamperingRules(request, tamperingContext);
+            if (selectedServer != null) {
+                serverRedirector.ApplyMatchingTamperingRules(request, tamperingContext, selectedServer);
+            }
 
-            if (tamperParams.ShouldTamperRequest) {
-                TamperRequest(request, tamperParams);
+            if (tamperingContext.ShouldTamperRequest) {
+                TamperRequest(request, tamperingContext);
             }
         }
 
@@ -130,16 +136,6 @@ namespace LowLevelDesign.Diagnostics.Bishop
                     tamperParams.ServerTcpAddressWithPort = string.Format("localhost:{0}", localPort);
                 }
             }
-        }
-
-        private void ApplyTamperingRules(IRequest request, TamperingContext tamperParams)
-        {
-            // FIXME loop through the rules and find the matching one
-        }
-
-        private void RedirectToASpecificServerIfSelected(Request request, TamperingContext tamperParams)
-        {
-            // FIXME redirect to a specific server
         }
 
         private void TamperRequest(IRequest request, TamperingContext tamperParams)

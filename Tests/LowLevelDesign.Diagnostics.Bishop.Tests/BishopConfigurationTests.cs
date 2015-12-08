@@ -60,7 +60,6 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
             Assert.Equal(0, expectedSettings.HttpsRedirects.Count());
 
             expectedSettings.DiagnosticsUrl = new Uri("http://diagnostics.test.com/test");
-            expectedSettings.IsAuthenticationRequired = true;
             expectedSettings.UserName = "testuser";
             var expectedPassword = "testpassword";
             expectedSettings.SetPassword(expectedPassword);
@@ -92,7 +91,6 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
 
             var actualSettings = PluginSettings.Load(configFilePath);
             Assert.Equal(expectedSettings.DiagnosticsUrl, actualSettings.DiagnosticsUrl);
-            Assert.Equal(expectedSettings.IsAuthenticationRequired, actualSettings.IsAuthenticationRequired);
             Assert.Equal(expectedSettings.UserName, actualSettings.UserName);
             Assert.Equal(expectedPassword, actualSettings.GetPassword());
             Assert.Equal(expectedSettings.UserDefinedTransformations, actualSettings.UserDefinedTransformations,

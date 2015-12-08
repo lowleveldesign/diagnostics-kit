@@ -22,7 +22,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
                 throw new ArgumentException("uri");
             }
 
-            var path = uri.AbsolutePath ?? String.Empty;
+            var path = uri.AbsolutePath ?? string.Empty;
             diagnosticsAddress = uri;
         }
 
@@ -31,7 +31,7 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
         /// </summary>
         /// <param name="logrec"></param>
         public virtual void SendLogRecord(LogRecord logrec) {
-            MakePostRequest(String.Format("{0}/collect", diagnosticsAddress),
+            MakePostRequest(string.Format("{0}/collect", diagnosticsAddress),
                 JsonConvert.SerializeObject(logrec, Formatting.None, JsonSettings));
         }
 
@@ -40,18 +40,18 @@ namespace LowLevelDesign.Diagnostics.Commons.Connectors
         /// </summary>
         /// <param name="logrecs"></param>
         public virtual void SendLogRecords(IEnumerable<LogRecord> logrecs) {
-            MakePostRequest(String.Format("{0}/collectall", diagnosticsAddress),
+            MakePostRequest(string.Format("{0}/collectall", diagnosticsAddress),
                 JsonConvert.SerializeObject(logrecs, Formatting.None, JsonSettings));
         }
 
-        protected String MakeGetRequest(String url) {
+        protected string MakeGetRequest(string url) {
             var request = WebRequest.Create(url);
             using (var reader = new StreamReader(request.GetResponse().GetResponseStream())) {
                 return reader.ReadToEnd();
             }
         }
 
-        protected String MakePostRequest(String url, String postData) {
+        protected string MakePostRequest(string url, string postData) {
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
             request.ContentType = "application/json";

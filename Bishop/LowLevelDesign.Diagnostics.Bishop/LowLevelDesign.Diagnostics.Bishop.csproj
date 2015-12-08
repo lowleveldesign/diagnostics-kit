@@ -65,7 +65,7 @@
     <Compile Include="Common\IRequest.cs" />
     <Compile Include="Config\PluginSettings.cs" />
     <Compile Include="FiddlerPlugin.cs" />
-    <Compile Include="HttpCastleConnector.cs" />
+    <Compile Include="BishopHttpCastleConnector.cs" />
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Common\Request.cs" />
     <Compile Include="Tampering\CustomTamperingRulesContainer.cs" />
