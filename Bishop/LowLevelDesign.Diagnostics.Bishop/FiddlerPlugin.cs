@@ -2,9 +2,10 @@
 using LowLevelDesign.Diagnostics.Bishop.Common;
 using LowLevelDesign.Diagnostics.Bishop.Config;
 using LowLevelDesign.Diagnostics.Bishop.Tampering;
+using LowLevelDesign.Diagnostics.Bishop.UI;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -16,6 +17,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
     {
         private readonly string configurationFilePath = Path.Combine(Path.GetDirectoryName(
             Assembly.GetExecutingAssembly().Location), "bishop.conf");
+        private readonly ReaderWriterLockSlim lck = new ReaderWriterLockSlim();
 
         private PluginSettings settings;
         private CustomTamperingRulesContainer tamperer;
@@ -23,24 +25,15 @@ namespace LowLevelDesign.Diagnostics.Bishop
         private bool isLoaded;
         private bool shouldInterceptHttps;
         private string selectedServer;
+        private string customServerAddressWithPort;
         private bool isRedirectionToOneHostEnabled;
-        private bool tamperRequests;
 
         public void OnLoad()
         {
             try {
-                settings = PluginSettings.Load(configurationFilePath);
-                tamperer = new CustomTamperingRulesContainer(settings);
+                ReloadSettings();
 
-                if (!IsDiagnosticsCastleConfigured()) {
-                    serverRedirector = new ServerRedirectionRulesContainer(new ApplicationServerConfig[0]);
-                } else {
-                    // FIXME connect with the Diagnostics Castle
-                }
-
-                // load menu items for Bishop
-                FiddlerApplication.UI.Menu.MenuItems.Add(PrepareMenu());
-
+                FiddlerApplication.UI.Menu.MenuItems.Add(new PluginMenu(this).PrepareMenu());
                 isLoaded = true;
             } catch (Exception ex) {
                 MessageBox.Show("There was a problem while loading the Bishop plugin. Please check the Fiddler log for details", 
@@ -49,96 +42,42 @@ namespace LowLevelDesign.Diagnostics.Bishop
             }
         }
 
-        private bool IsDiagnosticsCastleConfigured()
+        public void ReloadSettings()
+        {
+
+            lck.EnterWriteLock();
+            try {
+                settings = PluginSettings.Load(configurationFilePath);
+                // FIXME make sure that settings did change
+                tamperer = new CustomTamperingRulesContainer(settings);
+
+                serverRedirector = new ServerRedirectionRulesContainer(RetrieveApplicationServerConfigs());
+            } finally { 
+                lck.ExitWriteLock();
+            }
+        }
+
+        private IEnumerable<ApplicationServerConfig> RetrieveApplicationServerConfigs()
+        {
+            if (IsDiagnosticsCastleConfigured()) {
+                try {
+                    return new BishopHttpCastleConnector(settings).ReadApplicationConfigs();
+                } catch (Exception ex) {
+                    LogFormat("Bishop error: {0}", ex);
+                    MessageBox.Show("There was a problem while connecting with the Diagnostics Castle - please review the settings. " +
+                        "Probably something is wrong with them.", "Error in Bishop.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            return new ApplicationServerConfig[0];
+        }
+
+        public bool IsDiagnosticsCastleConfigured()
         {
             return settings.DiagnosticsUrl != null;
         }
 
-        private MenuItem PrepareMenu()
-        {
-            var bishopMenu = new MenuItem("&Bishop");
-            MenuItem it;
-
-            // Castle
-            if (!IsDiagnosticsCastleConfigured()) {
-                it = new MenuItem("Configure &Castle connection...") {
-                    Name = "miConfigureCastle"
-                };
-                // FIXME configuration dialog
-                bishopMenu.MenuItems.Add(it);
-                it = new MenuItem("-");
-                bishopMenu.MenuItems.Add(it);
-            }
-
-            // HTTPS -> HTTP emulator
-            it = new MenuItem("&Emulate HTTPS (localhost)") {
-                Name = "miEnableTlsEdgeRouter",
-                RadioCheck = false,
-                Checked = false
-            };
-            it.Click += (o, ev) => {
-                var mi = (MenuItem)o;
-                shouldInterceptHttps = mi.Checked = !mi.Checked;
-            };
-            bishopMenu.MenuItems.Add(it);
-
-            it = new MenuItem("-");
-            bishopMenu.MenuItems.Add(it);
-
-            // FIXME redirect to one host - (print its address if available)
-
-            // options dialog
-            it = new MenuItem("Tampering &options...");
-            // FIXME it.Click += Options_Click;
-            bishopMenu.MenuItems.Add(it);
-
-            it = new MenuItem("-");
-            bishopMenu.MenuItems.Add(it);
-
-            // about dialog
-            it = new MenuItem("About Bishop...");
-            it.Click += (o, ev) => MessageBox.Show("Version: " + GetType().Assembly.GetName().Version, 
-                "Bishop", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            bishopMenu.MenuItems.Add(it);
-
-            // help
-            it = new MenuItem("Help...");
-            it.Click += (o, ev) => Process.Start(new ProcessStartInfo(
-                "https://github.com/lowleveldesign/diagnostics-kit/wiki/5.1.bishop"));
-            bishopMenu.MenuItems.Add(it);
-
-            return bishopMenu;
-        }
-
-        public void AutoTamperRequestBefore(Session oSession)
-        {
-            if (!isLoaded) {
-                return;
-            }
-            var request = new Request(oSession);
-
-            if (request.IsHttpsConnect) {
-                if (request.IsLocal && shouldInterceptHttps) {
-                    PerformHttpsHandshake(oSession);
-                }
-                return;
-            }
-
-            var tamperingContext = new TamperingContext();
-            if (request.IsLocal && request.IsHttps && shouldInterceptHttps) {
-                ApplyHttpsRedirection(request, tamperingContext);
-            } 
-            tamperer.ApplyMatchingTamperingRules(request, tamperingContext);
-            if (isRedirectionToOneHostEnabled) {
-                tamperingContext.ServerTcpAddressWithPort = settings.OneHostForRedirectionTcpAddressWithPort;
-            } else if (IsApplicationServerSelected()) {
-                serverRedirector.ApplyMatchingTamperingRules(request, tamperingContext, selectedServer);
-            }
-
-            if (tamperingContext.ShouldTamperRequest)
-            {
-                TamperRequest(oSession, tamperingContext);
-            }
+        public void SetHttpsLocalInterception(bool enabled) {
+            shouldInterceptHttps = enabled;
         }
 
         private void Log(string message)
@@ -149,6 +88,44 @@ namespace LowLevelDesign.Diagnostics.Bishop
         private void LogFormat(string format, params object[] args)
         {
             Log(string.Format(format, args));
+        }
+
+        public void AutoTamperRequestBefore(Session oSession)
+        {
+            if (!isLoaded) {
+                return;
+            }
+            if (!lck.TryEnterReadLock(TimeSpan.FromSeconds(1))) {
+                return;
+            }
+            try {
+                var request = new Request(oSession);
+
+                if (request.IsHttpsConnect) {
+                    if (request.IsLocal && shouldInterceptHttps) {
+                        PerformHttpsHandshake(oSession);
+                    }
+                    return;
+                }
+
+                var tamperingContext = new TamperingContext();
+                if (request.IsLocal && request.IsHttps && shouldInterceptHttps) {
+                    ApplyHttpsRedirection(request, tamperingContext);
+                }
+                tamperer.ApplyMatchingTamperingRules(request, tamperingContext);
+                if (isRedirectionToOneHostEnabled) {
+                    tamperingContext.ServerTcpAddressWithPort = customServerAddressWithPort;
+                } else if (IsApplicationServerSelected()) {
+                    serverRedirector.ApplyMatchingTamperingRules(request, tamperingContext, selectedServer);
+                }
+
+                if (tamperingContext.ShouldTamperRequest)
+                {
+                    TamperRequest(oSession, tamperingContext);
+                }
+            } finally {
+                lck.ExitReadLock();
+            }
         }
 
         private void PerformHttpsHandshake(Session fiddlerSession)
@@ -174,7 +151,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
 
         private void TamperRequest(Session fiddlerSession, TamperingContext tamperingContext)
         {
-            LogFormat("Tampering request: {1}", fiddlerSession.url);
+            LogFormat("Tampering request: {0}", fiddlerSession.url);
 
             var fullUrl = fiddlerSession.fullUrl;
 
@@ -192,8 +169,8 @@ namespace LowLevelDesign.Diagnostics.Bishop
 
             fiddlerSession["X-OverrideHost"] = tamperingContext.ServerTcpAddressWithPort;
             fiddlerSession.bypassGateway = true;
-            LogFormat("IP changed to {1}", tamperingContext.ServerTcpAddressWithPort);
-            LogFormat("Url set to {1}", fullUrl);
+            LogFormat("IP changed to {0}", tamperingContext.ServerTcpAddressWithPort);
+            LogFormat("Url set to {0}", fullUrl);
         }
 
         public void AutoTamperRequestAfter(Session oSession)
@@ -216,5 +193,42 @@ namespace LowLevelDesign.Diagnostics.Bishop
         {
         }
 
+        public void SelectCustomServer(string customServerAddressWithPort)
+        {
+            lck.EnterWriteLock();
+            try {
+                isRedirectionToOneHostEnabled = true;
+                this.customServerAddressWithPort = customServerAddressWithPort;
+            } finally {
+                lck.ExitWriteLock();
+            }
+        }
+
+        public void SelectApplicationServer(string srv)
+        {
+            lck.EnterWriteLock();
+            try {
+                isRedirectionToOneHostEnabled = false;
+                selectedServer = srv;
+            } finally {
+                lck.ExitWriteLock();
+            }
+        }
+
+        public void TurnOffServerRedirection()
+        {
+            lck.EnterWriteLock();
+            try {
+                customServerAddressWithPort = null;
+                selectedServer = null;
+                isRedirectionToOneHostEnabled = false;
+            } finally {
+                lck.ExitWriteLock();
+            }
+        }
+
+        public string PluginConfigurationFilePath { get { return configurationFilePath; } }
+
+        public IEnumerable<string> AvailableServers { get { return serverRedirector.AvailableServers; } }
     }
 }

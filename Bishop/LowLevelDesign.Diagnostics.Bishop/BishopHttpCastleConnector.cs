@@ -23,8 +23,8 @@ namespace LowLevelDesign.Diagnostics.Bishop
              * this value to local time, completely skipping timezone settings. */
             DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
         };
-        private readonly PluginSettings settings;
         private readonly CookieContainer cookies = new CookieContainer();
+        private readonly PluginSettings settings;
         private bool isAuthenticationRequired = true;
 
         public BishopHttpCastleConnector(PluginSettings settings) 

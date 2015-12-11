@@ -21,16 +21,21 @@ namespace LowLevelDesign.Diagnostics.Bishop.Config
 
         public string UserName { get; set; }
 
-        public string OneHostForRedirectionTcpAddressWithPort { get; set; }
-
         public void SetPassword(string password)
         {
+            if (string.IsNullOrEmpty(password)) {
+                encryptedPassword = null;
+                return;
+            }
             encryptedPassword = ProtectedData.Protect(Encoding.UTF8.GetBytes(password), null,
                 DataProtectionScope.CurrentUser);
         }
 
         public string GetPassword()
         {
+            if (encryptedPassword == null) {
+                return string.Empty;
+            }
             return Encoding.UTF8.GetString(ProtectedData.Unprotect(encryptedPassword,
                 null, DataProtectionScope.CurrentUser));
         }
