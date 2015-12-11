@@ -61,6 +61,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
 
             expectedSettings.DiagnosticsUrl = new Uri("http://diagnostics.test.com/test");
             expectedSettings.UserName = "testuser";
+            expectedSettings.OneHostForRedirectionTcpAddressWithPort = "testhost.com:1200";
             var expectedPassword = "testpassword";
             expectedSettings.SetPassword(expectedPassword);
             expectedSettings.UserDefinedTransformations = new RequestTransformation[] {
@@ -93,6 +94,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tests
             Assert.Equal(expectedSettings.DiagnosticsUrl, actualSettings.DiagnosticsUrl);
             Assert.Equal(expectedSettings.UserName, actualSettings.UserName);
             Assert.Equal(expectedPassword, actualSettings.GetPassword());
+            Assert.Equal(expectedSettings.OneHostForRedirectionTcpAddressWithPort, actualSettings.OneHostForRedirectionTcpAddressWithPort);
             Assert.Equal(expectedSettings.UserDefinedTransformations, actualSettings.UserDefinedTransformations,
                 new RequestTransformationEqualityComparer());
             Assert.Equal(expectedSettings.HttpsRedirects, actualSettings.HttpsRedirects,

@@ -1,4 +1,5 @@
-﻿using Fiddler;
+﻿using System;
+using Fiddler;
 
 namespace LowLevelDesign.Diagnostics.Bishop.Common
 {
@@ -33,5 +34,10 @@ namespace LowLevelDesign.Diagnostics.Bishop.Common
         public Session FiddlerSession { get { return fiddlerSession; } }
 
         public string Protocol { get { return fiddlerSession.isHTTPS ? "https" : "http";  } }
+
+        public void SetHeader(string header, string value)
+        {
+            fiddlerSession.oRequest.headers.Add(header, value);
+        }
     }
 }

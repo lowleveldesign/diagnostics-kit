@@ -17,5 +17,7 @@
         int Port { get; }
 
         string Protocol { get; }
+
+        void SetHeader(string header, string value);
     }
 }
