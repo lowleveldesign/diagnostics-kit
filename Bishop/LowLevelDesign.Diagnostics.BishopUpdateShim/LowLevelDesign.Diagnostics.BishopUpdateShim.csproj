@@ -56,6 +56,9 @@
       <Name>LowLevelDesign.Diagnostics.Bishop</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)\*Bishop*" "%25USERPROFILE%25\Documents\Fiddler2\Scripts"</PostBuildEvent>
