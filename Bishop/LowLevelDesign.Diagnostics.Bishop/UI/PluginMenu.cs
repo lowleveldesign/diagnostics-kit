@@ -81,16 +81,11 @@ namespace LowLevelDesign.Diagnostics.Bishop.UI
             it = new MenuItem("-");
             bishopMenu.MenuItems.Add(it);
 
-            // about dialog FIXME: better description - maybe some custom dialog
+            // about dialog
             it = new MenuItem("About Bishop...");
-            it.Click += (o, ev) => MessageBox.Show("Version: " + GetType().Assembly.GetName().Version, 
-                "Bishop", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            bishopMenu.MenuItems.Add(it);
-
-            // help
-            it = new MenuItem("Help...");
-            it.Click += (o, ev) => Process.Start(new ProcessStartInfo(
-                "https://github.com/lowleveldesign/diagnostics-kit/wiki/5.1.bishop"));
+            it.Click += (o, ev) => {
+                new AboutForm().ShowDialog(FiddlerApplication.UI);
+            };
             bishopMenu.MenuItems.Add(it);
 
             return bishopMenu;
@@ -98,30 +93,33 @@ namespace LowLevelDesign.Diagnostics.Bishop.UI
 
         private void TamperingOptions_Click(object sender, EventArgs e)
         {
-            var dlg = new TamperingOptionsForm();
-            if (dlg.ShowDialog(FiddlerApplication.UI) == DialogResult.OK)
+            using (var dlg = new TamperingOptionsForm(plugin.PluginConfigurationFilePath))
             {
-
+                if (dlg.ShowDialog(FiddlerApplication.UI) == DialogResult.OK)
+                {
+                    plugin.ReloadSettings();
+                }
             }
-            dlg.Dispose();
         }
 
         private void CastleConnection_Click(object sender, EventArgs e)
         {
-            var dlg = new DiagnosticsCastleForm();
-            var settings = PluginSettings.Load(plugin.PluginConfigurationFilePath);
-            dlg.TxtCastleUrl.Text = settings.DiagnosticsUrl != null ? settings.DiagnosticsUrl.AbsoluteUri : string.Empty;
-            dlg.TxtCastleUsername.Text = settings.UserName;
-            dlg.TxtCastlePassword.Text = settings.GetPassword();
-            if (dlg.ShowDialog(FiddlerApplication.UI) == DialogResult.OK) {
-                settings.DiagnosticsUrl = new Uri(dlg.TxtCastleUrl.Text);
-                settings.UserName = dlg.TxtCastleUsername.Text;
-                settings.SetPassword(dlg.TxtCastlePassword.Text);
-                settings.Save(plugin.PluginConfigurationFilePath);
+            using (var dlg = new DiagnosticsCastleForm())
+            {
+                var settings = PluginSettings.Load(plugin.PluginConfigurationFilePath);
+                dlg.TxtCastleUrl.Text = settings.DiagnosticsUrl != null ? settings.DiagnosticsUrl.AbsoluteUri : string.Empty;
+                dlg.TxtCastleUsername.Text = settings.UserName;
+                dlg.TxtCastlePassword.Text = settings.GetPassword();
+                if (dlg.ShowDialog(FiddlerApplication.UI) == DialogResult.OK)
+                {
+                    settings.DiagnosticsUrl = new Uri(dlg.TxtCastleUrl.Text);
+                    settings.UserName = dlg.TxtCastleUsername.Text;
+                    settings.SetPassword(dlg.TxtCastlePassword.Text);
+                    settings.Save(plugin.PluginConfigurationFilePath);
 
-                plugin.ReloadSettings();
+                    plugin.ReloadSettings();
+                }
             }
-            dlg.Dispose();
         }
 
         private void Server_Click(object sender, EventArgs e)

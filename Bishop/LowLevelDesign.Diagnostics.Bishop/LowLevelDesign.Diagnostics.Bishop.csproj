@@ -73,6 +73,12 @@
     <Compile Include="Tampering\ServerRedirectionRulesContainer.cs" />
     <Compile Include="Tampering\TamperingContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\CustomServerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -92,17 +98,24 @@
     <Compile Include="UI\TamperingOptionsForm.Designer.cs">
       <DependentUpon>TamperingOptionsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\TamperingRuleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\TamperingRuleForm.Designer.cs">
+      <DependentUpon>TamperingRuleForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FodyWeavers.xml">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="FodyWeavers.xml" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <EmbeddedResource Include="UI\AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\CustomServerForm.resx">
       <DependentUpon>CustomServerForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -112,18 +125,21 @@
     <EmbeddedResource Include="UI\TamperingOptionsForm.resx">
       <DependentUpon>TamperingOptionsForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\TamperingRuleForm.resx">
+      <DependentUpon>TamperingRuleForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
+  <Import Project="..\..\packages\Fody.1.28.3\build\Fody.targets" Condition="Exists('..\..\packages\Fody.1.28.3\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Fody.1.28.3\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.1.28.3\build\Fody.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

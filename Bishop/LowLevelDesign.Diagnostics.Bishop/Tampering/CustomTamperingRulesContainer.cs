@@ -12,6 +12,8 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
     {
         private sealed class RequestTransformationWithCompiledRegex
         {
+            public string Name { get; set; }
+
             public Regex RegexToMatchAgainsHost { get; set; }
 
             public Regex RegexToMatchAgainstPathAndQuery { get; set; }
@@ -37,7 +39,8 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
                     DestinationHostHeader = s.DestinationHostHeader,
                     DestinationPathAndQuery = s.DestinationPathAndQuery,
                     DestinationIpAddresses = s.DestinationIpAddresses,
-                    DestinationPorts = s.DestinationPorts
+                    DestinationPorts = s.DestinationPorts,
+                    Name = s.Name
                 }));
 
         }

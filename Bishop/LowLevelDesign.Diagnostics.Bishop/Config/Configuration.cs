@@ -12,6 +12,8 @@
         private string[] destinationIpAddresses = new string[0];
         private ushort[] destinationPorts = new ushort[0];
 
+        public string Name { get; set; }
+
         public string Protocol { get; set; }
 
         public string RegexToMatchAgainstHost { get; set; }

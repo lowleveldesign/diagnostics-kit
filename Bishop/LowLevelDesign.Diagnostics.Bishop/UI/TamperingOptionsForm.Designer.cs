@@ -34,6 +34,12 @@
             this.label4 = new System.Windows.Forms.Label();
             this.txtLocalHttpsRedirects = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnDown = new System.Windows.Forms.Button();
+            this.btnUp = new System.Windows.Forms.Button();
+            this.cblTamperingRules = new System.Windows.Forms.CheckedListBox();
+            this.btnRemove = new System.Windows.Forms.Button();
+            this.btnEdit = new System.Windows.Forms.Button();
+            this.btnNew = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -49,7 +55,7 @@
             this.groupBox1.Controls.Add(this.btnCastleConnection);
             this.groupBox1.Location = new System.Drawing.Point(4, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(650, 54);
+            this.groupBox1.Size = new System.Drawing.Size(733, 54);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Diagnostics Castle Connection";
@@ -63,6 +69,7 @@
             this.btnCastleConnection.TabIndex = 0;
             this.btnCastleConnection.Text = "&Configure connection with the Castle...";
             this.btnCastleConnection.UseVisualStyleBackColor = true;
+            this.btnCastleConnection.Click += new System.EventHandler(this.btnCastleConnection_Click);
             // 
             // groupBox2
             // 
@@ -72,7 +79,7 @@
             this.groupBox2.Controls.Add(this.txtLocalHttpsRedirects);
             this.groupBox2.Location = new System.Drawing.Point(4, 59);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(650, 97);
+            this.groupBox2.Size = new System.Drawing.Size(733, 97);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Local HTTPS redirections";
@@ -89,37 +96,108 @@
             // 
             // txtLocalHttpsRedirects
             // 
+            this.txtLocalHttpsRedirects.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLocalHttpsRedirects.Location = new System.Drawing.Point(15, 48);
             this.txtLocalHttpsRedirects.Multiline = true;
             this.txtLocalHttpsRedirects.Name = "txtLocalHttpsRedirects";
-            this.txtLocalHttpsRedirects.Size = new System.Drawing.Size(602, 43);
+            this.txtLocalHttpsRedirects.Size = new System.Drawing.Size(705, 43);
             this.txtLocalHttpsRedirects.TabIndex = 0;
             // 
             // groupBox4
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.btnDown);
+            this.groupBox4.Controls.Add(this.btnUp);
+            this.groupBox4.Controls.Add(this.cblTamperingRules);
+            this.groupBox4.Controls.Add(this.btnRemove);
+            this.groupBox4.Controls.Add(this.btnEdit);
+            this.groupBox4.Controls.Add(this.btnNew);
             this.groupBox4.Controls.Add(this.label1);
             this.groupBox4.Location = new System.Drawing.Point(4, 163);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(650, 109);
+            this.groupBox4.Size = new System.Drawing.Size(733, 237);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Tampering rules";
+            // 
+            // btnDown
+            // 
+            this.btnDown.Location = new System.Drawing.Point(342, 37);
+            this.btnDown.Name = "btnDown";
+            this.btnDown.Size = new System.Drawing.Size(75, 23);
+            this.btnDown.TabIndex = 5;
+            this.btnDown.Text = "Move &down";
+            this.btnDown.UseVisualStyleBackColor = true;
+            this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
+            // 
+            // btnUp
+            // 
+            this.btnUp.Location = new System.Drawing.Point(261, 36);
+            this.btnUp.Name = "btnUp";
+            this.btnUp.Size = new System.Drawing.Size(75, 23);
+            this.btnUp.TabIndex = 4;
+            this.btnUp.Text = "Move &up";
+            this.btnUp.UseVisualStyleBackColor = true;
+            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
+            // 
+            // cblTamperingRules
+            // 
+            this.cblTamperingRules.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cblTamperingRules.FormattingEnabled = true;
+            this.cblTamperingRules.Location = new System.Drawing.Point(15, 65);
+            this.cblTamperingRules.Name = "cblTamperingRules";
+            this.cblTamperingRules.Size = new System.Drawing.Size(705, 154);
+            this.cblTamperingRules.TabIndex = 7;
+            // 
+            // btnRemove
+            // 
+            this.btnRemove.Location = new System.Drawing.Point(179, 37);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(75, 23);
+            this.btnRemove.TabIndex = 3;
+            this.btnRemove.Text = "&Remove...";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
+            // 
+            // btnEdit
+            // 
+            this.btnEdit.Location = new System.Drawing.Point(97, 37);
+            this.btnEdit.Name = "btnEdit";
+            this.btnEdit.Size = new System.Drawing.Size(75, 23);
+            this.btnEdit.TabIndex = 2;
+            this.btnEdit.Text = "&Edit...";
+            this.btnEdit.UseVisualStyleBackColor = true;
+            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
+            // 
+            // btnNew
+            // 
+            this.btnNew.Location = new System.Drawing.Point(15, 37);
+            this.btnNew.Name = "btnNew";
+            this.btnNew.Size = new System.Drawing.Size(75, 23);
+            this.btnNew.TabIndex = 1;
+            this.btnNew.Text = "&New...";
+            this.btnNew.UseVisualStyleBackColor = true;
+            this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
             // 
             // label1
             // 
             this.label1.Location = new System.Drawing.Point(12, 16);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(629, 32);
+            this.label1.Size = new System.Drawing.Size(629, 17);
             this.label1.TabIndex = 0;
-            this.label1.Text = "A list of rules which define how the coming requests will be processed. Each rule" +
-    " must be in a seperate line and each line has the following syntax: regexTo";
+            this.label1.Text = "A list of rules which define how the coming requests will be processed. ";
             // 
             // btnOK
             // 
+            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(489, 413);
+            this.btnOK.Location = new System.Drawing.Point(578, 407);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 4;
@@ -128,8 +206,9 @@
             // 
             // btnCancel
             // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(570, 413);
+            this.btnCancel.Location = new System.Drawing.Point(659, 407);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 5;
@@ -142,7 +221,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(657, 448);
+            this.ClientSize = new System.Drawing.Size(740, 437);
             this.ControlBox = false;
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -150,6 +229,7 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "TamperingOptionsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Bishop Tampering Options";
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
@@ -170,5 +250,11 @@
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckedListBox cblTamperingRules;
+        private System.Windows.Forms.Button btnRemove;
+        private System.Windows.Forms.Button btnEdit;
+        private System.Windows.Forms.Button btnNew;
+        private System.Windows.Forms.Button btnDown;
+        private System.Windows.Forms.Button btnUp;
     }
 }
