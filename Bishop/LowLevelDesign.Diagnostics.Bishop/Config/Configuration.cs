@@ -2,9 +2,9 @@
 {
     public sealed class HttpsLocalRedirect
     {
-        public short RemoteHttpsPort { get; set; }
+        public ushort RemoteHttpsPort { get; set; }
 
-        public short LocalHttpPort { get; set; }
+        public ushort LocalHttpPort { get; set; }
     }
 
     public sealed class RequestTransformation

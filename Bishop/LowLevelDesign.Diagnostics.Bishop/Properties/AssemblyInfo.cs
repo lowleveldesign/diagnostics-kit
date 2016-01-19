@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Qbrick AB")]
 [assembly: AssemblyProduct("LowLevelDesign.Diagnostics.Bishop")]
-[assembly: AssemblyCopyright("Copyright © Qbrick AB 2015")]
+[assembly: AssemblyCopyright("Copyright © Sebastian Solnica 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

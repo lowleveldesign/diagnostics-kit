@@ -31,7 +31,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
         public void OnLoad()
         {
             try {
-                ReloadSettings();
+                ReloadSettings(PluginSettings.Load(configurationFilePath));
 
                 FiddlerApplication.UI.Menu.MenuItems.Add(new PluginMenu(this).PrepareMenu());
                 isLoaded = true;
@@ -42,13 +42,12 @@ namespace LowLevelDesign.Diagnostics.Bishop
             }
         }
 
-        public void ReloadSettings()
+        public void ReloadSettings(PluginSettings newSettings)
         {
 
             lck.EnterWriteLock();
             try {
-                settings = PluginSettings.Load(configurationFilePath);
-                // FIXME make sure that settings did change
+                settings = newSettings;
                 tamperer = new CustomTamperingRulesContainer(settings);
 
                 serverRedirector = new ServerRedirectionRulesContainer(RetrieveApplicationServerConfigs());
@@ -111,6 +110,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
                 var tamperingContext = new TamperingContext();
                 if (request.IsLocal && request.IsHttps && shouldInterceptHttps) {
                     ApplyHttpsRedirection(request, tamperingContext);
+                    return;
                 }
                 tamperer.ApplyMatchingTamperingRules(request, tamperingContext);
                 if (isRedirectionToOneHostEnabled) {
@@ -121,7 +121,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
 
                 if (tamperingContext.ShouldTamperRequest)
                 {
-                    TamperRequest(oSession, tamperingContext);
+                    TamperRequest(request, oSession, tamperingContext);
                 }
             } finally {
                 lck.ExitReadLock();
@@ -149,7 +149,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
             return selectedServer != null;
         }
 
-        private void TamperRequest(Session fiddlerSession, TamperingContext tamperingContext)
+        private void TamperRequest(IRequest request, Session fiddlerSession, TamperingContext tamperingContext)
         {
             LogFormat("Tampering request: {0}", fiddlerSession.url);
 
@@ -160,12 +160,14 @@ namespace LowLevelDesign.Diagnostics.Bishop
             }
             if (!string.IsNullOrEmpty(tamperingContext.HostHeader))
             {
-                fiddlerSession.fullUrl = "http://" + tamperingContext.HostHeader + fiddlerSession.PathAndQuery;
+                fiddlerSession.fullUrl = request.Protocol + "://" + tamperingContext.HostHeader + fiddlerSession.PathAndQuery;
                 // fullUrl won't be a host but rather host header with different IP
                 fullUrl = fiddlerSession.fullUrl;
             }
-            // FIXME redirect from https to http
-            // fiddlerSession.fullUrl = fiddlerSession.fullUrl.Replace("https://", "http://");
+            if (!string.IsNullOrEmpty(tamperingContext.Protocol) && !string.Equals(
+                    tamperingContext.Protocol, request.Protocol, StringComparison.OrdinalIgnoreCase)) {
+                fiddlerSession.fullUrl = fiddlerSession.fullUrl.Replace(request.Protocol + "://", tamperingContext.Protocol + "://");
+            }
 
             fiddlerSession["X-OverrideHost"] = tamperingContext.ServerTcpAddressWithPort;
             fiddlerSession.bypassGateway = true;

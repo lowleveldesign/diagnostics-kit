@@ -9,13 +9,25 @@ namespace LowLevelDesign.Diagnostics.Bishop.UI
 {
     public partial class TamperingRuleForm : Form
     {
-        public TamperingRuleForm()
+        private readonly bool isNewRule;
+        private readonly Func<string, bool> isRuleNameUsed;
+
+        public TamperingRuleForm(Func<string, bool> isRuleNameUsed)
         {
+            isNewRule = true;
+            this.isRuleNameUsed = isRuleNameUsed;
+
             InitializeComponent();
         }
 
-        public TamperingRuleForm(RequestTransformation transformation) : base()
+        public TamperingRuleForm(RequestTransformation transformation)
         {
+            isNewRule = false;
+            isRuleNameUsed = null;
+
+            InitializeComponent();
+
+            txtRuleName.Enabled = false;
             txtRuleName.Text = transformation.Name;
             txtHostRegex.Text = transformation.RegexToMatchAgainstHost;
             txtPathAndQueryRegex.Text = transformation.RegexToMatchAgainstPathAndQuery;
@@ -88,6 +100,12 @@ namespace LowLevelDesign.Diagnostics.Bishop.UI
 
         private void btnOK_Click(object sender, EventArgs e)
         {
+            if (isNewRule && isRuleNameUsed(RuleName))
+            {
+                MessageBox.Show(this, "The rule name is already in use.", "Invalid data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             if (IsValid()) {
                 DialogResult = DialogResult.OK;
             } else {

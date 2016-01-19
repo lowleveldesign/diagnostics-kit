@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("www.lowleveldesign.org")]
 [assembly: AssemblyProduct("LowLevelDesign.Diagnostics.Harvester.AspNet")]
-[assembly: AssemblyCopyright("Copyright © Sebastian Solnica 2015")]
+[assembly: AssemblyCopyright("Copyright © Sebastian Solnica 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

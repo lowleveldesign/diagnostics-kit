@@ -97,7 +97,9 @@ namespace LowLevelDesign.Diagnostics.Bishop.UI
             {
                 if (dlg.ShowDialog(FiddlerApplication.UI) == DialogResult.OK)
                 {
-                    plugin.ReloadSettings();
+                    var newSettings = dlg.GetNewPluginSettings();
+                    newSettings.Save(plugin.PluginConfigurationFilePath);
+                    plugin.ReloadSettings(newSettings);
                 }
             }
         }
@@ -117,7 +119,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.UI
                     settings.SetPassword(dlg.TxtCastlePassword.Text);
                     settings.Save(plugin.PluginConfigurationFilePath);
 
-                    plugin.ReloadSettings();
+                    plugin.ReloadSettings(settings);
                 }
             }
         }

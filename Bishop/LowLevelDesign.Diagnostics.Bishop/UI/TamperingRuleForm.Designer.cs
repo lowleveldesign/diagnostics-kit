@@ -62,7 +62,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtRuleName.Location = new System.Drawing.Point(160, 10);
             this.txtRuleName.Name = "txtRuleName";
-            this.txtRuleName.Size = new System.Drawing.Size(278, 20);
+            this.txtRuleName.Size = new System.Drawing.Size(273, 20);
             this.txtRuleName.TabIndex = 1;
             // 
             // label2
@@ -80,7 +80,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtHostRegex.Location = new System.Drawing.Point(160, 33);
             this.txtHostRegex.Name = "txtHostRegex";
-            this.txtHostRegex.Size = new System.Drawing.Size(278, 20);
+            this.txtHostRegex.Size = new System.Drawing.Size(273, 20);
             this.txtHostRegex.TabIndex = 3;
             // 
             // label3
@@ -98,7 +98,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPathAndQueryRegex.Location = new System.Drawing.Point(160, 55);
             this.txtPathAndQueryRegex.Name = "txtPathAndQueryRegex";
-            this.txtPathAndQueryRegex.Size = new System.Drawing.Size(278, 20);
+            this.txtPathAndQueryRegex.Size = new System.Drawing.Size(273, 20);
             this.txtPathAndQueryRegex.TabIndex = 5;
             // 
             // label4
@@ -116,7 +116,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtDestinationHost.Location = new System.Drawing.Point(160, 77);
             this.txtDestinationHost.Name = "txtDestinationHost";
-            this.txtDestinationHost.Size = new System.Drawing.Size(278, 20);
+            this.txtDestinationHost.Size = new System.Drawing.Size(273, 20);
             this.txtDestinationHost.TabIndex = 7;
             // 
             // label5
@@ -134,28 +134,30 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtDestinationPathAndQuery.Location = new System.Drawing.Point(160, 100);
             this.txtDestinationPathAndQuery.Name = "txtDestinationPathAndQuery";
-            this.txtDestinationPathAndQuery.Size = new System.Drawing.Size(278, 20);
+            this.txtDestinationPathAndQuery.Size = new System.Drawing.Size(273, 20);
             this.txtDestinationPathAndQuery.TabIndex = 9;
             // 
             // btnCancel
             // 
-            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.CausesValidation = false;
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(363, 251);
+            this.btnCancel.Location = new System.Drawing.Point(364, 251);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 17;
+            this.btnCancel.Size = new System.Drawing.Size(69, 23);
+            this.btnCancel.TabIndex = 18;
             this.btnCancel.Text = "&Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
             // btnOK
             // 
-            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOK.Location = new System.Drawing.Point(282, 251);
+            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOK.Location = new System.Drawing.Point(283, 251);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(75, 23);
-            this.btnOK.TabIndex = 16;
+            this.btnOK.Size = new System.Drawing.Size(69, 23);
+            this.btnOK.TabIndex = 17;
             this.btnOK.Text = "&OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -167,7 +169,7 @@
             this.txtDestinationPorts.Location = new System.Drawing.Point(160, 182);
             this.txtDestinationPorts.Multiline = true;
             this.txtDestinationPorts.Name = "txtDestinationPorts";
-            this.txtDestinationPorts.Size = new System.Drawing.Size(278, 63);
+            this.txtDestinationPorts.Size = new System.Drawing.Size(273, 63);
             this.txtDestinationPorts.TabIndex = 15;
             // 
             // label6
@@ -185,7 +187,7 @@
             this.txtDestinationIPs.Location = new System.Drawing.Point(160, 123);
             this.txtDestinationIPs.Multiline = true;
             this.txtDestinationIPs.Name = "txtDestinationIPs";
-            this.txtDestinationIPs.Size = new System.Drawing.Size(278, 54);
+            this.txtDestinationIPs.Size = new System.Drawing.Size(273, 54);
             this.txtDestinationIPs.TabIndex = 13;
             // 
             // label7
@@ -198,11 +200,13 @@
             // 
             // lnkHelp
             // 
+            this.lnkHelp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lnkHelp.AutoSize = true;
-            this.lnkHelp.Location = new System.Drawing.Point(16, 260);
+            this.lnkHelp.Location = new System.Drawing.Point(13, 256);
             this.lnkHelp.Name = "lnkHelp";
             this.lnkHelp.Size = new System.Drawing.Size(62, 13);
-            this.lnkHelp.TabIndex = 18;
+            this.lnkHelp.TabIndex = 19;
             this.lnkHelp.TabStop = true;
             this.lnkHelp.Text = "Need help?";
             this.lnkHelp.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkHelp_LinkClicked);
@@ -211,7 +215,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(443, 282);
+            this.ClientSize = new System.Drawing.Size(438, 281);
             this.Controls.Add(this.lnkHelp);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
