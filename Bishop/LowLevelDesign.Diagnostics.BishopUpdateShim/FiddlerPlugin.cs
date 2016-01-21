@@ -12,23 +12,34 @@ namespace LowLevelDesign.Diagnostics.BishopUpdateShim
 {
     public class FiddlerPlugin : IAutoTamper
     {
+        private const int DefaultRequestTimeoutInMilliseconds = 1500;
+        private const string BishopDllName = "_Bishop.dll";
+        private const string BishopUpdateUrl = "http://localhost:51353";
         private IAutoTamper bishop;
 
         public FiddlerPlugin()
         {
-            var files = new [] { "_Bishop.dll", "_Bishop.pdb" };
             try
             {
                 Version installedVer = new Version(0, 0, 0, 0);
                 Version currentVer;
-                // get server version of Goniec
-                var req = WebRequest.Create("https://FIXME/about-bishop"); // FIXME valid https url
+                string updateFileHash, updateFileUrl;
+
+                var req = WebRequest.Create(BishopUpdateUrl + "/about-bishop");
+                req.Timeout = DefaultRequestTimeoutInMilliseconds;
                 using (var s = new StreamReader(req.GetResponse().GetResponseStream()))
                 {
-                    currentVer = new Version(s.ReadToEnd());
+                    var updateInfo = s.ReadToEnd().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (updateInfo.Length != 3) {
+                        return;
+                    }
+                    currentVer = new Version(updateInfo[0]);
+                    updateFileHash = updateInfo[1];
+                    updateFileUrl = updateInfo[2];
                 }
+
                 var fiddlerUserPath = CONFIG.GetPath("AutoFiddlers_User");
-                var asmpath = Path.Combine(fiddlerUserPath, files[0]);
+                var asmpath = Path.Combine(fiddlerUserPath, BishopDllName);
                 if (File.Exists(asmpath))
                 {
                     installedVer = AssemblyName.GetAssemblyName(asmpath).Version;
@@ -36,30 +47,21 @@ namespace LowLevelDesign.Diagnostics.BishopUpdateShim
 
                 if (currentVer > installedVer)
                 {
-                    if (MessageBox.Show(String.Format("New Bishop version available: {0}. Update?", currentVer), "Bishop update",
+                    if (MessageBox.Show(string.Format("New Bishop version available: {0}. Update?", currentVer), "Bishop update",
                             MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                        // we need to update fiddler
-                        // get Goniec.zip from a server
                         var tempPath = Path.Combine(Path.GetTempPath(), "Bishop.zip");
                         using (var wc = new WebClient())
                         {
-                            wc.DownloadFile("https://FIXME/bishop.zip", tempPath);
+                            wc.DownloadFile(updateFileUrl, tempPath);
+                            if (!IsFileUnaltered(tempPath, updateFileHash))
+                            {
+                                File.Delete(tempPath);
+                                throw new InvalidOperationException(
+                                    "There was a problem in the update download - the hash does not match.");
+                            }
                         }
-                        // unzip
-                        var unzipDir = Path.Combine(Path.GetTempPath(), "Bishop");
-                        ZipFile.ExtractToDirectory(tempPath, unzipDir);
-
-                        // move files to machine wide directory
-                        foreach (var f in files)
-                        {
-                            var p = Path.Combine(fiddlerUserPath, f);
-                            File.Delete(p);
-                            File.Move(Path.Combine(unzipDir, f), p);
-                        }
-
-                        // remove old files and directories 
-                        Directory.Delete(unzipDir, true);
+                        FileUtils.ExtractZipToDirectoryAndOverrideExistingFiles(tempPath, fiddlerUserPath);
                         File.Delete(tempPath);
                     }
                 }
@@ -67,15 +69,20 @@ namespace LowLevelDesign.Diagnostics.BishopUpdateShim
             catch (Exception ex)
             {
                 // this is cruel but what can we do? :)
-                Debug.Fail("Error when trying to check the update version", "Exception: " + ex);
+                Trace.Write("Error when trying to check the update version", "Exception: " + ex);
             }
+        }
+        private static bool IsFileUnaltered(string fileName, string fileHash)
+        {
+            return fileHash == null || string.Equals(FileUtils.CalculateFileHash(fileName), 
+                fileHash, StringComparison.OrdinalIgnoreCase);
         }
 
         public void OnLoad()
         {
             // load servant.dll
             var fiddlerUserPath = CONFIG.GetPath("AutoFiddlers_User");
-            var asm = Assembly.UnsafeLoadFrom(Path.Combine(fiddlerUserPath, "Bishop.dll"));
+            var asm = Assembly.UnsafeLoadFrom(Path.Combine(fiddlerUserPath, BishopDllName));
             if (asm == null) {
                 throw new InvalidOperationException("Bishop not found.");
             }

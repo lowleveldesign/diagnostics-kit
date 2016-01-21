@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -8,7 +7,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("LowLevelDesign.Diagnostics.BishopUpdateShim")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("LowLevelDesign.Diagnostics.BishopUpdateShim")]
 [assembly: AssemblyCopyright("Copyright © Sebastian Solnica 2016")]
 [assembly: AssemblyTrademark("")]

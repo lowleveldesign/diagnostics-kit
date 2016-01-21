@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("LowLevelDesign.Diagnostics.Bishop")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Qbrick AB")]
 [assembly: AssemblyProduct("LowLevelDesign.Diagnostics.Bishop")]
 [assembly: AssemblyCopyright("Copyright © Sebastian Solnica 2016")]
 [assembly: AssemblyTrademark("")]
@@ -32,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0.1")]
+[assembly: AssemblyFileVersion("1.0.0.1")]

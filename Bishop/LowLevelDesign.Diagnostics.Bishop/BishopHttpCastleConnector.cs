@@ -10,6 +10,8 @@ namespace LowLevelDesign.Diagnostics.Bishop
 {
     public sealed class BishopHttpCastleConnector
     {
+        private const int DefaultRequestTimeoutInMilliseconds = 1500;
+
         private class CastleSettings
         {
             public bool IsAuthenticationEnabled { get; set; }
@@ -55,6 +57,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
         private string MakeGetRequest(string url)
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
+            request.Timeout = DefaultRequestTimeoutInMilliseconds;
             request.CookieContainer = cookies;
             request.AllowAutoRedirect = false;
 
@@ -65,6 +68,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
 
         private string MakePostRequest(string url, string postData) {
             var request = (HttpWebRequest)WebRequest.Create(url);
+            request.Timeout = DefaultRequestTimeoutInMilliseconds;
             request.CookieContainer = cookies;
 
             request.Method = "POST";

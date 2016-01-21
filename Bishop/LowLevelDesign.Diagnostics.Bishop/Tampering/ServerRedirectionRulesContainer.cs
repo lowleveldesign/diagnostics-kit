@@ -89,9 +89,9 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
             List<ApplicationBinding> bindings;
             if (serverAppsBindings.TryGetValue(selectedServer, out bindings))
             {
-                SortedList<int, ApplicationBinding> matchedBindings = new SortedList<int, ApplicationBinding>();
+                SortedList<float, ApplicationBinding> matchedBindings = new SortedList<float, ApplicationBinding>();
                 foreach (var binding in bindings) {
-                    int matchingPoints = 0;
+                    float matchingPoints = 0;
                     if (context.IsIpAddressValidForRedirection(binding.HostnameOrIpAddress)) {
                         matchingPoints += 3;
                     }
@@ -99,7 +99,7 @@ namespace LowLevelDesign.Diagnostics.Bishop.Tampering
                         matchingPoints += 3;
                     }
                     if (IsHostMatchingBinding(binding, context.HostHeader ?? request.Host)) { 
-                        matchingPoints += 2;
+                        matchingPoints += 2 + binding.HostForHeader.Length / 100.0f;
                     }
                     if (string.Equals(binding.Protocol, request.Protocol, StringComparison.OrdinalIgnoreCase)) {
                         matchingPoints += 1;

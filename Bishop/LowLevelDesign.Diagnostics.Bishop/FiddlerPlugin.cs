@@ -154,24 +154,26 @@ namespace LowLevelDesign.Diagnostics.Bishop
             LogFormat("Tampering request: {0}", fiddlerSession.url);
 
             var fullUrl = fiddlerSession.fullUrl;
+            var host = fiddlerSession.host;
 
             if (!string.IsNullOrEmpty(tamperingContext.ServerTcpAddressWithPort)) {
-                fullUrl = fullUrl.Replace(fiddlerSession.host, tamperingContext.ServerTcpAddressWithPort);
+                fiddlerSession["X-OverrideHost"] = tamperingContext.ServerTcpAddressWithPort;
+                LogFormat("IP changed to {0}", tamperingContext.ServerTcpAddressWithPort);
             }
-            if (!string.IsNullOrEmpty(tamperingContext.HostHeader))
-            {
-                fiddlerSession.fullUrl = request.Protocol + "://" + tamperingContext.HostHeader + fiddlerSession.PathAndQuery;
-                // fullUrl won't be a host but rather host header with different IP
-                fullUrl = fiddlerSession.fullUrl;
+            if (!string.IsNullOrEmpty(tamperingContext.HostHeader)) {
+                fullUrl = request.Protocol + "://" + tamperingContext.HostHeader + fiddlerSession.PathAndQuery;
+                host = tamperingContext.HostHeader;
+            }
+            if (!string.IsNullOrEmpty(tamperingContext.PathAndQuery)) {
+                fullUrl = request.Protocol + "://" + host + tamperingContext.PathAndQuery;
             }
             if (!string.IsNullOrEmpty(tamperingContext.Protocol) && !string.Equals(
                     tamperingContext.Protocol, request.Protocol, StringComparison.OrdinalIgnoreCase)) {
-                fiddlerSession.fullUrl = fiddlerSession.fullUrl.Replace(request.Protocol + "://", tamperingContext.Protocol + "://");
+                fullUrl = fullUrl.Replace(request.Protocol + "://", tamperingContext.Protocol + "://");
             }
+            fiddlerSession.fullUrl = fullUrl;
 
-            fiddlerSession["X-OverrideHost"] = tamperingContext.ServerTcpAddressWithPort;
             fiddlerSession.bypassGateway = true;
-            LogFormat("IP changed to {0}", tamperingContext.ServerTcpAddressWithPort);
             LogFormat("Url set to {0}", fullUrl);
         }
 
