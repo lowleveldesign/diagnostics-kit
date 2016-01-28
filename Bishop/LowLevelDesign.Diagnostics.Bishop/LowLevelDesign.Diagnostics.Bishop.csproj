@@ -69,6 +69,7 @@
     <Compile Include="BishopHttpCastleConnector.cs" />
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Common\Request.cs" />
+    <Compile Include="IBishop.cs" />
     <Compile Include="Tampering\CustomTamperingRulesContainer.cs" />
     <Compile Include="Tampering\ServerRedirectionRulesContainer.cs" />
     <Compile Include="Tampering\TamperingContext.cs" />

@@ -40,6 +40,9 @@ namespace LowLevelDesign.Diagnostics.Bishop.Config
                 null, DataProtectionScope.CurrentUser));
         }
 
+        [JsonIgnore]
+        internal byte[] EncryptedPassword { get { return encryptedPassword; } }
+
         public IEnumerable<RequestTransformation> UserDefinedTransformations
         {
             get { return transformations; }

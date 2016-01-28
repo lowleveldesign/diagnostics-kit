@@ -1,6 +1,7 @@
 ﻿using Fiddler;
 using LowLevelDesign.Diagnostics.Bishop.Config;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -8,52 +9,20 @@ namespace LowLevelDesign.Diagnostics.Bishop.UI
 {
     class PluginMenu
     {
-        private readonly FiddlerPlugin plugin;
+        private readonly IBishop plugin;
+        private readonly MenuItem bishopMenu;
         private MenuItem selectedServerMenuItem;
         private string lastSelectedCustomServerAddress = string.Empty;
         private ushort lastSelectedCustomServerPort = 80;
 
-        public PluginMenu(FiddlerPlugin plugin)
+        public PluginMenu(IBishop plugin)
         {
             this.plugin = plugin;
-        }
+            bishopMenu = new MenuItem("&Bishop");
 
-        public MenuItem PrepareMenu()
-        {
-            var bishopMenu = new MenuItem("&Bishop");
             MenuItem it;
-
             // Castle
-            if (!plugin.IsDiagnosticsCastleConfigured()) {
-                it = new MenuItem("Configure &Castle connection...") {
-                    Name = "miConfigureCastle"
-                };
-                it.Click += CastleConnection_Click;
-                bishopMenu.MenuItems.Add(it);
-            }
-            it = new MenuItem("Off") {
-                Name = "miNoServer",
-                Checked = true
-            };
-            selectedServerMenuItem = it;
-            it.Click += NoServer_Click;
-            bishopMenu.MenuItems.Add(it);
-            if (plugin.IsDiagnosticsCastleConfigured()) {
-                foreach (var srv in plugin.AvailableServers) {
-                    it = new MenuItem(srv) {
-                        Name = "miServer" + srv
-                    };
-                    it.Click += Server_Click;
-                    bishopMenu.MenuItems.Add(it);
-                }
-            }
-
-            it = new MenuItem("Custom...") {
-                Name = "miCustomServer"
-            };
-            it.Click += CustomServer_Click;
-            bishopMenu.MenuItems.Add(it);
-
+            PrepareServerMenu();
             it = new MenuItem("-");
             bishopMenu.MenuItems.Add(it);
 
@@ -87,9 +56,74 @@ namespace LowLevelDesign.Diagnostics.Bishop.UI
                 new AboutForm().ShowDialog(FiddlerApplication.UI);
             };
             bishopMenu.MenuItems.Add(it);
-
-            return bishopMenu;
         }
+
+        public void PrepareServerMenu()
+        {
+            const string ConfigureCastleMenuItemKey = "miConfigureCastle";
+
+            if (!plugin.IsDiagnosticsCastleConfigured() &&
+                !bishopMenu.MenuItems.ContainsKey(ConfigureCastleMenuItemKey)) {
+                var it = new MenuItem("Configure &Castle connection...") {
+                    Name = ConfigureCastleMenuItemKey
+                };
+                it.Click += CastleConnection_Click;
+                bishopMenu.MenuItems.Add(0, it);
+            }
+
+            if (!bishopMenu.MenuItems.ContainsKey("miNoServer")) {
+                var it = new MenuItem("Off") {
+                    Name = "miNoServer",
+                    Checked = true
+                };
+                selectedServerMenuItem = it;
+                it.Click += NoServer_Click;
+                bishopMenu.MenuItems.Add(it);
+            }
+
+            var keysToRemove = new HashSet<string>(StringComparer.Ordinal);
+            foreach (MenuItem it in bishopMenu.MenuItems) {
+                if (it.Name.StartsWith("miServer", StringComparison.Ordinal)) {
+                    keysToRemove.Add(it.Name);
+                }
+            }
+            if (plugin.IsDiagnosticsCastleConfigured()) {
+                if (bishopMenu.MenuItems.ContainsKey(ConfigureCastleMenuItemKey)) {
+                    bishopMenu.MenuItems.RemoveByKey(ConfigureCastleMenuItemKey);
+                }
+                int offset = 1;
+                foreach (var srv in plugin.AvailableServers) {
+                    var itemName = "miServer" + srv;
+                    if (!keysToRemove.Contains(itemName)) {
+                        var it = new MenuItem(srv) { Name = itemName };
+                        it.Click += Server_Click;
+                        bishopMenu.MenuItems.Add(offset, it);
+                        offset += 1;
+                    } else {
+                        keysToRemove.Remove(itemName);
+                    }
+                }
+            }
+            foreach (var key in keysToRemove) {
+                var it = bishopMenu.MenuItems[key];
+                if (it.Checked) {
+                    plugin.TurnOffServerRedirection();
+                    it.Checked = false;
+                    bishopMenu.MenuItems["miNoServer"].Checked = true;
+                }
+                bishopMenu.MenuItems.Remove(it);
+            }
+
+            if (!bishopMenu.MenuItems.ContainsKey("miCustomServer")) {
+                var it = new MenuItem("Custom...") {
+                    Name = "miCustomServer"
+                };
+                it.Click += CustomServer_Click;
+                bishopMenu.MenuItems.Add(it);
+            }
+        }
+
+        public MenuItem BishopMenu { get { return bishopMenu; } }
 
         private void TamperingOptions_Click(object sender, EventArgs e)
         {
@@ -100,6 +134,8 @@ namespace LowLevelDesign.Diagnostics.Bishop.UI
                     var newSettings = dlg.GetNewPluginSettings();
                     newSettings.Save(plugin.PluginConfigurationFilePath);
                     plugin.ReloadSettings(newSettings);
+
+                    PrepareServerMenu();
                 }
             }
         }
@@ -120,6 +156,8 @@ namespace LowLevelDesign.Diagnostics.Bishop.UI
                     settings.Save(plugin.PluginConfigurationFilePath);
 
                     plugin.ReloadSettings(settings);
+
+                    PrepareServerMenu();
                 }
             }
         }

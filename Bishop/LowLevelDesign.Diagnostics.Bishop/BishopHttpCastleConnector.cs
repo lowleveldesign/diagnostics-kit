@@ -10,7 +10,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
 {
     public sealed class BishopHttpCastleConnector
     {
-        private const int DefaultRequestTimeoutInMilliseconds = 1500;
+        private const int DefaultRequestTimeoutInMilliseconds = 4000;
 
         private class CastleSettings
         {

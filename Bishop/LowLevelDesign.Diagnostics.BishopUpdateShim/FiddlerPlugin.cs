@@ -14,7 +14,7 @@ namespace LowLevelDesign.Diagnostics.BishopUpdateShim
     {
         private const int DefaultRequestTimeoutInMilliseconds = 1500;
         private const string BishopDllName = "_Bishop.dll";
-        private const string BishopUpdateUrl = "http://localhost:51353";
+        private const string BishopUpdateUrl = "http://localhost:51353"; // FIXME
         private IAutoTamper bishop;
 
         public FiddlerPlugin()

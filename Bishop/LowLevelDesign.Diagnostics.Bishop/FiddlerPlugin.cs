@@ -7,13 +7,14 @@ using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 
 namespace LowLevelDesign.Diagnostics.Bishop
 {
-    public class FiddlerPlugin : IAutoTamper
+    public sealed class FiddlerPlugin : IAutoTamper, IBishop
     {
         private readonly string configurationFilePath = Path.Combine(Path.GetDirectoryName(
             Assembly.GetExecutingAssembly().Location), "bishop.conf");
@@ -22,6 +23,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
         private PluginSettings settings;
         private CustomTamperingRulesContainer tamperer;
         private ServerRedirectionRulesContainer serverRedirector;
+        private PluginMenu pluginMenu;
         private bool isLoaded;
         private bool shouldInterceptHttps;
         private string selectedServer;
@@ -33,7 +35,8 @@ namespace LowLevelDesign.Diagnostics.Bishop
             try {
                 ReloadSettings(PluginSettings.Load(configurationFilePath));
 
-                FiddlerApplication.UI.Menu.MenuItems.Add(new PluginMenu(this).PrepareMenu());
+                pluginMenu = new PluginMenu(this);
+                FiddlerApplication.UI.Menu.MenuItems.Add(pluginMenu.BishopMenu);
                 isLoaded = true;
             } catch (Exception ex) {
                 MessageBox.Show("There was a problem while loading the Bishop plugin. Please check the Fiddler log for details", 
@@ -44,13 +47,21 @@ namespace LowLevelDesign.Diagnostics.Bishop
 
         public void ReloadSettings(PluginSettings newSettings)
         {
+            var needToReloadApplicationServerConfigs = settings == null
+                || newSettings.DiagnosticsUrl != null &&
+                    !newSettings.DiagnosticsUrl.Equals(settings.DiagnosticsUrl)
+                || !string.Equals(settings.UserName, newSettings.UserName, StringComparison.Ordinal)
+                || newSettings.EncryptedPassword != null && 
+                    !newSettings.EncryptedPassword.SequenceEqual(settings.EncryptedPassword);
 
             lck.EnterWriteLock();
             try {
                 settings = newSettings;
-                tamperer = new CustomTamperingRulesContainer(settings);
+                tamperer = new CustomTamperingRulesContainer(newSettings);
 
-                serverRedirector = new ServerRedirectionRulesContainer(RetrieveApplicationServerConfigs());
+                if (needToReloadApplicationServerConfigs) {
+                    serverRedirector = new ServerRedirectionRulesContainer(RetrieveApplicationServerConfigs());
+                }
             } finally { 
                 lck.ExitWriteLock();
             }
@@ -95,6 +106,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
                 return;
             }
             if (!lck.TryEnterReadLock(TimeSpan.FromSeconds(1))) {
+                LogFormat("ERROR: Timeout when acquiring lock.");
                 return;
             }
             try {
@@ -110,17 +122,17 @@ namespace LowLevelDesign.Diagnostics.Bishop
                 var tamperingContext = new TamperingContext();
                 if (request.IsLocal && request.IsHttps && shouldInterceptHttps) {
                     ApplyHttpsRedirection(request, tamperingContext);
-                    return;
-                }
-                tamperer.ApplyMatchingTamperingRules(request, tamperingContext);
-                if (isRedirectionToOneHostEnabled) {
-                    tamperingContext.ServerTcpAddressWithPort = customServerAddressWithPort;
-                } else if (IsApplicationServerSelected()) {
-                    serverRedirector.ApplyMatchingTamperingRules(request, tamperingContext, selectedServer);
+                } else {
+                    tamperer.ApplyMatchingTamperingRules(request, tamperingContext);
+                    if (isRedirectionToOneHostEnabled) {
+                        tamperingContext.ServerTcpAddressWithPort = customServerAddressWithPort;
+                    }
+                    else if (IsApplicationServerSelected()) {
+                        serverRedirector.ApplyMatchingTamperingRules(request, tamperingContext, selectedServer);
+                    }
                 }
 
-                if (tamperingContext.ShouldTamperRequest)
-                {
+                if (tamperingContext.ShouldTamperRequest) {
                     TamperRequest(request, oSession, tamperingContext);
                 }
             } finally {
@@ -141,6 +153,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
                 Log(string.Format("Redirecting local https to http :{0}->:{1}.", request.Port, localPort));
                 request.SetHeader("X-OriginalBaseUri", string.Format("https://{0}", request.Host));
                 tamperParams.ServerTcpAddressWithPort = string.Format("localhost:{0}", localPort);
+                tamperParams.Protocol = "http";
             }
         }
 
@@ -163,6 +176,7 @@ namespace LowLevelDesign.Diagnostics.Bishop
             if (!string.IsNullOrEmpty(tamperingContext.HostHeader)) {
                 fullUrl = request.Protocol + "://" + tamperingContext.HostHeader + fiddlerSession.PathAndQuery;
                 host = tamperingContext.HostHeader;
+                LogFormat("HostName changed to {0}", host);
             }
             if (!string.IsNullOrEmpty(tamperingContext.PathAndQuery)) {
                 fullUrl = request.Protocol + "://" + host + tamperingContext.PathAndQuery;
