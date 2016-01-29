@@ -137,7 +137,7 @@
                     loopCount++;
                     <tr>
                         <td class="@Extensions.ReturnIfOdd(loopCount, "odd")">
-                            <span class="label label-default">@l.TimeUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm.fff")</span>
+                            <span class="label label-default">@l.TimeUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss.fff")</span>
                         </td>
                         <td class="@Extensions.ReturnIfOdd(loopCount, "odd")"><span class="label label-@(l.GetBootstrapClassForLevel())">@l.LogLevel.ToString()</span></td>
                         <td class="@Extensions.ReturnIfOdd(loopCount, "odd")">@l.LoggerName</td>
