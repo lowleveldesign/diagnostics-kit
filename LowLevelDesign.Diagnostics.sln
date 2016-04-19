@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Castle", "LowLevelDesign.Diagnostics.Castle\LowLevelDesign.Diagnostics.Castle.csproj", "{885ABF87-B86B-436D-A787-66CDA246D211}"
 EndProject
@@ -63,6 +63,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.BishopUpdateShim", "Bishop\LowLevelDesign.Diagnostics.BishopUpdateShim\LowLevelDesign.Diagnostics.BishopUpdateShim.csproj", "{33C920BF-33A6-4246-984A-5CDF9524E191}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Bishop.Tests", "Tests\LowLevelDesign.Diagnostics.Bishop.Tests\LowLevelDesign.Diagnostics.Bishop.Tests.csproj", "{ECB23941-7C7D-4054-914B-6F99972F3282}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Musketeer", "LowLevelDesign.Diagnostics.Musketeer\LowLevelDesign.Diagnostics.Musketeer.csproj", "{A93BAF86-3C37-4FDF-9557-71A4EDC4AEAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.MusketeerUpdateShim", "LowLevelDesign.Diagnostics.MusketeerUpdateShim\LowLevelDesign.Diagnostics.MusketeerUpdateShim.csproj", "{65B63B34-57D9-4086-913C-40D764A8C377}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.ElasticSearch", "LogStores\LowLevelDesign.Diagnostics.LogStore.ElasticSearch\LowLevelDesign.Diagnostics.LogStore.ElasticSearch.csproj", "{0301D398-14C8-4005-A7F8-38EFFBCEFF61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests\LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests.csproj", "{C4971D29-9A13-42D5-A2D0-61A2FA211C64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Musketeer.Tests", "Tests\LowLevelDesign.Diagnostics.Musketeer.Tests\LowLevelDesign.Diagnostics.Musketeer.Tests.csproj", "{4F1704BC-7927-4EF2-B9B0-FD87F8840606}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -162,6 +172,26 @@ Global
 		{ECB23941-7C7D-4054-914B-6F99972F3282}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECB23941-7C7D-4054-914B-6F99972F3282}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECB23941-7C7D-4054-914B-6F99972F3282}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A93BAF86-3C37-4FDF-9557-71A4EDC4AEAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A93BAF86-3C37-4FDF-9557-71A4EDC4AEAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A93BAF86-3C37-4FDF-9557-71A4EDC4AEAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A93BAF86-3C37-4FDF-9557-71A4EDC4AEAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65B63B34-57D9-4086-913C-40D764A8C377}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65B63B34-57D9-4086-913C-40D764A8C377}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65B63B34-57D9-4086-913C-40D764A8C377}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65B63B34-57D9-4086-913C-40D764A8C377}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0301D398-14C8-4005-A7F8-38EFFBCEFF61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0301D398-14C8-4005-A7F8-38EFFBCEFF61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0301D398-14C8-4005-A7F8-38EFFBCEFF61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0301D398-14C8-4005-A7F8-38EFFBCEFF61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4971D29-9A13-42D5-A2D0-61A2FA211C64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4971D29-9A13-42D5-A2D0-61A2FA211C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4971D29-9A13-42D5-A2D0-61A2FA211C64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4971D29-9A13-42D5-A2D0-61A2FA211C64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F1704BC-7927-4EF2-B9B0-FD87F8840606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F1704BC-7927-4EF2-B9B0-FD87F8840606}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F1704BC-7927-4EF2-B9B0-FD87F8840606}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F1704BC-7927-4EF2-B9B0-FD87F8840606}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -187,6 +217,9 @@ Global
 		{171E4DA3-2D4F-4A0B-A775-25A657437B35} = {3DC4B847-F6A0-48AA-B6AD-F79F59E62916}
 		{33C920BF-33A6-4246-984A-5CDF9524E191} = {3DC4B847-F6A0-48AA-B6AD-F79F59E62916}
 		{ECB23941-7C7D-4054-914B-6F99972F3282} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
+		{0301D398-14C8-4005-A7F8-38EFFBCEFF61} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
+		{C4971D29-9A13-42D5-A2D0-61A2FA211C64} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
+		{4F1704BC-7927-4EF2-B9B0-FD87F8840606} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35;packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Logging.5.0.505.1\lib\NET35
