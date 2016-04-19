@@ -4,7 +4,6 @@ using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Storage;
 using LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models;
 using Nest;
-using Nest.Resolvers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +11,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using ElasticLogFilter = Nest.Filter<LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models.ElasticLogRecord>;
 
 namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 {
@@ -26,7 +24,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
         private const int MaxNumberOfReturnedStatuses = 1000;
         private const string AppStatsIndexName = ElasticSearchClientConfiguration.MainConfigIndex;
 
-        private readonly static TypeNameMarker[] LogRecordTypeMarker = new TypeNameMarker[] { typeof(ElasticLogRecord) };
         private readonly static string[] AllLogLevelNames = Enum.GetNames(typeof(LogRecord.ELogLevel));
 
         private readonly Func<DateTime> currentDateRetriever;
@@ -169,7 +166,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
         {
             var srchreq = new SearchRequest(
                 await logIndexManager.GetQueryIndicesOrAliasAsync(searchCriteria.FromUtc, searchCriteria.ToUtc, 6), // max indices to query is 6 - otherwise use alias
-                LogRecordTypeMarker) {
+                typeof(ElasticLogRecord)) {
                 From = searchCriteria.Offset,
                 Size = searchCriteria.Limit,
                 Filter = PrepareFilterForTheLogRecordsSearch(searchCriteria),
