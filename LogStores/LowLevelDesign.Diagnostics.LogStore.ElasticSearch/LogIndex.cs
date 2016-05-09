@@ -95,37 +95,36 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         private async Task CreateIndexAsync(string indexName)
         {
-            await esclient.CreateIndexAsync(indexName, 
-                c => c.AddAlias(AliasName)
-                    .Analysis(analysisDescriptor => analysisDescriptor.Analyzers(analyzers => analyzers.Add(
-                        "loggername", new PatternAnalyzer {
+            await esclient.CreateIndexAsync(indexName,
+                c => c.Settings(s => s.Analysis(analysisDescriptor => analysisDescriptor.Analyzers(analyzers => analyzers.Pattern(
+                        "loggername", p => new PatternAnalyzer {
                             Lowercase = true,
                             Pattern = @"[^\w]+"
                         })))
-                    .AddMapping<ElasticLogRecord>(m => m.MapFromAttributes())
-                    .NumberOfShards(ElasticSearchClientConfiguration.ShardsNum)
-                    .NumberOfReplicas(ElasticSearchClientConfiguration.ReplicasNum));
-            esclient.Alias(a => a.Add(add => add.Index(indexName).Alias(AliasName)));
+                        .NumberOfShards(ElasticSearchClientConfiguration.ShardsNum)
+                        .NumberOfReplicas(ElasticSearchClientConfiguration.ReplicasNum))
+                    .Mappings(m => m.Map<ElasticLogRecord>(am => am.AutoMap())));
+            await esclient.AliasAsync(a => a.Add(add => add.Index(indexName).Alias(AliasName)));
         }
 
-        public async Task<IEnumerable<IndexNameMarker>> GetQueryIndicesOrAliasAsync(DateTime fromUtc, DateTime endUtc, int maxIndicesCount)
+        public async Task<Indices> GetQueryIndicesOrAliasAsync(DateTime fromUtc, DateTime endUtc, int maxIndicesCount)
         {
             var existingIndicesCopy = existingIndices;
             if (existingIndices == null) {
                 existingIndicesCopy = existingIndices = new HashSet<string>(
                     await esclient.GetIndicesPointingToAliasAsync(AliasName), StringComparer.Ordinal);
             }
-            var indices = new List<IndexNameMarker>(maxIndicesCount);
+            var indices = new List<string>(maxIndicesCount);
             for (var dt = fromUtc.Date; dt <= endUtc.Date; dt = dt.AddDays(1)) {
                 var indname = string.Format("{0}{1:yyyyMMdd}", baseIndexName, dt);
                 if (existingIndices.Contains(indname)) {
                     indices.Add(indname);
                 }
                 if (indices.Count == maxIndicesCount) {
-                    return new IndexNameMarker[] { AliasName };
+                    return Indices.Index(AliasName);
                 }
             }
-            return indices;
+            return Indices.Parse(String.Join(",", indices)); // FIXME: to optimize - it should be possible to generate the indices collection directly
         }
     }
 }

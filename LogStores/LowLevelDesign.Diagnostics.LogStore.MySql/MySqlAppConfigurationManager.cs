@@ -15,8 +15,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
     /// </summary>
     public class MySqlAppConfigurationManager : DefaultAppConfigurationManager
     {
-        private const int appCacheExpirationInMinutes = 10;
-
         public MySqlAppConfigurationManager()
             : base(MySqlLogStoreConfiguration.ConnectionStringName)
         {

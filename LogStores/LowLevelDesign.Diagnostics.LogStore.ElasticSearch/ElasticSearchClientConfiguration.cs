@@ -1,4 +1,4 @@
-﻿using Elasticsearch.Net.ConnectionPool;
+﻿using Elasticsearch.Net;
 using LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models;
 using Nest;
 using System;
@@ -50,12 +50,13 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
             var resp = eclient.IndexExists(MainConfigIndex);
             if (resp.IsValid && !resp.Exists)
             {
-                eclient.CreateIndex(MainConfigIndex, c => c.AddMapping<ElasticUser>(
-                    m => m.MapFromAttributes()).AddMapping<ElasticApplication>(
-                    m => m.MapFromAttributes()).AddMapping<ElasticApplicationConfig>(
-                    m => m.MapFromAttributes()).AddMapping<ElasticApplicationStatus>(
-                    m => m.MapFromAttributes()).NumberOfShards(ElasticSearchClientConfiguration.ShardsNum)
-                        .NumberOfReplicas(ElasticSearchClientConfiguration.ReplicasNum));
+                eclient.CreateIndex(MainConfigIndex, c => c.Mappings(map => map.Map<ElasticUser>(
+                        m => m.AutoMap()).Map<ElasticApplication>(
+                        m => m.AutoMap()).Map<ElasticApplicationConfig>(
+                        m => m.AutoMap()).Map<ElasticApplicationStatus>(
+                        m => m.AutoMap()))
+                    .Settings(s => s.NumberOfShards(ShardsNum)
+                        .NumberOfReplicas(ReplicasNum)));
             }
         }
 
@@ -63,14 +64,15 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
         {
             ConnectionSettings settings;
             if (!isCluster) {
-                settings = new ConnectionSettings(elasticUris[0], indexName);
+                settings = new ConnectionSettings(elasticUris[0]).DefaultIndex(indexName);
             } else {
-                settings = new ConnectionSettings(new SniffingConnectionPool(elasticUris), indexName);
+                settings = new ConnectionSettings(new SniffingConnectionPool(
+                    elasticUris)).DefaultIndex(indexName);
             }
-            settings = settings.ThrowOnElasticsearchServerExceptions(true).PluralizeTypeNames();
+            settings = settings.ThrowExceptions(false).PluralizeTypeNames();
             if (requiresAuthentication)
             {
-                settings.SetBasicAuthentication(username, passwd);
+                settings.BasicAuthentication(username, passwd);
             }
             return new ElasticClient(settings);
         }

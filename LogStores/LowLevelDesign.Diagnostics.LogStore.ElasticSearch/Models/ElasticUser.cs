@@ -18,7 +18,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models
         [Date(Store = true)]
         public DateTime RegistrationDateUtc { get; set; }
 
-        [Nested(IncludeInParent = true, Store = true)]
+        [Nested(IncludeInParent = true)]
         public IDictionary<string, string> Claims { get; set; }
     }
 }

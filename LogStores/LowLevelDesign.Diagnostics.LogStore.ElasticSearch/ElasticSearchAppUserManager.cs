@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using System.Security.Claims;
 using Nest;
+using User = LowLevelDesign.Diagnostics.LogStore.Commons.Models.User;
 using LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models;
 
 namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
@@ -35,7 +34,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
         }
         public async Task UpdateAsync(User user)
         {
-            var qres = await eclient.GetAsync<ElasticUser>(q => q.Id(user.Id).Index(AppUsersIndexName));
+            var qres = await eclient.GetAsync(DocumentPath<ElasticUser>.Id(user.Id).Index(AppUsersIndexName));
             if (!qres.Found)
             {
                 throw new ArgumentException(string.Format("User with id: '{0}' does not exist.", user.Id));
@@ -48,12 +47,12 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         public async Task DeleteAsync(User user)
         {
-            await eclient.DeleteAsync<ElasticUser>(q => q.Id(user.Id).Index(AppUsersIndexName));
+            await eclient.DeleteAsync(DocumentPath<ElasticUser>.Id(user.Id).Index(AppUsersIndexName));
         }
 
         public async Task<User> FindByIdAsync(string userId)
         {
-            var qres = await eclient.GetAsync<ElasticUser>(q => q.Id(userId).Index(AppUsersIndexName));
+            var qres = await eclient.GetAsync(DocumentPath<ElasticUser>.Id(userId).Index(AppUsersIndexName));
             if (!qres.Found)
             {
                 return null;
@@ -65,7 +64,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         public async Task<User> FindByNameAsync(string userName)
         {
-            var res = (await eclient.SearchAsync<ElasticUser>(s => s.Filter(Filter<ElasticUser>.Term(eu => eu.UserName,
+            var res = (await eclient.SearchAsync<ElasticUser>(s => s.Query(q => q.Term(eu => eu.UserName,
                 userName)).Size(2))).Documents.ToList();
             if (res.Count > 1)
             {
@@ -83,7 +82,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         public async Task<IList<Claim>> GetClaimsAsync(User user)
         {
-            var qres = await eclient.GetAsync<ElasticUser>(q => q.Id(user.Id).Index(AppUsersIndexName));
+            var qres = await eclient.GetAsync(DocumentPath<ElasticUser>.Id(user.Id).Index(AppUsersIndexName));
             if (!qres.Found)
             {
                 return EmptyClaimList;
@@ -94,7 +93,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         public async Task AddClaimAsync(User user, Claim claim)
         {
-            var qres = await eclient.GetAsync<ElasticUser>(q => q.Id(user.Id).Index(AppUsersIndexName));
+            var qres = await eclient.GetAsync(DocumentPath<ElasticUser>.Id(user.Id).Index(AppUsersIndexName));
             if (!qres.Found)
             {
                 throw new ArgumentException(string.Format("User '{0}' not found.", user.Id));
@@ -110,7 +109,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         public async Task RemoveClaimAsync(User user, Claim claim)
         {
-            var qres = await eclient.GetAsync<ElasticUser>(q => q.Id(user.Id).Index(AppUsersIndexName));
+            var qres = await eclient.GetAsync(DocumentPath<ElasticUser>.Id(user.Id).Index(AppUsersIndexName));
             if (!qres.Found)
             {
                 throw new ArgumentException(string.Format("User '{0}' not found.", user.Id));
@@ -126,8 +125,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         public async Task<IEnumerable<Tuple<User, IEnumerable<Claim>>>> GetRegisteredUsersWithClaimsAsync()
         {
-            var eusers = (await eclient.SearchAsync<ElasticUser>(s => s.Index(AppUsersIndexName).MatchAll().SortAscending(
-                u => u.UserName).Take(200))).Documents;
+            var eusers = (await eclient.SearchAsync<ElasticUser>(s => s.Index(AppUsersIndexName).MatchAll().Sort(
+                sort => sort.Ascending(u => u.UserName)).Take(200))).Documents;
             var res = new List<Tuple<User, IEnumerable<Claim>>>();
             foreach (var eu in eusers)
             {

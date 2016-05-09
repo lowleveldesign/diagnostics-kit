@@ -105,10 +105,11 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
                 throw new ArgumentException("status == null");
             }
 
-            var elasticApplicationStatus = (await eclient.GetAsync<ElasticApplicationStatus>(
-                GenerateElasticApplicationStatusId(status), AppStatsIndexName)).Source;
+            var getRequest = await eclient.GetAsync(new DocumentPath<ElasticApplicationStatus>(
+                GenerateElasticApplicationStatusId(status)).Index(AppStatsIndexName));
 
-            elasticApplicationStatus = UpdateOrCreateElasticApplicationStatus(elasticApplicationStatus, status);
+            var elasticApplicationStatus = UpdateOrCreateElasticApplicationStatus(
+                getRequest.Found ? getRequest.Source : null, status);
             await eclient.IndexAsync(elasticApplicationStatus, ind => ind.Index(AppStatsIndexName));
         }
 
@@ -169,9 +170,9 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
                 typeof(ElasticLogRecord)) {
                 From = searchCriteria.Offset,
                 Size = searchCriteria.Limit,
-                Filter = PrepareFilterForTheLogRecordsSearch(searchCriteria),
-                Sort = new List<KeyValuePair<PropertyPathMarker, ISort>> {
-                    new KeyValuePair<PropertyPathMarker, ISort>(Property.Path<ElasticLogRecord>(l => l.TimeUtc), new Sort { Order = SortOrder.Descending })
+                Query = PrepareFilterForTheLogRecordsSearch(searchCriteria),
+                Sort = new List<ISort> {
+                    new SortFieldDescriptor<ElasticLogRecord>().Field(l => l.TimeUtc).Descending()
                 }
             };
 
@@ -181,58 +182,59 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
             };
         }
 
-        private FilterContainer PrepareFilterForTheLogRecordsSearch(LogSearchCriteria searchCriteria)
+        private QueryContainer PrepareFilterForTheLogRecordsSearch(LogSearchCriteria searchCriteria)
         {
             Debug.Assert(searchCriteria.Keywords != null);
-            var filters = new List<Func<FilterDescriptor<ElasticLogRecord>, FilterContainer>>();
+            var filters = new List<Func<QueryContainerDescriptor<ElasticLogRecord>, QueryContainer>>();
 
             filters.Add(f => f.Term(log => log.ApplicationPath, searchCriteria.ApplicationPath));
-            filters.Add(f => f.Range(r => r.OnField(log => log.TimeUtc).GreaterOrEquals(searchCriteria.FromUtc).Lower(searchCriteria.ToUtc)));
+            filters.Add(f => f.DateRange(r => r.Field(log => log.TimeUtc).GreaterThanOrEquals(
+                searchCriteria.FromUtc).LessThan(searchCriteria.ToUtc)));
 
             if (searchCriteria.Levels != null) {
                 var levelNames = searchCriteria.Levels.Select(lvl => Enum.GetName(typeof(LogRecord.ELogLevel), lvl)).ToArray();
                 // query only in case not all log levels are selected
                 if (levelNames.Length > 0 && levelNames.Length != AllLogLevelNames.Length) {
-                    filters.Add(f => f.Terms(log => log.LogLevel, levelNames));
+                    filters.Add(f => f.Terms(qt => qt.Field(log => log.LogLevel).Terms(levelNames)));
                 }
             }
             if (!string.IsNullOrEmpty(searchCriteria.Server)) {
                 filters.Add(f => f.Term(log => log.Server, searchCriteria.Server));
             }
             if (!string.IsNullOrEmpty(searchCriteria.Logger)) {
-                filters.Add(f => f.Query(q => q.Match(m => m.OnField(log => log.LoggerName).Query(searchCriteria.Logger))));
+                filters.Add(f => f.Match(m => m.Field(log => log.LoggerName).Query(searchCriteria.Logger)));
             }
             if (!string.IsNullOrEmpty(searchCriteria.Keywords.HttpStatus)) {
-                filters.Add(f => f.Query(q => q.Wildcard(log => log.HttpStatusCode, 
-                    searchCriteria.Keywords.HttpStatus + "*")));
+                filters.Add(f => f.Wildcard(log => log.HttpStatusCode, 
+                    searchCriteria.Keywords.HttpStatus + "*"));
             }
             if (!string.IsNullOrEmpty(searchCriteria.Keywords.Url)) {
-                filters.Add(f => f.Query(q => q.Match(m => m.OnField(log => log.Url).Query(searchCriteria.Keywords.Url))));
+                filters.Add(f => f.Match(m => m.Field(log => log.Url).Query(searchCriteria.Keywords.Url)));
             }
             if (!string.IsNullOrEmpty(searchCriteria.Keywords.Service)) {
-                filters.Add(f => f.Query(q => q.Match(m => m.OnField(log => log.ServiceName).Query(searchCriteria.Keywords.Service))));
+                filters.Add(f => f.Match(m => m.Field(log => log.ServiceName).Query(searchCriteria.Keywords.Service)));
             }
 
             // Keywords are used in a query 
             if (!string.IsNullOrEmpty(searchCriteria.Keywords.FreeText)) {
-                filters.Add(f => f.Query(q => q.MultiMatch(m => m.Analyzer("standard").OnFieldsWithBoost(d => {
-                    d.Add(log => log.Message, 1.5);
-                    d.Add(log => log.ExceptionType, 2.0);
-                    d.Add(log => log.ExceptionMessage, 2.0);
-                    d.Add(log => log.ExceptionAdditionalInfo, 2.0);
-                    d.Add(log => log.Identity, null);
-                    d.Add(log => log.LoggedUser, null);
-                    d.Add(log => log.Host, null);
-                    d.Add(log => log.Url, null);
-                    d.Add(log => log.Referer, null);
-                    d.Add(log => log.HttpStatusCode, null);
-                    d.Add(log => log.RequestData, null);
-                    d.Add(log => log.ResponseData, null);
-                    d.Add(log => log.ServiceName, null);
-                    d.Add(log => log.ServiceDisplayName, null);
-                }).Query(searchCriteria.Keywords.FreeText))));
+                filters.Add(f => f.MultiMatch(m => m.Analyzer("standard").Fields(
+                    fd => fd.Field(log => log.ExceptionAdditionalInfo, 2.0)
+                            .Field(log => log.ExceptionType, 2.0)
+                            .Field(log => log.ExceptionMessage, 2.0)
+                            .Field(log => log.Message, 1.5)
+                            .Field(log => log.Identity)
+                            .Field(log => log.LoggedUser)
+                            .Field(log => log.Host)
+                            .Field(log => log.Url)
+                            .Field(log => log.Referer)
+                            .Field(log => log.HttpStatusCode)
+                            .Field(log => log.RequestData)
+                            .Field(log => log.ResponseData)
+                            .Field(log => log.ServiceName)
+                            .Field(log => log.ServiceDisplayName)
+                ).Query(searchCriteria.Keywords.FreeText)));
             }
-            return ElasticLogFilter.And(filters.ToArray());
+            return Query<ElasticLogRecord>.Bool(qb => qb.Filter(filters));
         }
 
         private IEnumerable<LogRecord> ConvertElasticLogSearchResultsToLogRecords(ISearchResponse<ElasticLogRecord> queryResult)
@@ -274,8 +276,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
         public async Task<IEnumerable<LastApplicationStatus>> GetApplicationStatusesAsync(DateTime lastDateTimeUtcToQuery)
         {
             var result = await eclient.SearchAsync<ElasticApplicationStatus>(s => s.Take(MaxNumberOfReturnedStatuses).Index(
-                AppStatsIndexName).Filter(q => q.Range(r => r.OnField(st => st.LastUpdateTimeUtc)
-                .GreaterOrEquals(lastDateTimeUtcToQuery))));
+                AppStatsIndexName).Query(q => q.DateRange(r => r.Field(st => st.LastUpdateTimeUtc)
+                .GreaterThanOrEquals(lastDateTimeUtcToQuery))));
             return result.Hits.Select(hit => new LastApplicationStatus {
                 ApplicationPath = hit.Source.ApplicationPath,
                 Cpu = hit.Source.Cpu,

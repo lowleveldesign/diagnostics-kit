@@ -1,5 +1,4 @@
-﻿using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
-using LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models;
+﻿using LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models;
 using Nest;
 using System;
 using System.Security.Claims;
@@ -26,7 +25,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
         {
             var users = new ElasticSearchAppUserManager();
 
-            var expectedUser = new User {
+            var expectedUser = new Commons.Models.User {
                 Id = userId,
                 UserName = "testuser",
                 PasswordHash = "testhash",
@@ -105,7 +104,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
 
         public void Dispose()
         {
-            client.Delete<ElasticUser>(d => d.Id(userId).Index(ElasticSearchAppUserManager.AppUsersIndexName));
+            client.Delete(new DocumentPath<ElasticUser>(userId).Index(ElasticSearchAppUserManager.AppUsersIndexName));
         }
     }
 }

@@ -7,7 +7,6 @@ using SimpleInjector;
 using System;
 using System.Diagnostics;
 using Topshelf;
-using Topshelf.Diagnostics;
 
 namespace LowLevelDesign.Diagnostics.Musketeer
 {
@@ -112,9 +111,6 @@ namespace LowLevelDesign.Diagnostics.Musketeer
                 hc.SetServiceName(MusketeerService.ServiceName);
                 hc.SetDisplayName(typeof(MusketeerService).Namespace);
                 hc.SetDescription("Musketeer service - a part of LowLevelDesign DiagnosticsKit.");
-
-                hc.ApplyCommandLineWithDebuggerSupport();
-                hc.UseWindowsHostEnvironmentWithDebugSupport();
             });
         }
 

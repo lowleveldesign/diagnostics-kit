@@ -19,10 +19,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models
         [Date(Store = true)]
         public DateTime TimeUtc { get; set; }
 
-        [Number(Index = NonStringIndexOption.NotAnalyzed, Store = true)]
+        [Number(Store = true)]
         public int ProcessId { get; set; }
 
-        [Number(Index = NonStringIndexOption.NotAnalyzed, Store = true)]
+        [Number(Store = true)]
         public int ThreadId { get; set; }
 
         [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
@@ -76,7 +76,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models
         [String(Index = FieldIndexOption.Analyzed, Analyzer = "standard", Store = true)]
         public string ServiceDisplayName { get; set; }
         
-        [Nested(IncludeInParent = true, Store = true)]
+        [Nested(IncludeInParent = true)]
         public IDictionary<string, float> PerfData { get; set; }
     }
 }

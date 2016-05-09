@@ -127,8 +127,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
 
         public void Dispose()
         {
-            client.DeleteByQuery<ElasticApplicationConfig>(d => d.Index("lldconf").Query(q => q.Term(t => t.OnField(conf => conf.Path).Value(path))));
-            client.DeleteByQuery<ElasticApplication>(d => d.Index("lldconf").Query(q => q.Term(t => t.OnField(conf => conf.Path).Value(path))));
+            client.DeleteByQuery<ElasticApplicationConfig>(Indices.Index("lldconf"), Types.Type<ElasticApplicationConfig>(), 
+                d => d.Query(q => q.Term(t => t.Field(conf => conf.Path).Value(path))));
+            client.DeleteByQuery<ElasticApplication>(Indices.Index("lldconf"), Types.Type<ElasticApplication>(), 
+                d => d.Query(q => q.Term(t => t.Field(conf => conf.Path).Value(path))));
         }
     }
 }

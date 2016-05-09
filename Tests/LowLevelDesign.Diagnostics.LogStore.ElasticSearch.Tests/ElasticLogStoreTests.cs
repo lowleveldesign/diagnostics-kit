@@ -77,7 +77,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
             // give it 2s to swallow (FIXME)
             await Task.Delay(2000);
 
-            var res = await client.SearchAsync<ElasticLogRecord>(s => s.Filter(f => f.Term(lr => lr.ProcessId, -1)));
+            var res = await client.SearchAsync<ElasticLogRecord>(s => s.Query(f => f.Term(lr => lr.ProcessId, -1))); // FIXME: shouldn't it be filtered?
             Assert.Equal(1L, res.Total);
             var dbLogRec = res.Hits.First().Source;
 
@@ -326,10 +326,19 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
 
         public void Dispose()
         {
-            client.DeleteByQuery<ElasticLogRecord>(d => d.Query(q => q.Term(t => t.OnField(log => log.ProcessId).Value(-1))));
+            var searchResults = client.Search<ElasticLogRecord>(s => s.Index("lldconf").Query(q => q.Term(
+                t => t.Field(log => log.ProcessId).Value(-1))));
+            if (searchResults.HitsMetaData.Total > 0) {
+                client.DeleteByQuery<ElasticLogRecord>(Indices.Index("lldconf"), Types.Type<ElasticLogRecord>(),
+                    d => d.Query(q => q.Term(t => t.Field(log => log.ProcessId).Value(-1))));
+            }
 
-            string appPath = "c:\\###rather_not_existing_application_path###";
-            client.Delete<ElasticApplicationStatus>(s => s.Id(GenerateElasticApplicationStatusId(appPath, "SRV1")).Index("lldconf"));
+            var docPath = new DocumentPath<ElasticApplicationStatus>(GenerateElasticApplicationStatusId(
+                "c:\\###rather_not_existing_application_path###", "SRV1")).Index("lldconf");
+            var req = client.Get(docPath);
+            if (req.Found) {
+                client.Delete(docPath);
+            }
             Thread.Sleep(2000);
         }
         private string GenerateElasticApplicationStatusId(string path, string server)

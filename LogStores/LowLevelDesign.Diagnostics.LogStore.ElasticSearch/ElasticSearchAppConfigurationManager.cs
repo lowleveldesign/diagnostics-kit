@@ -49,7 +49,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
             }
             var econfig = new ElasticApplicationConfig();
             Map(config, econfig);
-            await eclient.IndexAsync<ElasticApplicationConfig>(econfig, ind => ind.Index(AppConfIndexName));
+            await eclient.IndexAsync(econfig, ind => ind.Index(AppConfIndexName));
         }
 
         public async Task<Application> FindAppAsync(string path)
@@ -59,7 +59,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
                 throw new ArgumentException("path is null");
             }
             var id = BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(path))).Replace("-", string.Empty);
-            var qres = await eclient.GetAsync<ElasticApplication>(id, AppConfIndexName);
+            var qres = await eclient.GetAsync(DocumentPath<ElasticApplication>.Id(id).Index(AppConfIndexName));
 
             if (!qres.Found)
             {
@@ -73,12 +73,13 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         public async Task<IEnumerable<ApplicationServerConfig>> GetAppConfigsAsync(string[] appPaths, string server = null)
         {
-            var filter = Filter<ElasticApplicationConfig>.Terms(econf => econf.Path, appPaths);
+            var filter = Query<ElasticApplicationConfig>.Bool(q => q.Filter(
+                qf => qf.Terms(tq => tq.Field(econf => econf.Path).Terms(appPaths))));
             if (server != null)
             {
-                filter = Filter<ElasticApplicationConfig>.And(f => filter, f => f.Term(econf => econf.Server, server));
+                filter = Query<ElasticApplicationConfig>.Bool(q => q.Filter(f => filter, f => f.Term(econf => econf.Server, server)));
             }
-            return (await eclient.SearchAsync<ElasticApplicationConfig>(q => q.Filter(filter).Index(
+            return (await eclient.SearchAsync<ElasticApplicationConfig>(s => s.Query(q => filter).Index(
                 AppConfIndexName).Take(400))).Hits.Select(h => {
                     var conf = new ApplicationServerConfig();
                     Map(h.Source, conf);
@@ -89,7 +90,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
         public async Task<IEnumerable<Application>> GetAppsAsync()
         {
             return (await eclient.SearchAsync<ElasticApplication>(s => s.Index(AppConfIndexName).MatchAll().Take(400)
-                    .SortAscending(app => app.Path))).Documents.Select(d => {
+                    .Sort(sort => sort.Ascending(app => app.Path)))).Documents.Select(d => {
                 var app = new Application();
                 Map(d, app);
                 return app;
@@ -103,9 +104,15 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
                 throw new ArgumentException("path is null");
             }
             var id = BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(app.Path))).Replace("-", string.Empty);
-            var eapp = (await eclient.GetAsync<ElasticApplication>(id, AppConfIndexName)).Source;
+            var req = await eclient.GetAsync(DocumentPath<ElasticApplication>.Id(id).Index(AppConfIndexName));
+            if (!req.Found) {
+                throw new ArgumentException("app not found");
+            }
+
+            var eapp = req.Source;
             Map(app, eapp, propertiesToUpdate);
-            await eclient.UpdateAsync<ElasticApplication>(u => u.Index(AppConfIndexName).Doc(eapp));
+            await eclient.UpdateAsync(new DocumentPath<ElasticApplication>(id).Index(AppConfIndexName),
+                u => u.Doc(eapp));
         }
 
         private void Map(ElasticApplication from, Application to)
@@ -163,19 +170,19 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         public async Task<string> GetGlobalSettingAsync(string key)
         {
-            var resp = await eclient.GetAsync<ElasticGlobalSetting>(key, AppConfIndexName);
+            var resp = await eclient.GetAsync(DocumentPath<ElasticGlobalSetting>.Id(key).Index(AppConfIndexName));
             return resp.Found ? resp.Source.ConfValue : null;
         }
 
         public string GetGlobalSetting(string key)
         {
-            var resp = eclient.Get<ElasticGlobalSetting>(q => q.Index(AppConfIndexName).Id(key));
+            var resp = eclient.Get(new DocumentPath<ElasticGlobalSetting>(key).Index(AppConfIndexName));
             return resp.Found ? resp.Source.ConfValue : null;
         }
 
         public async Task SetGlobalSettingAsync(string key, string value)
         {
-            await eclient.IndexAsync<ElasticGlobalSetting>(new ElasticGlobalSetting {
+            await eclient.IndexAsync(new ElasticGlobalSetting {
                 Id = key, ConfValue = value
             }, ind => ind.Index(AppConfIndexName));
         }
