@@ -326,11 +326,12 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
 
         public void Dispose()
         {
-            var searchResults = client.Search<ElasticLogRecord>(s => s.Index("lldconf").Query(q => q.Term(
+            var indexName = new LogIndexManager(null, () => DateTime.UtcNow).GetCurrentIndexName();
+
+            var searchResults = client.Search<ElasticLogRecord>(s => s.Index(indexName).Query(q => q.Term(
                 t => t.Field(log => log.ProcessId).Value(-1))));
-            if (searchResults.HitsMetaData.Total > 0) {
-                client.DeleteByQuery<ElasticLogRecord>(Indices.Index("lldconf"), Types.Type<ElasticLogRecord>(),
-                    d => d.Query(q => q.Term(t => t.Field(log => log.ProcessId).Value(-1))));
+            foreach (var hit in searchResults.Hits) {
+                client.Delete(new DocumentPath<ElasticLogRecord>(hit.Id));
             }
 
             var docPath = new DocumentPath<ElasticApplicationStatus>(GenerateElasticApplicationStatusId(
