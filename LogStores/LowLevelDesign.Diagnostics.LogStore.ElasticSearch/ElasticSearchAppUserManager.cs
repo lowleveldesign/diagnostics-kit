@@ -101,9 +101,9 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
             var euser = qres.Source;
             if (euser.Claims == null)
             {
-                euser.Claims = new Dictionary<string, string>();
+                euser.Claims = new List<KeyValuePair<string, string>>();
             }
-            euser.Claims.Add(claim.Type, claim.Value);
+            euser.Claims.Add(new KeyValuePair<string, string>(claim.Type, claim.Value));
             await eclient.IndexAsync(euser, ind => ind.Index(AppUsersIndexName));
         }
 
@@ -119,7 +119,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
             {
                 throw new ArgumentException(string.Format("No claims found for user: '{0}'", user.Id));
             }
-            euser.Claims.Remove(claim.Type);
+            euser.Claims.Remove(new KeyValuePair<string, string>(claim.Type, claim.Value));
             await eclient.IndexAsync(euser, ind => ind.Index(AppUsersIndexName));
         }
 

@@ -331,7 +331,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
             var searchResults = client.Search<ElasticLogRecord>(s => s.Index(indexName).Query(q => q.Term(
                 t => t.Field(log => log.ProcessId).Value(-1))));
             foreach (var hit in searchResults.Hits) {
-                client.Delete(new DocumentPath<ElasticLogRecord>(hit.Id));
+                client.Delete(new DocumentPath<ElasticLogRecord>(hit.Id).Index(indexName));
             }
 
             var docPath = new DocumentPath<ElasticApplicationStatus>(GenerateElasticApplicationStatusId(

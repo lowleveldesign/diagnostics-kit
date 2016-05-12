@@ -46,7 +46,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="LowLevelDesign.Diagnostics.LogStore.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.LogStore.Commons.1.0.0\lib\net452\LowLevelDesign.Diagnostics.LogStore.Commons.dll</HintPath>
+      <HintPath>..\..\packages\LowLevelDesign.Diagnostics.LogStore.Commons.1.0.0.0\lib\net452\LowLevelDesign.Diagnostics.LogStore.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -112,7 +112,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
