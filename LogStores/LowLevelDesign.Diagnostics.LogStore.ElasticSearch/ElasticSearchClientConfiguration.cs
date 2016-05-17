@@ -17,6 +17,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
         private static readonly bool requiresAuthentication;
         private static readonly string username;
         private static readonly string passwd;
+        private static readonly bool isProxied;
+        private static readonly Uri proxyUri;
+        private static readonly string proxyUsername;
+        private static readonly string proxyPassword;
         private static int shardsNum;
         private static int replicas;
 
@@ -44,6 +48,13 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
             shardsNum = elasticConfigSection.Shards;
             replicas = elasticConfigSection.Replicas;
 
+            isProxied = !string.IsNullOrEmpty(elasticConfigSection.ProxyUrl);
+            if (isProxied) {
+                proxyUri = new Uri(elasticConfigSection.ProxyUrl);
+                proxyUsername = elasticConfigSection.ProxyUsername;
+                proxyPassword = elasticConfigSection.ProxyPassword;
+            }
+
             // make sure main config index exists
             // check if the application status index exists
             var eclient = CreateClient(MainConfigIndex);
@@ -64,10 +75,13 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
         {
             ConnectionSettings settings;
             if (!isCluster) {
-                settings = new ConnectionSettings(elasticUris[0]).DefaultIndex(indexName);
+                settings = new ConnectionSettings(elasticUris[0]);
             } else {
-                settings = new ConnectionSettings(new SniffingConnectionPool(
-                    elasticUris)).DefaultIndex(indexName);
+                settings = new ConnectionSettings(new SniffingConnectionPool(elasticUris));
+            }
+            settings = settings.DefaultIndex(indexName);
+            if (isProxied) {
+                settings = settings.Proxy(proxyUri, proxyUsername, proxyPassword);
             }
             settings = settings.ThrowExceptions(false).PluralizeTypeNames();
             if (requiresAuthentication)
@@ -98,5 +112,14 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         [ConfigurationProperty("replicas", IsRequired = false, DefaultValue = 0)]
         public int Replicas { get { return (int)this["replicas"]; } }
+
+        [ConfigurationProperty("proxyUrl", IsRequired = false)]
+        public string ProxyUrl { get { return (string)this["proxyUrl"]; } }
+
+        [ConfigurationProperty("proxyUsername", IsRequired = false)]
+        public string ProxyUsername { get { return (string)this["proxyUsername"]; } }
+
+        [ConfigurationProperty("proxyPassword", IsRequired = false)]
+        public string ProxyPassword { get { return (string)this["proxyPassword"]; } }
     }
 }

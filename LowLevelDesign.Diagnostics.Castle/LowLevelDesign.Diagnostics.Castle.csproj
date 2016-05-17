@@ -224,6 +224,12 @@
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LogStores\LowLevelDesign.Diagnostics.LogStore.ElasticSearch\LowLevelDesign.Diagnostics.LogStore.ElasticSearch.csproj">
+      <Project>{0301d398-14c8-4005-a7f8-38effbceff61}</Project>
+      <Name>LowLevelDesign.Diagnostics.LogStore.ElasticSearch</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

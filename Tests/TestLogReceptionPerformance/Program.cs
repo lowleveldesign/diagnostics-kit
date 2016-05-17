@@ -61,7 +61,7 @@ namespace TestLogReceptionPerformance
                                 connector.SendLogRecords(recs);
                                 sw.Stop();
 
-                                Interlocked.Add(ref ticks, sw.ElapsedTicks);
+                                Interlocked.Add(ref ticks, sw.Elapsed.Ticks);
                                 Interlocked.Add(ref recordsGenerated, batchSize);
                             } catch (Exception ex) {
                                 Interlocked.Increment(ref errorsCnt);
@@ -76,7 +76,7 @@ namespace TestLogReceptionPerformance
                                 connector.SendLogRecord(GenerateRandomLogRecord());
                                 sw.Stop();
 
-                                Interlocked.Add(ref ticks, sw.ElapsedTicks);
+                                Interlocked.Add(ref ticks, sw.Elapsed.Ticks);
                                 Interlocked.Increment(ref recordsGenerated);
                             } catch (Exception ex) {
                                 Interlocked.Increment(ref errorsCnt);
