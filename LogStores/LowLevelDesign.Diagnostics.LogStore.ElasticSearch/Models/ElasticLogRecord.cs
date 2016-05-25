@@ -40,7 +40,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models
         [String(Index = FieldIndexOption.Analyzed, Analyzer = "standard", Store = true)]
         public string ExceptionMessage { get; set; }
 
-        [String(Index = FieldIndexOption.Analyzed, Analyzer = "standard", Store = true)]
+        [String(Index = FieldIndexOption.Analyzed, Analyzer = "camelcase", Store = true)]
         public string ExceptionType { get; set; }
 
         [String(Index = FieldIndexOption.Analyzed, Analyzer = "standard", Store = true)]

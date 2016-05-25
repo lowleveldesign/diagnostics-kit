@@ -16,11 +16,6 @@ namespace LowLevelDesign.Diagnostics.Castle
 {
     public static class Extensions
     {
-        public static string ReturnIfOdd(int i, string str)
-        {
-            return i % 2 != 0 ? str : string.Empty;
-        }
-
         public static string GetBootstrapClassForLevel(this LogRecord logrec)
         {
             var level = logrec.LogLevel;

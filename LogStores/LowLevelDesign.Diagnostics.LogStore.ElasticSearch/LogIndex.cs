@@ -68,7 +68,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
                 if (string.CompareOrdinal(index, pastIndexName) < 0)
                 {
                     logger.TraceInformation("Deleting index {0}", index);
-                    await esclient.DeleteIndexAsync(index, null); // FIXME what about removing an index which has an alias?
+                    await esclient.DeleteIndexAsync(index, null); 
                 }
                 else if (string.CompareOrdinal(index, currIndexName) == 0)
                 {
@@ -96,11 +96,14 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
         private async Task CreateIndexAsync(string indexName)
         {
             await esclient.CreateIndexAsync(indexName,
-                c => c.Settings(s => s.Analysis(analysisDescriptor => analysisDescriptor.Analyzers(analyzers => analyzers.Pattern(
+                c => c.Settings(s => s.Analysis(analysisDescriptor => analysisDescriptor.TokenFilters(
+                        tokenFilters => tokenFilters.WordDelimiter("camelfilter", t => t.SplitOnCaseChange())
+                    ).Analyzers(analyzers => analyzers.Pattern(
                         "loggername", p => new PatternAnalyzer {
                             Lowercase = true,
                             Pattern = @"[^\w]+"
-                        })))
+                        }).Custom("camelcase", analyzer => analyzer.Tokenizer("whitespace").Filters(
+                            "camelfilter", "lowercase"))))
                         .NumberOfShards(ElasticSearchClientConfiguration.ShardsNum)
                         .NumberOfReplicas(ElasticSearchClientConfiguration.ReplicasNum))
                     .Mappings(m => m.Map<ElasticLogRecord>(am => am.AutoMap())));

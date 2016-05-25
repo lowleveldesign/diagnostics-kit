@@ -74,10 +74,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
             var ir = await client.IndexExistsAsync(lim.GetCurrentIndexName());
             Assert.Equal(true, ir.Exists);
 
-            // give it 2s to swallow (FIXME)
+            // give it 2s to index
             await Task.Delay(2000);
 
-            var res = await client.SearchAsync<ElasticLogRecord>(s => s.Query(f => f.Term(lr => lr.ProcessId, -1))); // FIXME: shouldn't it be filtered?
+            var res = await client.SearchAsync<ElasticLogRecord>(s => s.Query(f => f.Term(lr => lr.ProcessId, -1))); 
             Assert.Equal(1L, res.Total);
             var dbLogRec = res.Hits.First().Source;
 
@@ -116,6 +116,14 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
 
             Assert.True(dbPerfLogs.TryGetValue("Memory", out r));
             Assert.Equal(r, logrec.PerformanceData["Memory"]);
+
+
+            res = await client.SearchAsync<ElasticLogRecord>(s => s.Query(f => f.Term(lr => lr.ExceptionType, "test"))); 
+            Assert.Equal(1L, res.Total);
+            dbLogRec = res.Hits.First().Source;
+
+            Assert.Equal("TestException", dbLogRec.ExceptionType);
+
         }
 
         [Fact]
@@ -282,7 +290,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
             // add log
             await elasticLogStore.AddLogRecordAsync(logrec);
 
-            // give it 2s to swallow (FIXME)
+            // give it 2s to index
             await Task.Delay(2000);
 
             // check content

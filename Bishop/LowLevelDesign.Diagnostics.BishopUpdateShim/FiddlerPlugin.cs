@@ -14,7 +14,8 @@ namespace LowLevelDesign.Diagnostics.BishopUpdateShim
     {
         private const int DefaultRequestTimeoutInMilliseconds = 1500;
         private const string BishopDllName = "_Bishop.dll";
-        private const string BishopUpdateUrl = "http://localhost:51353"; // FIXME
+        private readonly string configurationFilePath = Path.Combine(Path.GetDirectoryName(
+            Assembly.GetExecutingAssembly().Location), "bishop.conf");
         private IAutoTamper bishop;
 
         public FiddlerPlugin()
@@ -25,7 +26,12 @@ namespace LowLevelDesign.Diagnostics.BishopUpdateShim
                 Version currentVer;
                 string updateFileHash, updateFileUrl;
 
-                var req = WebRequest.Create(BishopUpdateUrl + "/about-bishop");
+                // try loading the Castle url
+                var diagnosticsCastleUrl = ExtractDiagnosticsCastleUrl();
+                if (diagnosticsCastleUrl == null) {
+                    return;
+                }
+                var req = WebRequest.Create(diagnosticsCastleUrl + "/about-bishop");
                 req.Timeout = DefaultRequestTimeoutInMilliseconds;
                 using (var s = new StreamReader(req.GetResponse().GetResponseStream()))
                 {
@@ -72,6 +78,28 @@ namespace LowLevelDesign.Diagnostics.BishopUpdateShim
                 Trace.Write("Error when trying to check the update version", "Exception: " + ex);
             }
         }
+
+        private string ExtractDiagnosticsCastleUrl()
+        {
+            if (!File.Exists(configurationFilePath)) {
+                return null;
+            }
+            string content = File.ReadAllText(configurationFilePath);
+            var startind = content.IndexOf("\"DiagnosticsUrl\"");
+            if (startind < 0) {
+                return null;
+            }
+            startind = content.IndexOf('"', startind + "\"DiagnosticsUrl\"".Length);
+            if (startind < 0) {
+                return null;
+            }
+            var endind = content.IndexOf('"', startind + 1);
+            if (endind < 0) {
+                return null;
+            }
+            return content.Substring(startind + 1, endind - startind - 1).TrimEnd('/', '\\');
+        }
+
         private static bool IsFileUnaltered(string fileName, string fileHash)
         {
             return fileHash == null || string.Equals(FileUtils.CalculateFileHash(fileName), 

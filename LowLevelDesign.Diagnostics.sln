@@ -50,9 +50,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Commons", "LogStores\LowLevelDesign.Diagnostics.LogStore.Commons\LowLevelDesign.Diagnostics.LogStore.Commons.csproj", "{B769B100-2318-4A28-89D4-EB23B8682FE6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{48B97BC0-EAEF-408D-B52C-138B8043F0D0}"
-	ProjectSection(SolutionItems) = preProject
-		Performance1.psess = Performance1.psess
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests\LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests.csproj", "{BA62103A-DCE0-4207-97C1-89F43A6F1C83}"
 EndProject
