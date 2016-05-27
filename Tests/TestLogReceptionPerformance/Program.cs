@@ -44,9 +44,9 @@ namespace TestLogReceptionPerformance
             int recordsGenerated = 0;
             long ticks = 0;
 
-            using (new Timer((o) => {
-                Console.Write("\rProcessed: {0} / {1}               ", recordsGenerated, numberOfLogs);
-            }, null, 0, 500)) {
+            using (new Timer((o) => { Console.Write("\rProcessed: {0} / {1}               ", recordsGenerated, numberOfLogs); }, null, 0, 500)) {
+                var sw = new Stopwatch();
+                sw.Start();
                 using (var connector = new HttpCastleConnector(new Uri(extra[0]))) {
                     var opt = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
                     if (batchSize > 0) {
@@ -56,10 +56,7 @@ namespace TestLogReceptionPerformance
                                 recs[j] = GenerateRandomLogRecord();
                             }
                             try {
-                                var sw = new Stopwatch();
-                                sw.Start();
                                 connector.SendLogRecords(recs);
-                                sw.Stop();
 
                                 Interlocked.Add(ref ticks, sw.Elapsed.Ticks);
                                 Interlocked.Add(ref recordsGenerated, batchSize);
@@ -71,12 +68,8 @@ namespace TestLogReceptionPerformance
                     } else {
                         Parallel.For(0, numberOfLogs, opt, (i) => {
                             try {
-                                var sw = new Stopwatch();
-                                sw.Start();
                                 connector.SendLogRecord(GenerateRandomLogRecord());
-                                sw.Stop();
 
-                                Interlocked.Add(ref ticks, sw.Elapsed.Ticks);
                                 Interlocked.Increment(ref recordsGenerated);
                             } catch (Exception ex) {
                                 Interlocked.Increment(ref errorsCnt);
@@ -85,9 +78,10 @@ namespace TestLogReceptionPerformance
                         });
                     }
                 }
+                sw.Stop();
 
-                var ts = new TimeSpan(ticks);
-                Console.WriteLine("\rRecords generated: {0}, errors: {1}, time: {2:#,#} ms which gives {3:0.000} processed records / sec", recordsGenerated,
+                var ts = sw.Elapsed;
+                Console.WriteLine("\rRecords generated: {0}, errors: {1}, time: {2:#,#.##} ms which gives {3:0.000} processed records / sec", recordsGenerated,
                     errorsCnt, ts.TotalMilliseconds, recordsGenerated / ts.TotalSeconds);
             }
         }
