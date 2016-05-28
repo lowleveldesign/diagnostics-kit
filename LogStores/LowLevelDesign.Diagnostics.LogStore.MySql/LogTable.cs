@@ -7,14 +7,13 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.LogStore.MySql
 {
     internal class LogTable
     {
-        private static readonly Object lck = new Object();
+        private static readonly object lck = new object();
         private static readonly ISet<string> availableTables = new HashSet<string>();
 
         private readonly Func<DateTime> currentUtcDateRetriever;
@@ -55,7 +54,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                         conn.Execute("create table if not exists " + tableName + " (Id int unsigned auto_increment not null,LoggerName varchar(200) not null" +
                             ",LogLevel smallint not null ,TimeUtc datetime not null ,Message varchar(7000) null ,ExceptionType varchar(100) null" +
                             ",ExceptionMessage varchar(2000) null ,ExceptionAdditionalInfo text null ,CorrelationId varchar(100) null" +
-                            ",Server varchar(200) null ,ApplicationPath varchar(2000) null ,ProcessId int null ,ThreadId int null" +
+                            ",Server varchar(200) not null ,ApplicationPath varchar(2000) null ,ProcessId int null ,ThreadId int null" +
                             ",Identity varchar(200) null ,Host varchar(100) null ,LoggedUser varchar(200) null ,HttpStatusCode varchar(15) character set ascii null" +
                             ",Url varchar(2000) null ,Referer varchar(2000) null ,ClientIP varchar(50) character set ascii null ,RequestData text null" +
                             ",ResponseData text null,ServiceName varchar(100) null ,ServiceDisplayName varchar(200) null, PerfData varchar(3000) null" +
@@ -69,7 +68,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             }
         }
 
-        public async Task<UInt32> SaveLogRecord(MySqlConnection conn, MySqlTransaction tran, string tableName, LogRecord logrec)
+        public async Task<uint> SaveLogRecord(MySqlConnection conn, MySqlTransaction tran, string tableName, LogRecord logrec)
         {
             CreateLogTableIfNotExists(conn, tran, tableName);
 
@@ -79,8 +78,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
             }
 
             // save log in the table
-            Object v;
-            return (UInt32)(await conn.QueryAsync<UInt64>("insert into " + tableName + "(LoggerName ,LogLevel ,TimeUtc ,Message ,ExceptionType " +
+            object v;
+            return (uint)(await conn.QueryAsync<ulong>("insert into " + tableName + "(LoggerName ,LogLevel ,TimeUtc ,Message ,ExceptionType " +
                     ",ExceptionMessage ,ExceptionAdditionalInfo ,CorrelationId ,Server ,ApplicationPath ,ProcessId ,ThreadId ,Identity ,Host " +
                     ",LoggedUser ,HttpStatusCode ,Url ,Referer ,ClientIP ,RequestData ,ResponseData ,ServiceName ,ServiceDisplayName, PerfData) values (" +
                     "@LoggerName ,@LogLevel ,@TimeUtc ,@Message ,@ExceptionType ,@ExceptionMessage ,@ExceptionAdditionalInfo ,@CorrelationId " +
@@ -116,15 +115,26 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
 
         public async Task UpdateApplicationStatus(MySqlConnection conn, MySqlTransaction tran, string apphash, LastApplicationStatus status)
         {
-            var columnsToUpdate = new List<string>() { "ApplicationPath", "Server", "LastUpdateTimeUtc" };
+            var columnsToUpdate = new List<string>() { "ApplicationHash", "ApplicationPath", "Server", "LastUpdateTimeUtc" };
             if (status.ContainsPerformanceData()) {
                 columnsToUpdate.AddRange(new [] { "Cpu", "Memory", "LastPerformanceDataUpdateTimeUtc" });
             }
             if (status.ContainsErrorInformation()) {
                 columnsToUpdate.AddRange(new[] { "LastErrorTimeUtc", "LastErrorType" });
             }
+            var model = new {
+                ApplicationHash = apphash,
+                status.ApplicationPath,
+                status.Server,
+                status.Cpu,
+                status.Memory,
+                status.LastUpdateTimeUtc,
+                status.LastPerformanceDataUpdateTimeUtc,
+                status.LastErrorType,
+                status.LastErrorTimeUtc
+            };
             await conn.ExecuteAsync(string.Format("replace into appstat ({0}) values (@{1})", string.Join(",", columnsToUpdate),
-                string.Join(",@", columnsToUpdate)), status, tran);
+                string.Join(",@", columnsToUpdate)), model, tran);
         }
 
         private static string GetPartitionDefinition(DateTime dt)

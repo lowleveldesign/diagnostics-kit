@@ -8,22 +8,22 @@ namespace LowLevelDesign.Diagnostics.Commons.Validators
     {
         public ApplicationServerConfigValidator()
         {
-            RuleFor(c => c.AppPath).NotEmpty().Length(1, 2000);
+            RuleFor(c => c.AppPath).NotEmpty().Length(1, Constraints.MaxApplicationPathLength);
             RuleFor(c => c.AppType).NotEmpty().Must(t => string.Equals(t, ApplicationServerConfig.WebAppType, StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(t, ApplicationServerConfig.WinSvcType, StringComparison.OrdinalIgnoreCase)).WithMessage("Invalid application type.");
-            RuleFor(c => c.Server).NotEmpty().Length(1, 200);
-            RuleFor(c => c.ServerFqdnOrIp).NotEmpty().Length(1, 255);
-            RuleFor(c => c.AppPoolName).Length(0, 500);
+            RuleFor(c => c.Server).NotEmpty().Length(1, Constraints.MaxServerNameLength);
+            RuleFor(c => c.ServerFqdnOrIp).NotEmpty().Length(1, Constraints.MaxServerFqdnOrIpLength);
+            RuleFor(c => c.AppPoolName).Length(0, Constraints.MaxAppPoolNameLength);
             When(c => c.Bindings != null, () => RuleFor(c => c.Bindings).Must(bindings => {
                     // number of chars is limited
                     int cnt = bindings.Length;
                     foreach (var b in bindings) {
                         cnt += b.Length;
                     }
-                    return cnt <= 3000;
+                    return cnt <= Constraints.MaxBindingLength;
                 }).WithMessage("Too many or too long bindings defined."));
-            RuleFor(c => c.ServiceName).Length(0, 300);
-            RuleFor(c => c.DisplayName).Length(0, 500);
+            RuleFor(c => c.ServiceName).Length(0, Constraints.MaxServiceNameLength);
+            RuleFor(c => c.DisplayName).Length(0, Constraints.MaxDisplayNameLength);
         }
     }
 }

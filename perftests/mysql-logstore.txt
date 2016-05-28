@@ -1,5 +1,0 @@
-Records generated: 10000, errors: 0, time: 30 903 ms which gives 323,596 processed records / sec
-
-After merging perfdata into the main record:
-
-Records generated: 10000, errors: 0, time: 20 057 ms which gives 498,571 processed records / sec

@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connectors\HttpCastleConnector.cs" />
+    <Compile Include="Constraints.cs" />
     <Compile Include="Models\ApplicationServerConfig.cs" />
     <Compile Include="Models\LogRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
