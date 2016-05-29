@@ -13,4 +13,4 @@ The detailed documentation can be found on wiki: **<https://github.com/lowleveld
 
 ---------------------------
 
-Project is distributed under the GPLv2 license and I would be grateful for any contribution and usage information.
+Project is distributed under the GPL license and any contribution is welcome.
