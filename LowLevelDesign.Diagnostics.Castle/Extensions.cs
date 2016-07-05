@@ -134,5 +134,10 @@ namespace LowLevelDesign.Diagnostics.Castle
         {
             return logrec.ExceptionType != null || logrec.ExceptionMessage != null;
         }
+
+        public static string ReturnIfOdd(int n, string str)
+        {
+            return n % 2 == 0 ? string.Empty : str;
+        }
     }
 }
