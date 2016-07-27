@@ -89,6 +89,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             }
 
             if (snapshots.Count > 0) {
+                // FIXME call asynchronously graphite (if configured at the same time)
                 using (var castleConnector = castleConnectorFactory.CreateCastleConnector()) {
                     castleConnector.SendLogRecords(snapshots);
                 }

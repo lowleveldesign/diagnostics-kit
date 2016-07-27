@@ -17,6 +17,7 @@
 using Dapper;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
+using LowLevelDesign.Diagnostics.LogStore.Defaults;
 using LowLevelDesign.Diagnostics.LogStore.MySql;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
@@ -48,7 +49,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Tests
                     var hash = BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(path))).Replace("-", String.Empty);
                     tableNames.Add(MySqlLogStore.AppLogTablePrefix + hash);
 
-                    conn.Execute("delete from appstat where ApplicationHash = @hash", new { hash });
+                    conn.Execute("delete from ApplicationStatus where ApplicationHash = @hash", new { hash });
                 }
 
                 // we will drop all the newly created tables in the db

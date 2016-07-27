@@ -14,20 +14,11 @@
  *  GNU General Public License for more details.
  */
 
-using System;
-using System.Collections.Generic;
+using LowLevelDesign.Diagnostics.LogStore.Defaults;
 
-namespace LowLevelDesign.Diagnostics.LogStore.MySql
+namespace LowLevelDesign.Diagnostics.LogStore.GenericDb
 {
-    internal static class Helpers
+    public sealed class GenericDbAppUserManager : DefaultAppUserManager
     {
-        public static void AddIfNotNull(this IDictionary<String, Object> dict, String key, Object v)
-        {
-            if (v != null)
-            {
-                dict.Add(key, v);
-            }
-        }
-
     }
 }
