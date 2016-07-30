@@ -15,11 +15,12 @@
  */
 
 using LowLevelDesign.Diagnostics.Commons.Models;
+using System.Reflection;
 
 namespace LowLevelDesign.Diagnostics.Castle
 {
     public class SelfInformation
     {
-        public static readonly string ApplicationVersion = typeof(LogRecord).Assembly.GetName().Version.ToString();
+        public static readonly string ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
     }
 }

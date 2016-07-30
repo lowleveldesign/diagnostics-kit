@@ -160,6 +160,8 @@
     <Content Include="Views\Applications.cshtml" />
     <Content Include="Views\ApplicationLogs.cshtml" />
     <None Include="Properties\PublishProfiles\Local-Debug.pubxml" />
+    <None Include="Properties\PublishProfiles\Local-MySql.pubxml" />
+    <None Include="Properties\PublishProfiles\Local-SqlServer.pubxml" />
     <None Include="Properties\PublishProfiles\Local.pubxml" />
     <Content Include="Views\Auth\Users.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
@@ -170,6 +172,12 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.Mysql.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.SqlServer.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
@@ -227,14 +235,44 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LogStores\LowLevelDesign.Diagnostics.LogStore.Defaults\LowLevelDesign.Diagnostics.LogStore.Defaults.csproj">
+      <Project>{3413a67b-0152-419b-8959-73e67732fd97}</Project>
+      <Name>LowLevelDesign.Diagnostics.LogStore.Defaults</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LogStores\LowLevelDesign.Diagnostics.LogStore.ElasticSearch\LowLevelDesign.Diagnostics.LogStore.ElasticSearch.csproj">
       <Project>{0301d398-14c8-4005-a7f8-38effbceff61}</Project>
       <Name>LowLevelDesign.Diagnostics.LogStore.ElasticSearch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LogStores\LowLevelDesign.Diagnostics.LogStore.MySql\LowLevelDesign.Diagnostics.LogStore.MySql.csproj">
+      <Project>{8e8eeeaf-b485-488d-9979-f4fcc6800fa2}</Project>
+      <Name>LowLevelDesign.Diagnostics.LogStore.MySql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LogStores\LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard\LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.csproj">
+      <Project>{cc263aab-b7c1-4687-bd8a-70932cc8aef6}</Project>
+      <Name>LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release.Mysql|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release.SqlServer|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

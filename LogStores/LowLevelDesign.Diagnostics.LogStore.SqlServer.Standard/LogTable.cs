@@ -49,7 +49,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard
                     // we need to create a table which will store application statuses for the grid
                     conn.Execute("if object_id('ApplicationStatus') is null create table ApplicationStatus (ApplicationHash char(32), Server varchar(200) not null, ApplicationPath varchar(2000) not null, " +
                         "Cpu float, Memory float null, LastPerformanceDataUpdateTimeUtc datetime, LastErrorType varchar(100), LastErrorTimeUtc datetime," +
-                        "LastUpdateTimeUtc datetime not null, primary key (ApplicationHash, Server))");
+                        "LastUpdateTimeUtc datetime not null, primary key (ApplicationHash, Server) with (ignore_dup_key = on))");
                 }
             }
         }

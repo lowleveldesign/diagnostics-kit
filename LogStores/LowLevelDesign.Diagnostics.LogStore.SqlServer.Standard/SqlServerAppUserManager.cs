@@ -31,7 +31,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard
                 conn.Execute("if object_id('Users') is null create table Users (Id nvarchar(32) not null primary key," +
                         "UserName nvarchar(100) not null unique, PasswordHash nvarchar(1000), " +
                         "RegistrationDateUtc datetime not null)");
-                conn.Execute("create unique nonclustered index NCIX_Users_UserName on Users(UserName)");
 
                 conn.Execute("if object_id('UserClaims') is null create table UserClaims (UserId nvarchar(32) not null references Users(Id)," +
                     "ClaimType nvarchar(250) not null, ClaimValue nvarchar(1000) not null, primary key(UserId, ClaimType))");
