@@ -17,26 +17,26 @@
 using System;
 using System.Configuration;
 
-namespace LowLevelDesign.Diagnostics.LogStore.GenericDb
+namespace LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard
 {
-    internal static class GenericDbLogStoreConfiguration
+    internal static class SqlServerLogStoreConfiguration
     {
-        private static readonly GenericDbLogStoreConfigSection configSection;
+        private static readonly SqlServerLogStoreConfigSection configSection;
         private static readonly string connectionString;
         private static readonly string connectionStringName;
 
-        static GenericDbLogStoreConfiguration()
+        static SqlServerLogStoreConfiguration()
         {
-            configSection = ConfigurationManager.GetSection("genericDbLogStore") as GenericDbLogStoreConfigSection;
+            configSection = ConfigurationManager.GetSection("sqlServerLogStore") as SqlServerLogStoreConfigSection;
             if (configSection == null) {
-                throw new ConfigurationErrorsException("genericDbLogStore section is required in the application configuration file.");
+                throw new ConfigurationErrorsException("sqlServerLogStore section is required in the application configuration file.");
             }
             try {
                 connectionStringName = configSection.ConnectionStringName;
                 connectionString = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
             } catch (Exception ex) {
                 throw new ConfigurationErrorsException(string.Format(
-                    "There is something wrong with the connection string to the MySql log store database, error: {0}", ex));
+                    "There is something wrong with the connection string to the Sql Server log store database, error: {0}", ex));
             }
         }
 
@@ -45,9 +45,9 @@ namespace LowLevelDesign.Diagnostics.LogStore.GenericDb
         public static string ConnectionStringName { get { return connectionStringName;  } }
     }
 
-    public sealed class GenericDbLogStoreConfigSection : ConfigurationSection
+    public sealed class SqlServerLogStoreConfigSection : ConfigurationSection
     {
         [ConfigurationProperty("connectionStringName", IsRequired = true, IsKey = true)]
-        public string ConnectionStringName { get { return (string)this["connectionStringName"]; } }
+        public String ConnectionStringName { get { return (String)this["connectionStringName"]; } }
     }
 }

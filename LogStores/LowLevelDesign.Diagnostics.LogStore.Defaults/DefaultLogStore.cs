@@ -55,43 +55,12 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
         }
 
 
-        public virtual async Task<LogSearchResults> FilterLogsAsync(LogSearchCriteria searchCriteria)
-        {
-            var hash = GetApplicationHash(searchCriteria.ApplicationPath);
-            if (!logTable.IsLogTableAvailable(AppLogTablePrefix + hash)) {
-                return new LogSearchResults {
-                    FoundItems = new LogRecord[0]
-                };
-            }
-
-            if (string.IsNullOrEmpty(searchCriteria.ApplicationPath)) {
-                throw new ArgumentException("ApplicationPath is required to filter the logs");
-            }
-            var whereSql = PrepareWhereSectionOfTheQuery(searchCriteria);
-            var orderBySql = string.Format("order by TimeUtc desc limit {0},{1}", searchCriteria.Offset, searchCriteria.Limit);
-
-            using (var conn = CreateConnection()) {
-                conn.Open();
-                var dbapplogs = (await conn.QueryAsync<DbAppLogRecord>(string.Format("select * from {0}{1} {2} {3}", AppLogTablePrefix, hash, whereSql, orderBySql), new {
-                    searchCriteria.FromUtc,
-                    searchCriteria.ToUtc,
-                    searchCriteria.Server,
-                    Logger = searchCriteria.Logger + "%",
-                    searchCriteria.Levels,
-                    HttpStatusCode = searchCriteria.Keywords.HttpStatus + "%",
-                    Url = searchCriteria.Keywords.Url + "%",
-                    ClientIp = searchCriteria.Keywords.ClientIp + "%",
-                    ServiceName = searchCriteria.Keywords.Service + "%"
-                })).ToArray();
-
-                return new LogSearchResults { FoundItems = ConvertDbLogRecordToPublicModel(dbapplogs) };
-            }
-        }
+        public abstract Task<LogSearchResults> FilterLogsAsync(LogSearchCriteria searchCriteria);
 
         protected string PrepareWhereSectionOfTheQuery(LogSearchCriteria searchCriteria)
         {
             Debug.Assert(searchCriteria.Keywords != null);
-            var whereSql = new StringBuilder("where TimeUtc >= convert(@FromUtc, datetime) and TimeUtc < convert(@ToUtc, datetime)");
+            var whereSql = new StringBuilder("where TimeUtc >= cast(@FromUtc as datetime) and TimeUtc < cast(@ToUtc as datetime)");
             if (!string.IsNullOrEmpty(searchCriteria.Server)) {
                 whereSql.Append(" and Server = @Server");
             }
@@ -217,7 +186,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
             using (var conn = CreateConnection()) {
                 conn.Open();
 
-                var tables = await conn.QueryAsync<string>("select table_name from information_schema.tables where table_schema = @Database", conn);
+                // table_schema is a database name on mysql, when on sql server the database name is stored in table_catalog
+                var tables = await conn.QueryAsync<string>("select table_name from information_schema.tables where table_schema = @Database or table_catalog = @Database", conn);
                 // make sure that all tables have current and future partitions created
                 foreach (var tbl in tables) {
                     string hash;

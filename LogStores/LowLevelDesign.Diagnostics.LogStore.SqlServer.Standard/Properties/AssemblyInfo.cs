@@ -1,16 +1,32 @@
-﻿using System.Reflection;
+﻿/**
+ *  Part of the Diagnostics Kit
+ *
+ *  Copyright (C) 2016  Sebastian Solnica
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ */
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LowLevelDesign.Diagnostics.LogStore.GenericDb.Tests")]
+[assembly: AssemblyTitle("SqlServerStandardLogStore")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("LowLevelDesign.Diagnostics.LogStore.GenericDb.Tests")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyProduct("SqlServerStandardLogStore")]
+[assembly: AssemblyCopyright("Copyright © Sebastian Solnica 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +36,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("6384abef-8396-4a98-ab88-99053f351283")]
+[assembly: Guid("cc263aab-b7c1-4687-bd8a-70932cc8aef6")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -34,3 +50,6 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+// For tests
+[assembly: InternalsVisibleTo("LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.Tests")]

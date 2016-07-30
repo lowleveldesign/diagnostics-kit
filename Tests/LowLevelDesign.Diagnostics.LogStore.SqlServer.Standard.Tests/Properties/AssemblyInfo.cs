@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LowLevelDesign.Diagnostics.LogStore.GenericDb")]
+[assembly: AssemblyTitle("LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("LowLevelDesign.Diagnostics.LogStore.GenericDb")]
+[assembly: AssemblyProduct("LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5ae82be4-841b-45fb-9ca7-2bd006b45d5c")]
+[assembly: Guid("48c6dae9-bf48-4525-8429-1f6c1e98ce56")]
 
 // Version information for an assembly consists of the following four values:
 //

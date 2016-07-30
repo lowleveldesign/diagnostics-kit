@@ -43,8 +43,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Defaults", "LogStores\LowLevelDesign.Diagnostics.LogStore.Defaults\LowLevelDesign.Diagnostics.LogStore.Defaults.csproj", "{3413A67B-0152-419B-8959-73E67732FD97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Defaults.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.Defaults.Tests\LowLevelDesign.Diagnostics.LogStore.Defaults.Tests.csproj", "{3DC7E0FD-41A6-4924-BA85-19D7852513B0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Commons.net35", "LowLevelDesign.Diagnostics.Commons.net35\LowLevelDesign.Diagnostics.Commons.net35.csproj", "{B024E78E-8F26-4196-80A5-126CC66ECFA9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Commons", "LogStores\LowLevelDesign.Diagnostics.LogStore.Commons\LowLevelDesign.Diagnostics.LogStore.Commons.csproj", "{B769B100-2318-4A28-89D4-EB23B8682FE6}"
@@ -71,9 +69,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Musketeer.Tests", "Tests\LowLevelDesign.Diagnostics.Musketeer.Tests\LowLevelDesign.Diagnostics.Musketeer.Tests.csproj", "{4F1704BC-7927-4EF2-B9B0-FD87F8840606}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.GenericDb", "LogStores\LowLevelDesign.Diagnostics.LogStore.GenericDb\LowLevelDesign.Diagnostics.LogStore.GenericDb.csproj", "{5AE82BE4-841B-45FB-9CA7-2BD006B45D5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard", "LogStores\LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard\LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.csproj", "{CC263AAB-B7C1-4687-BD8A-70932CC8AEF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.GenericDb.Tests", "LowLevelDesign.Diagnostics.LogStore.GenericDb.Tests\LowLevelDesign.Diagnostics.LogStore.GenericDb.Tests.csproj", "{6384ABEF-8396-4A98-AB88-99053F351283}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.Tests\LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.Tests.csproj", "{48C6DAE9-BF48-4525-8429-1F6C1E98CE56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Defaults.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.Defaults.Tests\LowLevelDesign.Diagnostics.LogStore.Defaults.Tests.csproj", "{3DC7E0FD-41A6-4924-BA85-19D7852513B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,10 +145,6 @@ Global
 		{3413A67B-0152-419B-8959-73E67732FD97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3413A67B-0152-419B-8959-73E67732FD97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3413A67B-0152-419B-8959-73E67732FD97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B024E78E-8F26-4196-80A5-126CC66ECFA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B024E78E-8F26-4196-80A5-126CC66ECFA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B024E78E-8F26-4196-80A5-126CC66ECFA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -193,14 +189,18 @@ Global
 		{4F1704BC-7927-4EF2-B9B0-FD87F8840606}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F1704BC-7927-4EF2-B9B0-FD87F8840606}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F1704BC-7927-4EF2-B9B0-FD87F8840606}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5AE82BE4-841B-45FB-9CA7-2BD006B45D5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5AE82BE4-841B-45FB-9CA7-2BD006B45D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5AE82BE4-841B-45FB-9CA7-2BD006B45D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5AE82BE4-841B-45FB-9CA7-2BD006B45D5C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6384ABEF-8396-4A98-AB88-99053F351283}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6384ABEF-8396-4A98-AB88-99053F351283}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6384ABEF-8396-4A98-AB88-99053F351283}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6384ABEF-8396-4A98-AB88-99053F351283}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC263AAB-B7C1-4687-BD8A-70932CC8AEF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC263AAB-B7C1-4687-BD8A-70932CC8AEF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC263AAB-B7C1-4687-BD8A-70932CC8AEF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC263AAB-B7C1-4687-BD8A-70932CC8AEF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48C6DAE9-BF48-4525-8429-1F6C1E98CE56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48C6DAE9-BF48-4525-8429-1F6C1E98CE56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48C6DAE9-BF48-4525-8429-1F6C1E98CE56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48C6DAE9-BF48-4525-8429-1F6C1E98CE56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -220,7 +220,6 @@ Global
 		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{B36818A4-DD67-442F-A470-FE98E40FA584} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{3413A67B-0152-419B-8959-73E67732FD97} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{B769B100-2318-4A28-89D4-EB23B8682FE6} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{BA62103A-DCE0-4207-97C1-89F43A6F1C83} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{171E4DA3-2D4F-4A0B-A775-25A657437B35} = {3DC4B847-F6A0-48AA-B6AD-F79F59E62916}
@@ -229,8 +228,9 @@ Global
 		{0301D398-14C8-4005-A7F8-38EFFBCEFF61} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{C4971D29-9A13-42D5-A2D0-61A2FA211C64} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{4F1704BC-7927-4EF2-B9B0-FD87F8840606} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
-		{5AE82BE4-841B-45FB-9CA7-2BD006B45D5C} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
-		{6384ABEF-8396-4A98-AB88-99053F351283} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
+		{CC263AAB-B7C1-4687-BD8A-70932CC8AEF6} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
+		{48C6DAE9-BF48-4525-8429-1F6C1E98CE56} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
+		{3DC7E0FD-41A6-4924-BA85-19D7852513B0} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35;packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Logging.5.0.505.1\lib\NET35

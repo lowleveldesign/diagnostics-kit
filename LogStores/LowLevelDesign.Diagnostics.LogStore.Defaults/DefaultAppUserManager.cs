@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 {
-    public class DefaultAppUserManager : IAppUserManager
+    public abstract class DefaultAppUserManager : IAppUserManager
     {
         protected sealed class UserClaim
         {
@@ -44,7 +44,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
         protected readonly String dbConnStringName;
         protected readonly String dbConnString;
 
-        public DefaultAppUserManager(String connstrName = "configdb")
+        public DefaultAppUserManager(String connstrName)
         {
             var configDbConnString = ConfigurationManager.ConnectionStrings[connstrName];
             if (configDbConnString == null)

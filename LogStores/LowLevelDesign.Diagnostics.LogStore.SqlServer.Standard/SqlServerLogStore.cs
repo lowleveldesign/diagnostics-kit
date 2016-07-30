@@ -15,26 +15,26 @@
  */
 
 using LowLevelDesign.Diagnostics.LogStore.Defaults;
-using MySql.Data.MySqlClient;
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using LowLevelDesign.Diagnostics.LogStore.Commons.Models;
 using System.Threading.Tasks;
 using LowLevelDesign.Diagnostics.Commons.Models;
 using Dapper;
 using System.Linq;
 
-namespace LowLevelDesign.Diagnostics.LogStore.MySql
+namespace LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard
 {
-    public class MySqlLogStore : DefaultLogStore
+    public sealed class SqlServerLogStore : DefaultLogStore
     {
-        public MySqlLogStore() : this(() => DateTime.UtcNow.Date) { }
+        public SqlServerLogStore() : this(() => DateTime.UtcNow.Date) { }
 
-        internal MySqlLogStore(Func<DateTime> currentUtcDateRetriever) : base(new LogTable(currentUtcDateRetriever)) { }
+        internal SqlServerLogStore(Func<DateTime> currentUtcDateRetriever) : base(new LogTable(currentUtcDateRetriever)) { }
 
         protected override IDbConnection CreateConnection()
         {
-            return new MySqlConnection(MySqlLogStoreConfiguration.ConnectionString);
+            return new SqlConnection(SqlServerLogStoreConfiguration.ConnectionString);
         }
 
         public override async Task<LogSearchResults> FilterLogsAsync(LogSearchCriteria searchCriteria)
@@ -50,11 +50,22 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                 throw new ArgumentException("ApplicationPath is required to filter the logs");
             }
             var whereSql = PrepareWhereSectionOfTheQuery(searchCriteria);
-            var orderBySql = string.Format("order by TimeUtc desc limit {0},{1}", searchCriteria.Offset, searchCriteria.Limit);
+
+            var query = string.Format(@"
+select LoggerName ,LogLevel ,TimeUtc ,Message ,ExceptionType ,ExceptionMessage ,ExceptionAdditionalInfo ,CorrelationId 
+      ,Server ,ApplicationPath ,ProcessId ,ThreadId ,[Identity] ,Host ,LoggedUser ,HttpStatusCode ,Url ,Referer ,ClientIP 
+      ,RequestData ,ResponseData ,ServiceName ,ServiceDisplayName, PerfData
+from (
+    select LoggerName ,LogLevel ,TimeUtc ,Message ,ExceptionType ,ExceptionMessage ,ExceptionAdditionalInfo ,CorrelationId 
+      ,Server ,ApplicationPath ,ProcessId ,ThreadId ,[Identity] ,Host ,LoggedUser ,HttpStatusCode ,Url ,Referer ,ClientIP 
+      ,RequestData ,ResponseData ,ServiceName ,ServiceDisplayName, PerfData, row_number() over (order by TimeUtc desc) AS RowNum
+    from {0}{1} {2}
+) as MyDerivedTable
+where MyDerivedTable.RowNum >= @StartRow and MyDerivedTable.RowNum < @EndRow", AppLogTablePrefix, hash, whereSql);
 
             using (var conn = CreateConnection()) {
                 conn.Open();
-                var dbapplogs = (await conn.QueryAsync<DbAppLogRecord>(string.Format("select * from {0}{1} {2} {3}", AppLogTablePrefix, hash, whereSql, orderBySql), new {
+                var dbapplogs = (await conn.QueryAsync<DbAppLogRecord>(query, new {
                     searchCriteria.FromUtc,
                     searchCriteria.ToUtc,
                     searchCriteria.Server,
@@ -63,7 +74,9 @@ namespace LowLevelDesign.Diagnostics.LogStore.MySql
                     HttpStatusCode = searchCriteria.Keywords.HttpStatus + "%",
                     Url = searchCriteria.Keywords.Url + "%",
                     ClientIp = searchCriteria.Keywords.ClientIp + "%",
-                    ServiceName = searchCriteria.Keywords.Service + "%"
+                    ServiceName = searchCriteria.Keywords.Service + "%",
+                    StartRow = searchCriteria.Offset,
+                    EndRow = searchCriteria.Offset + searchCriteria.Limit
                 })).ToArray();
 
                 return new LogSearchResults { FoundItems = ConvertDbLogRecordToPublicModel(dbapplogs) };

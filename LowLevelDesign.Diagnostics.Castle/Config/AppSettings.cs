@@ -32,7 +32,6 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
         private static readonly TraceSource logger = new TraceSource("LowLevelDesign.Diagnostics.Castle");
 
         // Diagnostics defaults - we should use them only if other options are not available
-        private const string defaultTypesNamespace = "LowLevelDesign.Diagnostics.LogStore.Defaults";
         private const string UserMgrKey = "diag:usermgr";
         private const string LogStoreKey = "diag:logstore";
         private const string ConfMgrKey = "diag:confmgr";
@@ -91,7 +90,7 @@ namespace LowLevelDesign.Diagnostics.Castle.Config
                 }
                 if (implementers.Count > 1) {
                     // we may skip the default one if present
-                    var ind = implementers.FindIndex(t => t.Namespace.StartsWith(defaultTypesNamespace, StringComparison.Ordinal));
+                    var ind = implementers.FindIndex(t => t.IsAbstract);
                     if (ind >= 0) {
                         implementers.RemoveAt(ind);
                     }

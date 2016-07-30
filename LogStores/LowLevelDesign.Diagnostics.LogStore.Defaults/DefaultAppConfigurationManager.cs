@@ -35,7 +35,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
     /// <summary>
     /// Use only in single instance mode. Should be a singleton.
     /// </summary>
-    public class DefaultAppConfigurationManager : IAppConfigurationManager
+    public abstract class DefaultAppConfigurationManager : IAppConfigurationManager
     {
         protected static readonly MemoryCache cache = new MemoryCache("configcache");
         private static readonly Object lck = new Object();
@@ -50,7 +50,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.Defaults
 
         private readonly Random rand = new Random();
 
-        public DefaultAppConfigurationManager(String connstrName = "configdb")
+        public DefaultAppConfigurationManager(String connstrName)
         {
             var configDbConnString = ConfigurationManager.ConnectionStrings[connstrName];
             if (configDbConnString == null) {
