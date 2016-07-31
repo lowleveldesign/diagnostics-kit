@@ -102,15 +102,56 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 
             // load the list of PIDs from the shared info about apps and get
             // the corresponding perf counters
+            var pids = MatchProcessPidsWithCounterInstances("Process", "ID Process");
+            var managedPids = MatchProcessPidsWithCounterInstances(".NET CLR Memory", "Process ID");
+
+            var processIds = sharedAppsInfo.GetProcessIds();
+            foreach (var pid in processIds) {
+                var perfCounters = new List<PerformanceCounter>(15);
+                string inst;
+                if (pids.TryGetValue((uint)pid, out inst)) {
+                    logger.Debug("Adding performance counters for PID: {0}.", pid);
+                    perfCounters.Add(new PerformanceCounter(ProcessCategoryName, ProcessCpuTimeCounter, inst, true));
+                    perfCounters.Add(new PerformanceCounter(ProcessCategoryName, ProcessMemoryCounter, inst, true));
+                }
+                if (managedPids.TryGetValue((uint)pid, out inst)) {
+                    logger.Debug("Adding managed performance counters for PID: {0}.", pid);
+                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "# Gen 0 Collections", inst, true));
+                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "# Gen 1 Collections", inst, true));
+                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "# Gen 2 Collections", inst, true));
+                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "Gen 0 heap size", inst, true));
+                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "Gen 1 heap size", inst, true));
+                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "Gen 2 heap size", inst, true));
+                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "% Time in GC", inst, true));
+                    perfCounters.Add(new PerformanceCounter(".NET CLR Exceptions", "# of Exceps Thrown", inst, true));
+                    perfCounters.Add(new PerformanceCounter(".NET CLR Exceptions", "# of Exceps Thrown / sec", inst, true));
+                }
+
+                if (perfCounters.Count > 0) {
+                    counters.Add(new Tuple<int, PerformanceCounter[], IEnumerable<AppInfo>>(pid, 
+                        perfCounters.ToArray(), sharedAppsInfo.FindAppsByProcessId(pid)));
+                }
+            }
+            // close previous counters
+            if (serviceCounters != null) {
+                foreach (var sc in serviceCounters) {
+                    foreach (var c in sc.Item2) { c.Close(); }
+                }
+            }
+            // new counters now become valid
+            serviceCounters = counters;
+        }
+
+        private static Dictionary<uint, string> MatchProcessPidsWithCounterInstances(string categoryName, string counterName)
+        {
             var pids = new Dictionary<uint, string>(); // pid <-> instance name
-                                                       // now let's get the Process ID performance counter to find process counter instance name
-            var perfcat = new PerformanceCounterCategory("Process");
+            var perfcat = new PerformanceCounterCategory(categoryName);
             string[] instances = perfcat.GetInstanceNames();
 
             // now for each instance let's figure out its pid
             foreach (var inst in instances) {
                 try {
-                    using (var counter = new PerformanceCounter("Process", "ID Process", inst, true)) {
+                    using (var counter = new PerformanceCounter(categoryName, counterName, inst, true)) {
                         var ppid = (uint)counter.NextValue();
                         // _Total and Idle have PID = 0 - we don't need them
                         if (ppid > 0 && !pids.ContainsKey(ppid)) {
@@ -122,25 +163,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                 }
             }
 
-            var processIds = sharedAppsInfo.GetProcessIds();
-            foreach (var pid in processIds) {
-                string inst;
-                if (pids.TryGetValue((uint)pid, out inst)) {
-                    logger.Debug("Adding performance counters for PID: {0}.", pid);
-                    counters.Add(new Tuple<int, PerformanceCounter[], IEnumerable<AppInfo>>(pid, new[] {
-                            new PerformanceCounter(ProcessCategoryName, ProcessCpuTimeCounter, inst, true),
-                            new PerformanceCounter(ProcessCategoryName, ProcessMemoryCounter, inst, true),
-                        }, sharedAppsInfo.FindAppsByProcessId(pid)));
-                }
-            }
-            // close previous counters
-            if (serviceCounters != null) {
-                foreach (var sc in serviceCounters) {
-                    foreach (var c in sc.Item2) { c.Close(); }
-                }
-            }
-            // new counters now become valid
-            serviceCounters = counters;
+            return pids;
         }
 
         private static string GetPerfCounterPath(PerformanceCounter cnt)

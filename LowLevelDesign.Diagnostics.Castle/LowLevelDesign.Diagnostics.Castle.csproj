@@ -159,10 +159,10 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Applications.cshtml" />
     <Content Include="Views\ApplicationLogs.cshtml" />
-    <None Include="Properties\PublishProfiles\Local-Debug.pubxml" />
+    <None Include="Properties\PublishProfiles\Local-ElasticSearch-Debug.pubxml" />
     <None Include="Properties\PublishProfiles\Local-MySql.pubxml" />
     <None Include="Properties\PublishProfiles\Local-SqlServer.pubxml" />
-    <None Include="Properties\PublishProfiles\Local.pubxml" />
+    <None Include="Properties\PublishProfiles\Local-ElasticSearch.pubxml" />
     <Content Include="Views\Auth\Users.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Auth\ChangePassword.cshtml" />
