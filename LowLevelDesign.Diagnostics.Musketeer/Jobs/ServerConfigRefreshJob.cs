@@ -17,6 +17,7 @@
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Musketeer.Config;
 using LowLevelDesign.Diagnostics.Musketeer.Models;
+using LowLevelDesign.Diagnostics.Musketeer.Output;
 using Microsoft.Web.Administration;
 using NLog;
 using Quartz;
@@ -43,7 +44,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         private static readonly char[] InvalidPathChars = Path.GetInvalidPathChars();
         private static readonly string serverFqdnOrIp;
         private readonly ISharedInfoAboutApps sharedAppsInfo;
-        private readonly IMusketeerHttpCastleConnectorFactory castleConnectorFactory;
+        private readonly IMusketeerConnectorFactory castleConnectorFactory;
 
         static ServerConfigRefreshJob()
         {
@@ -60,7 +61,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             }
         }
 
-        public ServerConfigRefreshJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerHttpCastleConnectorFactory castleConnectorFactory)
+        public ServerConfigRefreshJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory castleConnectorFactory)
         {
             this.sharedAppsInfo = sharedAppsInfo;
             this.castleConnectorFactory = castleConnectorFactory;
@@ -76,7 +77,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             // load Win services configuration items
             LoadWinServicesConfigs(configs, appinfo);
 
-            using (var castleConnector = castleConnectorFactory.CreateCastleConnector()) {
+            using (var castleConnector = castleConnectorFactory.CreateConnector()) {
                 var activeApps = castleConnector.SendApplicationConfigs(configs);
 
                 // store the configs in the shared storage

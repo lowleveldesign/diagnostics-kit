@@ -18,6 +18,7 @@ using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Musketeer.Config;
 using LowLevelDesign.Diagnostics.Musketeer.Jobs;
 using LowLevelDesign.Diagnostics.Musketeer.Models;
+using LowLevelDesign.Diagnostics.Musketeer.Output;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -53,8 +54,8 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Tests
         [Fact]
         public void TestReadLogsJob()
         {
-            var connectorMock = new Mock<IMusketeerHttpCastleConnector>();
-            var factoryMock = new Mock<IMusketeerHttpCastleConnectorFactory>();
+            var connectorMock = new Mock<IMusketeerConnector>();
+            var factoryMock = new Mock<IMusketeerConnectorFactory>();
 
             // setup log folders
             var fileName = Path.Combine(logFolder, "u_ex151006.log");
@@ -88,7 +89,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Tests
                     Assert.Equal(o, "/czesci-samochodowe-do-mercedesbenz-74/czesci-tloki-71901");
                 });
 
-            factoryMock.Setup(f => f.CreateCastleConnector()).Returns(connectorMock.Object);
+            factoryMock.Setup(f => f.CreateConnector()).Returns(connectorMock.Object);
 
             var job = new ReadWebAppsLogsJob(sharedInfoAboutApps, factoryMock.Object);
             job.Execute(null);

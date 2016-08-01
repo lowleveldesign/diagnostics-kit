@@ -15,6 +15,7 @@
  */
 
 using LowLevelDesign.Diagnostics.Musketeer.Models;
+using LowLevelDesign.Diagnostics.Musketeer.Output;
 using NLog;
 using Quartz;
 using System;
@@ -32,10 +33,10 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         private static readonly string executingAssemblyPath = Path.GetDirectoryName(
             Assembly.GetExecutingAssembly().Location);
 
-        private readonly IMusketeerHttpCastleConnector castleConnector;
+        private readonly IMusketeerConnector castleConnector;
 
-        public MusketeerUpdateJob(IMusketeerHttpCastleConnectorFactory castleConnectorFactory) {
-            castleConnector= castleConnectorFactory.CreateCastleConnector();
+        public MusketeerUpdateJob(IMusketeerConnectorFactory castleConnectorFactory) {
+            castleConnector= castleConnectorFactory.CreateConnector();
         }
 
         public void Execute(IJobExecutionContext context)

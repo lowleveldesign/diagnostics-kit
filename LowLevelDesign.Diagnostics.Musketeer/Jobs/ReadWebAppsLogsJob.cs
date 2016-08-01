@@ -18,6 +18,7 @@ using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Musketeer.Config;
 using LowLevelDesign.Diagnostics.Musketeer.IIS;
 using LowLevelDesign.Diagnostics.Musketeer.Models;
+using LowLevelDesign.Diagnostics.Musketeer.Output;
 using NLog;
 using Quartz;
 using System;
@@ -37,9 +38,9 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         private static readonly Dictionary<string, W3CLogStream> logPathToAppLogStreamInfo = new Dictionary<string, W3CLogStream>(StringComparer.Ordinal);
 
         private readonly ISharedInfoAboutApps sharedAppsInfo;
-        private readonly IMusketeerHttpCastleConnectorFactory castleConnectorFactory;
+        private readonly IMusketeerConnectorFactory castleConnectorFactory;
 
-        public ReadWebAppsLogsJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerHttpCastleConnectorFactory castleConnectorFactory)
+        public ReadWebAppsLogsJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory castleConnectorFactory)
         {
             this.sharedAppsInfo = sharedAppsInfo;
             this.castleConnectorFactory = castleConnectorFactory;
@@ -102,7 +103,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 
             if (logrecs.Count > 0) {
                 // send collected logs to Diagnostics Castle
-                using (var castleConnector = castleConnectorFactory.CreateCastleConnector()) {
+                using (var castleConnector = castleConnectorFactory.CreateConnector()) {
                     castleConnector.SendLogRecords(logrecs);
                 }
             }

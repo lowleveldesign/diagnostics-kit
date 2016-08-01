@@ -17,6 +17,7 @@
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Musketeer.Config;
 using LowLevelDesign.Diagnostics.Musketeer.Models;
+using LowLevelDesign.Diagnostics.Musketeer.Output;
 using NLog;
 using Quartz;
 using System;
@@ -39,9 +40,9 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         private static IList<Tuple<int, PerformanceCounter[], IEnumerable<AppInfo>>> serviceCounters;
 
         private readonly ISharedInfoAboutApps sharedAppsInfo;
-        private readonly IMusketeerHttpCastleConnectorFactory castleConnectorFactory;
+        private readonly IMusketeerConnectorFactory castleConnectorFactory;
 
-        public ServiceMonitorJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerHttpCastleConnectorFactory castleConnectorFactory)
+        public ServiceMonitorJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory castleConnectorFactory)
         {
             this.sharedAppsInfo = sharedAppsInfo;
             this.castleConnectorFactory = castleConnectorFactory;
@@ -90,7 +91,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 
             if (snapshots.Count > 0) {
                 // FIXME call asynchronously graphite (if configured at the same time)
-                using (var castleConnector = castleConnectorFactory.CreateCastleConnector()) {
+                using (var castleConnector = castleConnectorFactory.CreateConnector()) {
                     castleConnector.SendLogRecords(snapshots);
                 }
             }
