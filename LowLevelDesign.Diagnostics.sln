@@ -295,10 +295,10 @@ Global
 		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.Mysql|Any CPU.ActiveCfg = Release|Any CPU
-		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.Mysql|Any CPU.Build.0 = Release|Any CPU
-		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.SqlServer|Any CPU.ActiveCfg = Release|Any CPU
-		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.SqlServer|Any CPU.Build.0 = Release|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.Mysql|Any CPU.ActiveCfg = Release.Mysql|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.Mysql|Any CPU.Build.0 = Release.Mysql|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.SqlServer|Any CPU.ActiveCfg = Release.SqlServer|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.SqlServer|Any CPU.Build.0 = Release.SqlServer|Any CPU
 		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
