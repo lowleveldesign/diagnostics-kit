@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ExampleConsoleApp</RootNamespace>
     <AssemblyName>ExampleConsoleApp</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -90,6 +91,10 @@
     <ProjectReference Include="..\..\Harvesters\LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics\LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics.csproj">
       <Project>{cfcdfb73-6b60-47e8-8dd1-fa1a0597ed0e}</Project>
       <Name>LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LowLevelDesign.Diagnostics.LogStash\LowLevelDesign.Diagnostics.LogStash.csproj">
+      <Project>{3405684a-de59-4aa6-b8e5-5f3d900da7e0}</Project>
+      <Name>LowLevelDesign.Diagnostics.LogStash</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Commons", "LowLevelDesign.Diagnostics.Commons\LowLevelDesign.Diagnostics.Commons.csproj", "{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.LuceneNet", "LogStores\LowLevelDesign.Diagnostics.LogStore.LuceneNet\LowLevelDesign.Diagnostics.LogStore.LuceneNet.csproj", "{A1A7454D-6114-4340-819F-416E0D696DDE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Harvesters", "Harvesters", "{64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Harvester.NLog", "Harvesters\LowLevelDesign.Diagnostics.Harvester.NLog\LowLevelDesign.Diagnostics.Harvester.NLog.csproj", "{6F1489DB-0876-4278-ADD2-65086DB6F60A}"
@@ -39,8 +37,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLogReceptionPerformance
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.MySql", "LogStores\LowLevelDesign.Diagnostics.LogStore.MySql\LowLevelDesign.Diagnostics.LogStore.MySql.csproj", "{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.MySql.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.MySql.Tests\LowLevelDesign.Diagnostics.LogStore.MySql.Tests.csproj", "{B36818A4-DD67-442F-A470-FE98E40FA584}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Defaults", "LogStores\LowLevelDesign.Diagnostics.LogStore.Defaults\LowLevelDesign.Diagnostics.LogStore.Defaults.csproj", "{3413A67B-0152-419B-8959-73E67732FD97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.Commons.net35", "LowLevelDesign.Diagnostics.Commons.net35\LowLevelDesign.Diagnostics.Commons.net35.csproj", "{B024E78E-8F26-4196-80A5-126CC66ECFA9}"
@@ -48,8 +44,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Commons", "LogStores\LowLevelDesign.Diagnostics.LogStore.Commons\LowLevelDesign.Diagnostics.LogStore.Commons.csproj", "{B769B100-2318-4A28-89D4-EB23B8682FE6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{48B97BC0-EAEF-408D-B52C-138B8043F0D0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests\LowLevelDesign.Diagnostics.LogStore.LuceneNet.Tests.csproj", "{BA62103A-DCE0-4207-97C1-89F43A6F1C83}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bishop", "Bishop", "{3DC4B847-F6A0-48AA-B6AD-F79F59E62916}"
 EndProject
@@ -73,7 +67,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.Tests\LowLevelDesign.Diagnostics.LogStore.SqlServer.Standard.Tests.csproj", "{48C6DAE9-BF48-4525-8429-1F6C1E98CE56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.Defaults.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.Defaults.Tests\LowLevelDesign.Diagnostics.LogStore.Defaults.Tests.csproj", "{3DC7E0FD-41A6-4924-BA85-19D7852513B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStore.MySql.Tests", "Tests\LowLevelDesign.Diagnostics.LogStore.MySql.Tests\LowLevelDesign.Diagnostics.LogStore.MySql.Tests.csproj", "{B36818A4-DD67-442F-A470-FE98E40FA584}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelDesign.Diagnostics.LogStash", "LowLevelDesign.Diagnostics.LogStash\LowLevelDesign.Diagnostics.LogStash.csproj", "{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,12 +95,6 @@ Global
 		{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}.Release.SqlServer|Any CPU.Build.0 = Release.SqlServer|Any CPU
 		{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEBC3248-E9C6-4BC3-B46F-BDA8909A190C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1A7454D-6114-4340-819F-416E0D696DDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1A7454D-6114-4340-819F-416E0D696DDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1A7454D-6114-4340-819F-416E0D696DDE}.Release.Mysql|Any CPU.ActiveCfg = Release|Any CPU
-		{A1A7454D-6114-4340-819F-416E0D696DDE}.Release.SqlServer|Any CPU.ActiveCfg = Release|Any CPU
-		{A1A7454D-6114-4340-819F-416E0D696DDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1A7454D-6114-4340-819F-416E0D696DDE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6F1489DB-0876-4278-ADD2-65086DB6F60A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6F1489DB-0876-4278-ADD2-65086DB6F60A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F1489DB-0876-4278-ADD2-65086DB6F60A}.Release.Mysql|Any CPU.ActiveCfg = Release.Mysql|Any CPU
@@ -193,14 +183,6 @@ Global
 		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Release.SqlServer|Any CPU.Build.0 = Release.SqlServer|Any CPU
 		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B36818A4-DD67-442F-A470-FE98E40FA584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B36818A4-DD67-442F-A470-FE98E40FA584}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release.Mysql|Any CPU.ActiveCfg = Release.Mysql|Any CPU
-		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release.Mysql|Any CPU.Build.0 = Release.Mysql|Any CPU
-		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release.SqlServer|Any CPU.ActiveCfg = Release.SqlServer|Any CPU
-		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release.SqlServer|Any CPU.Build.0 = Release.SqlServer|Any CPU
-		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3413A67B-0152-419B-8959-73E67732FD97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3413A67B-0152-419B-8959-73E67732FD97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3413A67B-0152-419B-8959-73E67732FD97}.Release.Mysql|Any CPU.ActiveCfg = Release.Mysql|Any CPU
@@ -223,12 +205,6 @@ Global
 		{B769B100-2318-4A28-89D4-EB23B8682FE6}.Release.SqlServer|Any CPU.Build.0 = Release.SqlServer|Any CPU
 		{B769B100-2318-4A28-89D4-EB23B8682FE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B769B100-2318-4A28-89D4-EB23B8682FE6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA62103A-DCE0-4207-97C1-89F43A6F1C83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA62103A-DCE0-4207-97C1-89F43A6F1C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA62103A-DCE0-4207-97C1-89F43A6F1C83}.Release.Mysql|Any CPU.ActiveCfg = Release|Any CPU
-		{BA62103A-DCE0-4207-97C1-89F43A6F1C83}.Release.SqlServer|Any CPU.ActiveCfg = Release|Any CPU
-		{BA62103A-DCE0-4207-97C1-89F43A6F1C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA62103A-DCE0-4207-97C1-89F43A6F1C83}.Release|Any CPU.Build.0 = Release|Any CPU
 		{171E4DA3-2D4F-4A0B-A775-25A657437B35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{171E4DA3-2D4F-4A0B-A775-25A657437B35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{171E4DA3-2D4F-4A0B-A775-25A657437B35}.Release.Mysql|Any CPU.ActiveCfg = Release.Mysql|Any CPU
@@ -309,18 +285,27 @@ Global
 		{48C6DAE9-BF48-4525-8429-1F6C1E98CE56}.Release.SqlServer|Any CPU.Build.0 = Release.SqlServer|Any CPU
 		{48C6DAE9-BF48-4525-8429-1F6C1E98CE56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48C6DAE9-BF48-4525-8429-1F6C1E98CE56}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Release.Mysql|Any CPU.ActiveCfg = Release|Any CPU
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Release.SqlServer|Any CPU.ActiveCfg = Release|Any CPU
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release.Mysql|Any CPU.ActiveCfg = Release.Mysql|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release.Mysql|Any CPU.Build.0 = Release.Mysql|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release.SqlServer|Any CPU.ActiveCfg = Release.SqlServer|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release.SqlServer|Any CPU.Build.0 = Release.SqlServer|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B36818A4-DD67-442F-A470-FE98E40FA584}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.Mysql|Any CPU.ActiveCfg = Release|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.Mysql|Any CPU.Build.0 = Release|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.SqlServer|Any CPU.ActiveCfg = Release|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release.SqlServer|Any CPU.Build.0 = Release|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3405684A-DE59-4AA6-B8E5-5F3D900DA7E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{A1A7454D-6114-4340-819F-416E0D696DDE} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{6F1489DB-0876-4278-ADD2-65086DB6F60A} = {64769AE2-3D05-4035-9A3B-AB96EAB0B1CC}
 		{F24B1FEF-B1C3-4036-A131-DB977D4B5E33} = {1FD68A99-5CF6-4CEE-9E5C-E135AC362D25}
 		{45BF1E31-A3FA-45A5-A464-61707268A110} = {1FD68A99-5CF6-4CEE-9E5C-E135AC362D25}
@@ -332,10 +317,8 @@ Global
 		{F68F72F7-D341-4252-BBBF-A2FB31FA0DB6} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{2F328F9B-9540-4B42-9FA6-4FE59AF328FA} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{8E8EEEAF-B485-488D-9979-F4FCC6800FA2} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
-		{B36818A4-DD67-442F-A470-FE98E40FA584} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{3413A67B-0152-419B-8959-73E67732FD97} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{B769B100-2318-4A28-89D4-EB23B8682FE6} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
-		{BA62103A-DCE0-4207-97C1-89F43A6F1C83} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{171E4DA3-2D4F-4A0B-A775-25A657437B35} = {3DC4B847-F6A0-48AA-B6AD-F79F59E62916}
 		{33C920BF-33A6-4246-984A-5CDF9524E191} = {3DC4B847-F6A0-48AA-B6AD-F79F59E62916}
 		{ECB23941-7C7D-4054-914B-6F99972F3282} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
@@ -344,7 +327,7 @@ Global
 		{4F1704BC-7927-4EF2-B9B0-FD87F8840606} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 		{CC263AAB-B7C1-4687-BD8A-70932CC8AEF6} = {AF9A1B53-7BA4-4E9B-8ADF-20432D751F20}
 		{48C6DAE9-BF48-4525-8429-1F6C1E98CE56} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
-		{3DC7E0FD-41A6-4924-BA85-19D7852513B0} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
+		{B36818A4-DD67-442F-A470-FE98E40FA584} = {3F8A9C23-D49F-41DC-A935-F2898E13707B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35;packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Logging.5.0.505.1\lib\NET35

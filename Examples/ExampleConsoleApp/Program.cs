@@ -15,13 +15,10 @@
  */
 
 using log4net;
+using LowLevelDesign.Diagnostics.LogStash;
 using NLog;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExampleConsoleApp
 {
@@ -31,7 +28,8 @@ namespace ExampleConsoleApp
         private static readonly ILog logger2 = log4net.LogManager.GetLogger(typeof(Program));
         private static readonly TraceSource logger3 = new TraceSource("TestSource");
 
-        static void Main(string[] args) {
+        static void SendTestLogs()
+        {
             log4net.Config.XmlConfigurator.Configure();
 
             logger.Info("test");
@@ -40,6 +38,18 @@ namespace ExampleConsoleApp
             logger2.Info("test-log4net");
             logger3.TraceEvent(TraceEventType.Information, 0, "test-system.diagnostics-tracesource");
             Trace.WriteLine("### test-system.diagnostics-trace");
+        }
+
+        static void Main(string[] args)
+        {
+            using (var beats = new Beats("localhost", 5044)) {
+                for (var i = 0; i < 35; i++) {
+                    beats.SendEvent("musketeer", "mprocess", new Dictionary<string, object> {
+                        { "cpu", 20.0f },
+                        { "machine", "mylaptop" }
+                    });
+                }
+            }
         }
     }
 }
