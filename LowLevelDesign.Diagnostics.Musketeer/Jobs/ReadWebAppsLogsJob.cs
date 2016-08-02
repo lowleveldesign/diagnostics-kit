@@ -16,9 +16,9 @@
 
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Musketeer.Config;
+using LowLevelDesign.Diagnostics.Musketeer.Connectors;
 using LowLevelDesign.Diagnostics.Musketeer.IIS;
 using LowLevelDesign.Diagnostics.Musketeer.Models;
-using LowLevelDesign.Diagnostics.Musketeer.Output;
 using NLog;
 using Quartz;
 using System;
@@ -103,7 +103,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 
             if (logrecs.Count > 0) {
                 // send collected logs to Diagnostics Castle
-                using (var castleConnector = castleConnectorFactory.CreateConnector()) {
+                using (var castleConnector = castleConnectorFactory.GetConnector()) {
                     castleConnector.SendLogRecords(logrecs);
                 }
             }

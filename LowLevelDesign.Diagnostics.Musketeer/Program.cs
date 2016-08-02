@@ -15,8 +15,8 @@
  */
 
 using LowLevelDesign.Diagnostics.Musketeer.Config;
+using LowLevelDesign.Diagnostics.Musketeer.Connectors;
 using LowLevelDesign.Diagnostics.Musketeer.Jobs;
-using LowLevelDesign.Diagnostics.Musketeer.Output;
 using NLog;
 using Quartz;
 using Quartz.Impl;
@@ -43,7 +43,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer
 
             // shared class registration
             container.Register<ISharedInfoAboutApps, SharedInfoAboutApps>(Lifestyle.Singleton);
-            container.Register<IMusketeerConnectorFactory, MusketeerHttpCastleConnectorFactory>(Lifestyle.Singleton);
+            container.Register<IMusketeerConnectorFactory, MusketeerConnectorFactory>(Lifestyle.Singleton);
 
             container.Verify();
 

@@ -16,8 +16,8 @@
 
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Musketeer.Config;
+using LowLevelDesign.Diagnostics.Musketeer.Connectors;
 using LowLevelDesign.Diagnostics.Musketeer.Models;
-using LowLevelDesign.Diagnostics.Musketeer.Output;
 using Microsoft.Web.Administration;
 using NLog;
 using Quartz;
@@ -44,7 +44,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         private static readonly char[] InvalidPathChars = Path.GetInvalidPathChars();
         private static readonly string serverFqdnOrIp;
         private readonly ISharedInfoAboutApps sharedAppsInfo;
-        private readonly IMusketeerConnectorFactory castleConnectorFactory;
+        private readonly IMusketeerConnectorFactory connectorFactory;
 
         static ServerConfigRefreshJob()
         {
@@ -61,10 +61,10 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             }
         }
 
-        public ServerConfigRefreshJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory castleConnectorFactory)
+        public ServerConfigRefreshJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory connectorFactory)
         {
             this.sharedAppsInfo = sharedAppsInfo;
-            this.castleConnectorFactory = castleConnectorFactory;
+            this.connectorFactory = connectorFactory;
         }
 
         public void Execute(IJobExecutionContext context)
@@ -77,8 +77,9 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             // load Win services configuration items
             LoadWinServicesConfigs(configs, appinfo);
 
-            using (var castleConnector = castleConnectorFactory.CreateConnector()) {
-                var activeApps = castleConnector.SendApplicationConfigs(configs);
+            using (var connector = connectorFactory.GetConnector()) {
+                var activeApps = connector.SupportsApplicationConfigs ?
+                    connector.SendApplicationConfigs(configs) : configs.Select(c => c.AppPath).ToArray();
 
                 // store the configs in the shared storage
                 var map = new Dictionary<string, AppInfo>(activeApps.Length, StringComparer.Ordinal);

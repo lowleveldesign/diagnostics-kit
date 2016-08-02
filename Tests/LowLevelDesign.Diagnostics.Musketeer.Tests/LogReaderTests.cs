@@ -16,9 +16,9 @@
 
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Musketeer.Config;
+using LowLevelDesign.Diagnostics.Musketeer.Connectors;
 using LowLevelDesign.Diagnostics.Musketeer.Jobs;
 using LowLevelDesign.Diagnostics.Musketeer.Models;
-using LowLevelDesign.Diagnostics.Musketeer.Output;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -89,7 +89,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Tests
                     Assert.Equal(o, "/czesci-samochodowe-do-mercedesbenz-74/czesci-tloki-71901");
                 });
 
-            factoryMock.Setup(f => f.CreateConnector()).Returns(connectorMock.Object);
+            factoryMock.Setup(f => f.GetConnector()).Returns(connectorMock.Object);
 
             var job = new ReadWebAppsLogsJob(sharedInfoAboutApps, factoryMock.Object);
             job.Execute(null);

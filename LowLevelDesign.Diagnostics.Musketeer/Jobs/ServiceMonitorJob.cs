@@ -16,13 +16,14 @@
 
 using LowLevelDesign.Diagnostics.Commons.Models;
 using LowLevelDesign.Diagnostics.Musketeer.Config;
+using LowLevelDesign.Diagnostics.Musketeer.Connectors;
 using LowLevelDesign.Diagnostics.Musketeer.Models;
-using LowLevelDesign.Diagnostics.Musketeer.Output;
 using NLog;
 using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 {
@@ -30,9 +31,20 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
     public sealed class ServiceMonitorJob : IJob
     {
         private const int TheNumberOfExecutionsBeforeReload = 10;
-        private const string ProcessCategoryName = "Process";
-        private const string ProcessCpuTimeCounter = "% Processor Time";
-        private const string ProcessMemoryCounter = "Working Set";
+
+        private static readonly IDictionary<Tuple<string, string>, string> perfCountersWithFriendlyNames = new Dictionary<Tuple<string, string>, string> {
+            { new Tuple<string, string>("Process", "% Processor Time"), "CPU" },
+            { new Tuple<string, string>("Process", "Working Set"), "Memory" },
+            { new Tuple<string, string>(".NET CLR Memory", "# Gen 0 Collections"), "DotNetGen0Collections" },
+            { new Tuple<string, string>(".NET CLR Memory", "# Gen 1 Collections"), "DotNetGen1Collections" },
+            { new Tuple<string, string>(".NET CLR Memory", "# Gen 2 Collections"), "DotNetGen2Collections" },
+            { new Tuple<string, string>(".NET CLR Memory", "Gen 0 heap size"), "DotNetGen0HeapSize" },
+            { new Tuple<string, string>(".NET CLR Memory", "Gen 1 heap size"), "DotNetGen1HeapSize" },
+            { new Tuple<string, string>(".NET CLR Memory", "Gen 2 heap size"), "DotNetGen2HeapSize" },
+            { new Tuple<string, string>(".NET CLR Memory", "% Time in GC"), "DotNetCpuTimeInGc" },
+            { new Tuple<string, string>(".NET CLR Exceptions", "# of Exceps Thrown"), "DotNetExceptionsThrown" },
+            { new Tuple<string, string>(".NET CLR Exceptions", "# of Exceps Thrown / sec"), "DotNetExceptionsThrownPerSec" },
+        };
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -62,12 +74,14 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                 foreach (var perfCounter in svccnt.Item2) {
                     try {
                         // for CPU counter we need to divide the value by the number of cores
-                        if (string.Equals(perfCounter.CategoryName, ProcessCategoryName, StringComparison.Ordinal)
-                            && string.Equals(perfCounter.CounterName, ProcessCpuTimeCounter, StringComparison.Ordinal)) {
-                            perfData.Add("CPU", perfCounter.NextValue() / Environment.ProcessorCount);
-                        } else if (string.Equals(perfCounter.CategoryName, ProcessCategoryName, StringComparison.Ordinal)
-                              && string.Equals(perfCounter.CounterName, ProcessMemoryCounter, StringComparison.Ordinal)) {
-                            perfData.Add("Memory", perfCounter.NextValue());
+                        string friendlyName;
+                        if (perfCountersWithFriendlyNames.TryGetValue(new Tuple<string, string>(perfCounter.CategoryName, 
+                            perfCounter.CounterName), out friendlyName)) {
+                            if (friendlyName.Equals("CPU", StringComparison.Ordinal)) {
+                                perfData.Add(friendlyName, perfCounter.NextValue() / Environment.ProcessorCount);
+                                continue;
+                            }
+                            perfData.Add(friendlyName, perfCounter.NextValue());
                         }
                     } catch (InvalidOperationException ex) {
                         // this unfortunately happens quite frequently
@@ -91,7 +105,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 
             if (snapshots.Count > 0) {
                 // FIXME call asynchronously graphite (if configured at the same time)
-                using (var castleConnector = castleConnectorFactory.CreateConnector()) {
+                using (var castleConnector = castleConnectorFactory.GetConnector()) {
                     castleConnector.SendLogRecords(snapshots);
                 }
             }
@@ -108,24 +122,19 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 
             var processIds = sharedAppsInfo.GetProcessIds();
             foreach (var pid in processIds) {
-                var perfCounters = new List<PerformanceCounter>(15);
+                var perfCounters = new List<PerformanceCounter>(perfCountersWithFriendlyNames.Count);
                 string inst;
                 if (pids.TryGetValue((uint)pid, out inst)) {
                     logger.Debug("Adding performance counters for PID: {0}.", pid);
-                    perfCounters.Add(new PerformanceCounter(ProcessCategoryName, ProcessCpuTimeCounter, inst, true));
-                    perfCounters.Add(new PerformanceCounter(ProcessCategoryName, ProcessMemoryCounter, inst, true));
+                    foreach (var counter in perfCountersWithFriendlyNames.Keys.Where(k => k.Item1.Equals("Process", StringComparison.Ordinal))) {
+                        perfCounters.Add(new PerformanceCounter(counter.Item1, counter.Item2, inst, true));
+                    }
                 }
                 if (managedPids.TryGetValue((uint)pid, out inst)) {
                     logger.Debug("Adding managed performance counters for PID: {0}.", pid);
-                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "# Gen 0 Collections", inst, true));
-                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "# Gen 1 Collections", inst, true));
-                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "# Gen 2 Collections", inst, true));
-                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "Gen 0 heap size", inst, true));
-                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "Gen 1 heap size", inst, true));
-                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "Gen 2 heap size", inst, true));
-                    perfCounters.Add(new PerformanceCounter(".NET CLR Memory", "% Time in GC", inst, true));
-                    perfCounters.Add(new PerformanceCounter(".NET CLR Exceptions", "# of Exceps Thrown", inst, true));
-                    perfCounters.Add(new PerformanceCounter(".NET CLR Exceptions", "# of Exceps Thrown / sec", inst, true));
+                    foreach (var counter in perfCountersWithFriendlyNames.Keys.Where(k => k.Item1.StartsWith(".NET", StringComparison.Ordinal))) {
+                        perfCounters.Add(new PerformanceCounter(counter.Item1, counter.Item2, inst, true));
+                    }
                 }
 
                 if (perfCounters.Count > 0) {

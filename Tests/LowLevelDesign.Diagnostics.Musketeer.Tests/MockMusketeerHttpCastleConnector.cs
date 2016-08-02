@@ -1,4 +1,8 @@
-﻿/**
+﻿
+
+
+using LowLevelDesign.Diagnostics.Musketeer.Connectors;
+/**
 *  Part of the Diagnostics Kit
 *
 *  Copyright (C) 2016  Sebastian Solnica
@@ -14,9 +18,6 @@
 *  GNU General Public License for more details.
 */
 
-
-using LowLevelDesign.Diagnostics.Musketeer.Output;
-
 namespace LowLevelDesign.Diagnostics.Musketeer.Tests
 {
     class MockMusketeerHttpCastleConnectorFactory : IMusketeerConnectorFactory
@@ -28,7 +29,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Tests
             connector = connectorToReturn;
         }
 
-        public IMusketeerConnector CreateConnector()
+        public IMusketeerConnector GetConnector()
         {
             return connector;
         }
