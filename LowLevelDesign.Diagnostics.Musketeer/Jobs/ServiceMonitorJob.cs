@@ -35,6 +35,8 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         private static readonly IDictionary<Tuple<string, string>, string> perfCountersWithFriendlyNames = new Dictionary<Tuple<string, string>, string> {
             { new Tuple<string, string>("Process", "% Processor Time"), "CPU" },
             { new Tuple<string, string>("Process", "Working Set"), "Memory" },
+            { new Tuple<string, string>("Process", "IO Read Bytes/sec"), "IOReadBytesPerSec" },
+            { new Tuple<string, string>("Process", "IO Write Bytes/sec"), "IOWriteBytesPerSec" },
             { new Tuple<string, string>(".NET CLR Memory", "# Gen 0 Collections"), "DotNetGen0Collections" },
             { new Tuple<string, string>(".NET CLR Memory", "# Gen 1 Collections"), "DotNetGen1Collections" },
             { new Tuple<string, string>(".NET CLR Memory", "# Gen 2 Collections"), "DotNetGen2Collections" },
@@ -52,12 +54,12 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         private static IList<Tuple<int, PerformanceCounter[], IEnumerable<AppInfo>>> serviceCounters;
 
         private readonly ISharedInfoAboutApps sharedAppsInfo;
-        private readonly IMusketeerConnectorFactory castleConnectorFactory;
+        private readonly IMusketeerConnector connector;
 
-        public ServiceMonitorJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory castleConnectorFactory)
+        public ServiceMonitorJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory connectorFactory)
         {
             this.sharedAppsInfo = sharedAppsInfo;
-            this.castleConnectorFactory = castleConnectorFactory;
+            connector= connectorFactory.CreateConnector();
         }
 
         public void Execute(IJobExecutionContext context)
@@ -104,10 +106,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             }
 
             if (snapshots.Count > 0) {
-                // FIXME call asynchronously graphite (if configured at the same time)
-                using (var castleConnector = castleConnectorFactory.GetConnector()) {
-                    castleConnector.SendLogRecords(snapshots);
-                }
+                connector.SendLogRecords(snapshots);
             }
         }
 
@@ -166,6 +165,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                         // _Total and Idle have PID = 0 - we don't need them
                         if (ppid > 0 && !pids.ContainsKey(ppid)) {
                             pids.Add(ppid, inst);
+                            logger.Debug("Matched PID: {0} with instance: {1} ({2})", ppid, inst, categoryName);
                         }
                     }
                 } catch (InvalidOperationException ex) {

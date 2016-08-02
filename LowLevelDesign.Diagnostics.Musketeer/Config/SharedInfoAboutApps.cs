@@ -37,6 +37,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
     public sealed class SharedInfoAboutApps : ISharedInfoAboutApps
     {
         public static readonly string MachineName = Environment.MachineName;
+        public static readonly int MusketeerProcessId = System.Diagnostics.Process.GetCurrentProcess().Id;
         private static readonly AppInfo[] NoApps = new AppInfo[0];
 
         private readonly ReaderWriterLockSlim lck = new ReaderWriterLockSlim();
@@ -106,6 +107,9 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
             var logmap = new Dictionary<string, IEnumerable<AppInfo>>(StringComparer.Ordinal);
             foreach (var m in map) {
                 foreach (var pid in m.Value.ProcessIds) {
+                    if (pid == MusketeerProcessId) {
+                        continue;
+                    }
                     IEnumerable<AppInfo> en;
                     if (!wpmap.TryGetValue(pid, out en)) {
                         en = new List<AppInfo>();

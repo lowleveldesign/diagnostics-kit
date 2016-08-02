@@ -24,7 +24,6 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
 {
     static class MusketeerConfiguration
     {
-        private readonly static string iisConfigurationRefreshCron = ConfigurationManager.AppSettings["job:iis-config-refresh-cron"] ?? "0 0 0/2 * * ?";
         private readonly static string perfMonitorCron = ConfigurationManager.AppSettings["job:perf-monitor-cron"] ?? "0 0/3 * * * ?";
         private readonly static string iisLogsReadCron = ConfigurationManager.AppSettings["job:iis-logs-read-cron"] ?? "0 0/1 * * * ?";
         private readonly static string checkUpdateCron = ConfigurationManager.AppSettings["job:check-updates"] ?? "0 /10 * * * ?";
@@ -33,27 +32,33 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
         private readonly static List<Regex> includedServices;
 
         private readonly static Uri diagnosticsUrl;
+        private readonly static Uri logstashUrl;
 
         static MusketeerConfiguration()
         {
-            var v = ConfigurationManager.AppSettings["lowleveldesign.diagnostics.url"];
-            if (v != null) {
-                try {
-                    diagnosticsUrl = new Uri(v);
-                } catch (UriFormatException) {
-                    diagnosticsUrl = null;
-                }
-            } else {
-                diagnosticsUrl = null;
-            }
-            if (diagnosticsUrl == null) {
-                throw new ConfigurationErrorsException("Missing URL to the Diagnostics Castle. Please add 'lowleveldesign.diagnostics.url' key to the " +
-                    "appsettings section of the Musketeer configuration - the value should be an url to the Diagnostics Castle application.");
+            diagnosticsUrl = ExtractUrlFromAppSettings("lowleveldesign.diagnostics.url");
+            logstashUrl = ExtractUrlFromAppSettings("lowleveldesign.logstash.url");
+
+            if (diagnosticsUrl == null && logstashUrl == null) {
+                throw new ConfigurationErrorsException("Missing URL to the Diagnostics Castle or LogStash. Please add 'lowleveldesign.diagnostics.url' or " +
+                    "'lowleveldesign.logstash.url' key to the appsettings section of the Musketeer configuration - please check project wiki for more details.");
             }
 
             excludedServices = ParsePatternToRegexList(ConfigurationManager.AppSettings["exclude-services"]);
             includedServices = ParsePatternToRegexList(ConfigurationManager.AppSettings["include-services"]);
             shouldSendSuccessHttpLogs = Boolean.Parse(ConfigurationManager.AppSettings["include-http-success-logs"] ?? "false");
+        }
+
+        static Uri ExtractUrlFromAppSettings(string key)
+        {
+            var v = ConfigurationManager.AppSettings[key];
+            if (v != null) {
+                try {
+                    return new Uri(v);
+                } catch (UriFormatException) {
+                }
+            }
+            return null;
         }
 
         private static List<Regex> ParsePatternToRegexList(string pattern)
@@ -72,14 +77,14 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
             get { return diagnosticsUrl; }
         }
 
+        public static Uri LogStashUrl
+        {
+            get { return logstashUrl; }
+        }
+
         public static string PerformanceMonitorJobCron
         {
             get { return perfMonitorCron; }
-        }
-
-        public static string IISConfigurationRefreshCron
-        {
-            get { return iisConfigurationRefreshCron; }
         }
 
         public static string IISLogsReadCron

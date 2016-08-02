@@ -89,7 +89,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Tests
                     Assert.Equal(o, "/czesci-samochodowe-do-mercedesbenz-74/czesci-tloki-71901");
                 });
 
-            factoryMock.Setup(f => f.GetConnector()).Returns(connectorMock.Object);
+            factoryMock.Setup(f => f.CreateConnector()).Returns(connectorMock.Object);
 
             var job = new ReadWebAppsLogsJob(sharedInfoAboutApps, factoryMock.Object);
             job.Execute(null);

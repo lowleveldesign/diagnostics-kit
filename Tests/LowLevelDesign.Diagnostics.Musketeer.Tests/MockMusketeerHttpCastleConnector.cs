@@ -29,7 +29,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Tests
             connector = connectorToReturn;
         }
 
-        public IMusketeerConnector GetConnector()
+        public IMusketeerConnector CreateConnector()
         {
             return connector;
         }

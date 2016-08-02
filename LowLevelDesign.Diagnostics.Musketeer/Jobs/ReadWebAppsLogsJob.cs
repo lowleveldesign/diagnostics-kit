@@ -38,12 +38,12 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         private static readonly Dictionary<string, W3CLogStream> logPathToAppLogStreamInfo = new Dictionary<string, W3CLogStream>(StringComparer.Ordinal);
 
         private readonly ISharedInfoAboutApps sharedAppsInfo;
-        private readonly IMusketeerConnectorFactory castleConnectorFactory;
+        private readonly IMusketeerConnector connector;
 
-        public ReadWebAppsLogsJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory castleConnectorFactory)
+        public ReadWebAppsLogsJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory connectorFactory)
         {
             this.sharedAppsInfo = sharedAppsInfo;
-            this.castleConnectorFactory = castleConnectorFactory;
+            connector = connectorFactory.CreateConnector();
         }
 
         public void Execute(IJobExecutionContext context)
@@ -103,9 +103,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 
             if (logrecs.Count > 0) {
                 // send collected logs to Diagnostics Castle
-                using (var castleConnector = castleConnectorFactory.GetConnector()) {
-                    castleConnector.SendLogRecords(logrecs);
-                }
+                connector.SendLogRecords(logrecs);
             }
         }
 
@@ -161,7 +159,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                 ProcessId = app.ProcessIds.FirstOrDefault(),
                 Server = SharedInfoAboutApps.MachineName,
                 AdditionalFields = new Dictionary<string, object>() {
-                    { "HttpStatusCode", string.Format("{0}{1}{2}", ev.sc_status, string.IsNullOrEmpty(ev.sc_substatus) ? string.Empty : "." + ev.sc_substatus, 
+                    { "HttpStatusCode", string.Format("{0}{1}{2}", ev.sc_status, string.IsNullOrEmpty(ev.sc_substatus) ? string.Empty : "." + ev.sc_substatus,
                                 string.IsNullOrEmpty(ev.sc_win32_status) ? string.Empty : "." + ev.sc_win32_status) },
                     { "ClientIP", ev.c_ip },
                     { "Url", string.Format("{0}{1}{2}", ev.cs_uri_stem, ev.cs_uri_query != null ? "?" : string.Empty, ev.cs_uri_query) }

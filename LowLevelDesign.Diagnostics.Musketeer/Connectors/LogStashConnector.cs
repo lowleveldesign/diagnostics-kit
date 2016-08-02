@@ -16,24 +16,28 @@
 
 
 using LowLevelDesign.Diagnostics.Commons.Models;
-using LowLevelDesign.Diagnostics.Musketeer.Models;
+using LowLevelDesign.Diagnostics.LogStash;
+using LowLevelDesign.Diagnostics.Musketeer.Config;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
 {
     public sealed class LogStashConnector : IMusketeerConnector
     {
-
+        private Beats beatsClient;
 
         public LogStashConnector()
         {
-
+            if (MusketeerConfiguration.LogStashUrl != null) {
+                beatsClient = new Beats(MusketeerConfiguration.LogStashUrl.Host, MusketeerConfiguration.LogStashUrl.Port);
+            } else {
+                beatsClient = null;
+            }
         }
 
-        public bool IsEnabled {
-            get { throw new NotImplementedException(); }
-        }
+        public bool IsEnabled { get { return beatsClient != null; } }
 
         public bool SupportsApplicationConfigs { get { return false; } }
 
@@ -44,18 +48,43 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
 
         public void SendLogRecord(LogRecord logrec)
         {
-            throw new NotImplementedException();
+            var data = new Dictionary<string, object> {
+                { "Server", logrec.Server },
+                { "ProcessId", logrec.ProcessId },
+                { "ThreadId", logrec.ThreadId },
+                { "Path", logrec.ApplicationPath },
+                { "LogLevel", logrec.LogLevel.ToString() },
+                { "Logger", logrec.LoggerName }
+            };
+
+            if (logrec.PerformanceData != null) {
+                data.Add("PerfData", logrec.PerformanceData);
+            }
+            if (!string.IsNullOrEmpty(logrec.Message)) {
+                data.Add("Message", logrec.Message);
+            }
+            try {
+                beatsClient.SendEvent("musketeer", string.Format("Musketeer.{0}", logrec.LoggerName),
+                    logrec.TimeUtc, data);
+            } catch (IOException) {
+                // reload the client
+                beatsClient.Dispose();
+                beatsClient = new Beats(MusketeerConfiguration.LogStashUrl.Host, MusketeerConfiguration.LogStashUrl.Port);
+
+                throw;
+            }
         }
 
         public void SendLogRecords(IEnumerable<LogRecord> logrecs)
         {
-            throw new NotImplementedException();
+            foreach (var log in logrecs) {
+                SendLogRecord(log);
+            }
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            beatsClient.Dispose();
         }
-
     }
 }

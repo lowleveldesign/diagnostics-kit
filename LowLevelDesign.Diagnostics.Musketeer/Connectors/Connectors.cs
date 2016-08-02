@@ -23,7 +23,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
 {
     public interface IMusketeerConnectorFactory
     {
-        IMusketeerConnector GetConnector();
+        IMusketeerConnector CreateConnector();
     }
 
     public interface IMusketeerConnector : IDisposable
@@ -97,25 +97,20 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
             }
         }
 
-        private readonly IMusketeerConnector connector;
+        public MusketeerConnectorFactory() { }
 
-        public MusketeerConnectorFactory()
+        public IMusketeerConnector CreateConnector()
         {
             var castleConnector = new MusketeerHttpCastleConnector();
             var logstashConnector = new LogStashConnector();
 
             if (castleConnector.IsEnabled && !logstashConnector.IsEnabled) {
-                connector = castleConnector;
-            } else if (!castleConnector.IsEnabled && logstashConnector.IsEnabled) {
-                connector = logstashConnector;
-            } else {
-                connector = new MultiMusketeerConnector(new IMusketeerConnector[] { castleConnector, logstashConnector });
+                return castleConnector;
             }
-        }
-
-        public IMusketeerConnector GetConnector()
-        {
-            return connector;
+            if (!castleConnector.IsEnabled && logstashConnector.IsEnabled) {
+                return logstashConnector;
+            }
+            return new MultiMusketeerConnector(new IMusketeerConnector[] { castleConnector, logstashConnector });
         }
     }
 }

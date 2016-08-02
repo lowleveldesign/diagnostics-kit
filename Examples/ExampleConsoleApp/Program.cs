@@ -17,6 +17,7 @@
 using log4net;
 using LowLevelDesign.Diagnostics.LogStash;
 using NLog;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -44,7 +45,7 @@ namespace ExampleConsoleApp
         {
             using (var beats = new Beats("localhost", 5044)) {
                 for (var i = 0; i < 35; i++) {
-                    beats.SendEvent("musketeer", "mprocess", new Dictionary<string, object> {
+                    beats.SendEvent("musketeer", "mprocess", DateTime.UtcNow, new Dictionary<string, object> {
                         { "cpu", 20.0f },
                         { "machine", "mylaptop" }
                     });

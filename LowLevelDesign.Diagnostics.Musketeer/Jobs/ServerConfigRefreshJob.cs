@@ -44,7 +44,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         private static readonly char[] InvalidPathChars = Path.GetInvalidPathChars();
         private static readonly string serverFqdnOrIp;
         private readonly ISharedInfoAboutApps sharedAppsInfo;
-        private readonly IMusketeerConnectorFactory connectorFactory;
+        private readonly IMusketeerConnector connector;
 
         static ServerConfigRefreshJob()
         {
@@ -64,7 +64,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         public ServerConfigRefreshJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory connectorFactory)
         {
             this.sharedAppsInfo = sharedAppsInfo;
-            this.connectorFactory = connectorFactory;
+            connector = connectorFactory.CreateConnector();
         }
 
         public void Execute(IJobExecutionContext context)
@@ -77,25 +77,23 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             // load Win services configuration items
             LoadWinServicesConfigs(configs, appinfo);
 
-            using (var connector = connectorFactory.GetConnector()) {
-                var activeApps = connector.SupportsApplicationConfigs ?
-                    connector.SendApplicationConfigs(configs) : configs.Select(c => c.AppPath).ToArray();
+            var activeApps = connector.SupportsApplicationConfigs ?
+                connector.SendApplicationConfigs(configs) : configs.Select(c => c.AppPath).ToArray();
 
-                // store the configs in the shared storage
-                var map = new Dictionary<string, AppInfo>(activeApps.Length, StringComparer.Ordinal);
-                foreach (var path in activeApps) {
-                    if (map.ContainsKey(path)) {
-                        logger.Warn("Duplicate application path found: '{0}' - it will appear once in the log.", path);
-                        continue;
-                    }
-                    AppInfo ai;
-                    if (appinfo.TryGetValue(path, out ai)) {
-                        logger.Debug("Application '{0}' will be monitored by the Musketeer.", path);
-                        map.Add(path, ai);
-                    }
+            // store the configs in the shared storage
+            var map = new Dictionary<string, AppInfo>(activeApps.Length, StringComparer.Ordinal);
+            foreach (var path in activeApps) {
+                if (map.ContainsKey(path)) {
+                    logger.Warn("Duplicate application path found: '{0}' - it will appear once in the log.", path);
+                    continue;
                 }
-                sharedAppsInfo.UpdateAppWorkerProcessesMap(map);
+                AppInfo ai;
+                if (appinfo.TryGetValue(path, out ai)) {
+                    logger.Debug("Application '{0}' will be monitored by the Musketeer.", path);
+                    map.Add(path, ai);
+                }
             }
+            sharedAppsInfo.UpdateAppWorkerProcessesMap(map);
         }
 
         private void LoadIISAppConfigs(IList<ApplicationServerConfig> configs, IDictionary<string, AppInfo> appinfo)
@@ -104,7 +102,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             Debug.Assert(configs != null);
 
             ServerManager mgr = null;
-            try { 
+            try {
                 mgr = ServerManager.OpenRemote("localhost");
                 var poolToApps = new Dictionary<string, List<string>>();
                 // information about application logs (if any) - Item1 is logpath, Item2 is filter
@@ -163,15 +161,13 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                                     logger.Debug("Found worker processes: {0} for the pool: '{1}'", string.Join(",", pids), pool.Name);
                                 }
                                 foreach (var path in appPaths) {
-                                    if (!appinfo.ContainsKey(path))
-                                    {
+                                    if (!appinfo.ContainsKey(path)) {
                                         var ai = new AppInfo {
                                             Path = path,
                                             ProcessIds = pids
                                         };
                                         Tuple<string, string> li;
-                                        if (applogs.TryGetValue(path, out li))
-                                        {
+                                        if (applogs.TryGetValue(path, out li)) {
                                             ai.LogType = ELogType.W3SVC;
                                             ai.LogEnabled = true;
                                             ai.LogsPath = li.Item1;
@@ -206,7 +202,6 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                         foreach (char invalidchr in InvalidPathChars) {
                             path = path.Replace(invalidchr, ' ');
                         }
-                        path = Path.GetDirectoryName(path);
 
                         if (MusketeerConfiguration.ShouldServiceBeIncluded(name)) {
                             if (MusketeerConfiguration.ShouldServiceBeExcluded(name)) {
@@ -239,6 +234,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                                     ProcessIds = new[] { pid }
                                 });
                             }
+                            alreadyProcessedPaths.Add(path, name);
                         }
                     } finally {
                         o.Dispose();

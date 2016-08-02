@@ -48,14 +48,15 @@ namespace LowLevelDesign.Diagnostics.Musketeer
             container.Verify();
 
             sched = StdSchedulerFactory.GetDefaultScheduler();
-            sched.JobFactory = new SimpleInjectorJobFactory(container); 
+            sched.JobFactory = new SimpleInjectorJobFactory(container);
 
             /* schedule all the jobs */
             // the configuration should be loaded just after the service is started
-            ScheduleCronJob<ServerConfigRefreshJob>("once");
-            ScheduleCronJob<ServerConfigRefreshJob>(MusketeerConfiguration.IISConfigurationRefreshCron);
+            ScheduleJob<ServerConfigRefreshJob>(TriggerBuilder.Create().StartNow().WithSimpleSchedule(
+                x => x.WithIntervalInMinutes(30).RepeatForever()).Build());
 
-            ScheduleCronJob<ServiceMonitorJob>(MusketeerConfiguration.PerformanceMonitorJobCron);
+            ScheduleJob<ServiceMonitorJob>(TriggerBuilder.Create().WithCronSchedule(
+                MusketeerConfiguration.PerformanceMonitorJobCron).Build());
 
             ScheduleCronJob<ReadWebAppsLogsJob>(MusketeerConfiguration.IISLogsReadCron);
 
@@ -72,18 +73,20 @@ namespace LowLevelDesign.Diagnostics.Musketeer
         {
             if (string.Equals(cronExp, "never", StringComparison.OrdinalIgnoreCase))
                 return;
-            var job = JobBuilder.Create<T>().WithIdentity(typeof(T).Name + "-" + cronExp).Build();
+            if (string.Equals(cronExp, "once", StringComparison.OrdinalIgnoreCase)) {
+                ScheduleJob<T>(TriggerBuilder.Create().WithSimpleSchedule().Build());
+                return;
+            }
+            ScheduleJob<T>(TriggerBuilder.Create().WithCronSchedule(cronExp).Build());
+        }
 
-            ITrigger trigger;
-            if (string.Equals(cronExp, "once", StringComparison.OrdinalIgnoreCase))
-                trigger = TriggerBuilder.Create().WithSimpleSchedule().Build();
-            else
-                trigger = TriggerBuilder.Create().WithCronSchedule(cronExp).Build();
+        private void ScheduleJob<T>(ITrigger trigger) where T : IJob
+        {
+            var job = JobBuilder.Create<T>().WithIdentity(typeof(T).Name + "-" + trigger.Key).Build();
 
             var startdt = sched.ScheduleJob(job, trigger);
 
-            logger.Info("{0} has been scheduled to run at: {1} and repeat based on expression: {2}",
-                    job.Key.Name, startdt, cronExp);
+            logger.Info("{0} has been scheduled to run at: {1}", job.Key.Name, startdt);
         }
 
         public bool Stop(HostControl hostControl)

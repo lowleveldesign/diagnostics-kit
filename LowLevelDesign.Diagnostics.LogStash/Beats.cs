@@ -39,13 +39,13 @@ namespace LowLevelDesign.Diagnostics.LogStash
             logStashTcpClient = new TcpClient(logStashServer, logStashPort);
         }
 
-        public void SendEvent(string beat, string type, Dictionary<string, object> eventData)
+        public void SendEvent(string beat, string type, DateTime timestampUtc, Dictionary<string, object> eventData)
         {
             eventData.Add("@metadata", new Dictionary<string, string> {
                 { "type", type },
                 { "beat", beat }
             });
-            eventData.Add("@timestamp", DateTime.UtcNow);
+            eventData.Add("@timestamp", timestampUtc);
             eventData.Add("type", type);
 
             var serializedEventData = JsonConvert.SerializeObject(eventData, Formatting.None);
@@ -54,13 +54,6 @@ namespace LowLevelDesign.Diagnostics.LogStash
                 // we need to send the collected events
                 ProcessEventsQueue(serializedEventsQueue.ToArray());
                 serializedEventsQueue.Clear();
-            }
-        }
-
-        public void SendEvents(string beat, string type, IEnumerable<Dictionary<string, object>> eventsData)
-        {
-            foreach (var evd in eventsData) {
-                SendEvent(beat, type, evd);
             }
         }
 
