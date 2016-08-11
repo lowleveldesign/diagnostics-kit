@@ -76,7 +76,7 @@ namespace LowLevelDesign.Diagnostics.Harvester.SystemDiagnostics
                 LoggerName = source,
                 Message = message,
                 Server = Environment.MachineName,
-                ApplicationPath = AppDomain.CurrentDomain.BaseDirectory, // TODO: check if it's a valid approach
+                ApplicationPath = AppDomain.CurrentDomain.BaseDirectory,
                 ProcessId = process.Id,
                 ProcessName = process.ProcessName,
                 Identity = Thread.CurrentPrincipal.Identity.Name

@@ -143,7 +143,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
                     return Indices.Index(AliasName);
                 }
             }
-            return Indices.Parse(String.Join(",", indices)); // FIXME: to optimize - it should be possible to generate the indices collection directly
+            return Indices.Parse(string.Join(",", indices)); // FIXME: to optimize - it should be possible to generate the indices collection directly
         }
     }
 }

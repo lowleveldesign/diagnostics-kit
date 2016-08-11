@@ -78,7 +78,7 @@ namespace LowLevelDesign.Diagnostics.Harvester.NLog
                 LogLevel = ConvertToLogRecordLevel(logEvent.Level),
                 Message = logEvent.Message,
                 Server = Environment.MachineName,
-                ApplicationPath = AppDomain.CurrentDomain.BaseDirectory, // TODO: check if it's a valid approach
+                ApplicationPath = AppDomain.CurrentDomain.BaseDirectory,
                 ProcessId = process.Id,
                 ProcessName = process.ProcessName,
                 ThreadId = thread.ManagedThreadId,

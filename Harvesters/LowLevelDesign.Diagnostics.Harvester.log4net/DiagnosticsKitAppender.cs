@@ -56,7 +56,7 @@ namespace LowLevelDesign.Diagnostics.Harvester.log4net
                 LogLevel = ConvertToLogRecordLevel(loggingEvent.Level),
                 Message = loggingEvent.RenderedMessage,
                 Server = Environment.MachineName,
-                ApplicationPath = AppDomain.CurrentDomain.BaseDirectory, // TODO: check if it's a valid approach
+                ApplicationPath = AppDomain.CurrentDomain.BaseDirectory,
                 ProcessId = process.Id,
                 ProcessName = process.ProcessName,
                 ThreadId = thread.ManagedThreadId,
