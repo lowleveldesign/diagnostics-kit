@@ -21,91 +21,66 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading;
 
 namespace LowLevelDesign.Diagnostics.LogStash
 {
     public class Beats : IDisposable
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-
-        private class BeatsWorkItem : WorkItem
-        {
-            private readonly string[] events;
-            private readonly Stream streamToLogStashServer;
-
-            public BeatsWorkItem(Stream streamToLogStashServer, string[] events)
-            {
-                this.events = events;
-                this.streamToLogStashServer = streamToLogStashServer;
-            }
-
-            protected override void DoWork()
-            {
-                if (events == null || events.Length == 0) {
-                    return;
-                }
-
-                var outputStream = new MemoryStream();
-                outputStream.WriteAllBytes(Encoding.ASCII.GetBytes("2W"));
-                outputStream.WriteAllBytes(BigEndianBitConverter.GetBytes(events.Length));
-
-                var compressedStream = new MemoryStream();
-                int seq = 0;
-                var deflater = new Deflater(-1, false);
-                using (var deflateStream = new DeflaterOutputStream(compressedStream, deflater)) {
-                    deflateStream.IsStreamOwner = false;
-                    foreach (var ev in events) {
-                        seq += 1;
-
-                        deflateStream.WriteAllBytes(Encoding.ASCII.GetBytes("2J"));
-                        deflateStream.WriteAllBytes(BigEndianBitConverter.GetBytes(seq));
-
-                        var encodedEvent = Encoding.UTF8.GetBytes(ev);
-                        deflateStream.WriteAllBytes(BigEndianBitConverter.GetBytes(encodedEvent.Length));
-                        deflateStream.WriteAllBytes(encodedEvent);
-                    }
-                }
-
-                outputStream.WriteAllBytes(Encoding.ASCII.GetBytes("2C"));
-                outputStream.WriteAllBytes(BigEndianBitConverter.GetBytes((int)compressedStream.Length));
-
-                compressedStream.Seek(0, SeekOrigin.Begin);
-                compressedStream.CopyTo(outputStream);
-
-                outputStream.Seek(0, SeekOrigin.Begin);
-                outputStream.CopyTo(streamToLogStashServer);
-
-                // there should be one ACK message on the output
-                int ackseq = 0;
-                while (seq != ackseq) {
-                    byte[] buffer = new byte[6]; // ACK message is: 2 A <4-byte-seq-number> 
-                    streamToLogStashServer.Read(buffer, 0, buffer.Length);
-                    ackseq = BigEndianBitConverter.ToInt32(buffer, 2);
-                }
-            }
-        }
+        private static readonly TimeSpan MaxDelayInSendingLogs = TimeSpan.FromMinutes(3);
 
         private const int WindowSize = 10;
 
         private readonly Queue<string> serializedEventsQueue = new Queue<string>(WindowSize);
         private readonly string logStashServer;
-        private int logStashPort;
+        private readonly int logStashPort;
+        private readonly bool useSsl;
+        private readonly string certThumb;
 
-        // FIXME support SSL
         private TcpClient logStashTcpClient;
+        private Stream currentStream;
+        private DateTime lastTimeEventsWereSentUtc = DateTime.MinValue;
 
-        public Beats(string logStashServer, int logStashPort)
+        public Beats(string logStashServer, int logStashPort, bool useSsl, string certThumb = null)
         {
             this.logStashServer = logStashServer;
             this.logStashPort = logStashPort;
+            this.useSsl = useSsl;
+            this.certThumb = certThumb;
+
+            RenewConnectionStream();
+        }
+
+        private void RenewConnectionStream()
+        {
             logStashTcpClient = new TcpClient(logStashServer, logStashPort);
+            if (useSsl) {
+                var sslStream = new SslStream(logStashTcpClient.GetStream(), false, null, 
+                    !string.IsNullOrEmpty(certThumb) ? (LocalCertificateSelectionCallback)SelectLocalCertificate : null, 
+                    EncryptionPolicy.RequireEncryption);
+                sslStream.AuthenticateAsClient(logStashServer);
+                currentStream = sslStream;
+            } else {
+                currentStream = logStashTcpClient.GetStream();
+            }
+        }
+
+        private static X509Certificate SelectLocalCertificate(object sender, string targetHost, 
+            X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
+        {
+            return null;
         }
 
         public void SendEvent(string beat, string type, DateTime timestampUtc, Dictionary<string, object> eventData)
         {
+            if (lastTimeEventsWereSentUtc == DateTime.MinValue) {
+                lastTimeEventsWereSentUtc = DateTime.UtcNow;
+            }
+
             eventData.Add("@metadata", new Dictionary<string, string> {
                 { "type", type },
                 { "beat", beat }
@@ -115,44 +90,73 @@ namespace LowLevelDesign.Diagnostics.LogStash
 
             var serializedEventData = JsonConvert.SerializeObject(eventData, Formatting.None);
             serializedEventsQueue.Enqueue(serializedEventData);
-            if (serializedEventsQueue.Count == WindowSize) {
-                // we need to send the collected events
-                QueueCollectedEventsForProcessing();
+            if (serializedEventsQueue.Count == WindowSize || 
+                DateTime.UtcNow.Subtract(lastTimeEventsWereSentUtc) > MaxDelayInSendingLogs) {
+                ProcessCollectedEventsQueue();
+                lastTimeEventsWereSentUtc = DateTime.UtcNow;
             }
         }
 
-        private void QueueCollectedEventsForProcessing()
+        private void ProcessCollectedEventsQueue()
         {
+            var events = serializedEventsQueue.ToArray();
+            if (events.Length == 0) {
+                return;
+            }
+            serializedEventsQueue.Clear();
+
             if (!logStashTcpClient.Connected) {
                 logStashTcpClient = new TcpClient(logStashServer, logStashPort);
             }
-            try {
-                new BeatsWorkItem(logStashTcpClient.GetStream(), serializedEventsQueue.ToArray()).Enqueue();
-            } catch (TimeoutException ex) {
-                logger.Error(ex, "The queue is full - we start dropping events! Make sure the connection with the LogStash server is working.");
+
+            var outputStream = new MemoryStream();
+            outputStream.WriteAllBytes(Encoding.ASCII.GetBytes("2W"));
+            outputStream.WriteAllBytes(BigEndianBitConverter.GetBytes(events.Length));
+
+            var compressedStream = new MemoryStream();
+            int seq = 0;
+            var deflater = new Deflater(-1, false);
+            using (var deflateStream = new DeflaterOutputStream(compressedStream, deflater)) {
+                deflateStream.IsStreamOwner = false;
+                foreach (var ev in events) {
+                    seq += 1;
+
+                    deflateStream.WriteAllBytes(Encoding.ASCII.GetBytes("2J"));
+                    deflateStream.WriteAllBytes(BigEndianBitConverter.GetBytes(seq));
+
+                    var encodedEvent = Encoding.UTF8.GetBytes(ev);
+                    deflateStream.WriteAllBytes(BigEndianBitConverter.GetBytes(encodedEvent.Length));
+                    deflateStream.WriteAllBytes(encodedEvent);
+                }
             }
-            serializedEventsQueue.Clear();
+
+            outputStream.WriteAllBytes(Encoding.ASCII.GetBytes("2C"));
+            outputStream.WriteAllBytes(BigEndianBitConverter.GetBytes((int)compressedStream.Length));
+
+            compressedStream.Seek(0, SeekOrigin.Begin);
+            compressedStream.CopyTo(outputStream);
+
+            outputStream.Seek(0, SeekOrigin.Begin);
+            outputStream.CopyTo(currentStream);
+            currentStream.Flush();
+
+            // there should be one ACK message on the output
+            int ackseq = 0;
+            while (seq != ackseq) {
+                byte[] buffer = new byte[6]; // ACK message is: 2 A <4-byte-seq-number> 
+                currentStream.Read(buffer, 0, buffer.Length);
+                ackseq = BigEndianBitConverter.ToInt32(buffer, 2);
+            }
         }
 
         public void Dispose()
         {
             // send all pending events
             if (serializedEventsQueue.Count > 0) {
-                QueueCollectedEventsForProcessing();
+                ProcessCollectedEventsQueue();
             }
 
-            // busy wait for all the queued workers
-            int iterNum = 0;
-            while (WorkItem.QueueCount > 0) {
-                Thread.Sleep(100);
-
-                if (iterNum > 5) {
-                    WorkItem.Abort();
-                    break;
-                }
-                iterNum++;
-            }
-
+            currentStream.Close();
             logStashTcpClient.Close();
         }
 

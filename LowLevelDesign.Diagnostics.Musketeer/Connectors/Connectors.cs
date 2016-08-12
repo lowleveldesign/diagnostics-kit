@@ -18,6 +18,7 @@ using LowLevelDesign.Diagnostics.Commons.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
 {
@@ -81,9 +82,9 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
                 if (!isEnabled) {
                     throw new InvalidOperationException();
                 }
-                foreach (var c in connectors) {
+                Parallel.ForEach(connectors, c => {
                     c.SendLogRecord(logrec);
-                }
+                });
             }
 
             public void SendLogRecords(IEnumerable<LogRecord> logrecs)
@@ -91,9 +92,9 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
                 if (!isEnabled) {
                     throw new InvalidOperationException();
                 }
-                foreach (var c in connectors) {
+                Parallel.ForEach(connectors, c => {
                     c.SendLogRecords(logrecs);
-                }
+                });
             }
         }
 

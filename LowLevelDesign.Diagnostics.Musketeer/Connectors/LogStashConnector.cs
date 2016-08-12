@@ -31,7 +31,8 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
         public LogStashConnector()
         {
             if (MusketeerConfiguration.LogStashUrl != null) {
-                beatsClient = new Beats(MusketeerConfiguration.LogStashUrl.Host, MusketeerConfiguration.LogStashUrl.Port);
+                beatsClient = new Beats(MusketeerConfiguration.LogStashUrl.Host, MusketeerConfiguration.LogStashUrl.Port,
+                    MusketeerConfiguration.LogStashUseSsl, MusketeerConfiguration.LogStashCertThumb);
             } else {
                 beatsClient = null;
             }
@@ -69,8 +70,8 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
             } catch (IOException) {
                 // reload the client
                 beatsClient.Dispose();
-                beatsClient = new Beats(MusketeerConfiguration.LogStashUrl.Host, MusketeerConfiguration.LogStashUrl.Port);
-
+                beatsClient = new Beats(MusketeerConfiguration.LogStashUrl.Host, MusketeerConfiguration.LogStashUrl.Port,
+                    MusketeerConfiguration.LogStashUseSsl, MusketeerConfiguration.LogStashCertThumb);
                 throw;
             }
         }

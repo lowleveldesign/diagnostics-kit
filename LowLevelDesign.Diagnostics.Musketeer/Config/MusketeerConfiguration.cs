@@ -33,6 +33,8 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
 
         private readonly static Uri diagnosticsUrl;
         private readonly static Uri logstashUrl;
+        private readonly static bool logStashUseSsl;
+        private readonly static string logStashCertThumb;
 
         static MusketeerConfiguration()
         {
@@ -46,7 +48,10 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
 
             excludedServices = ParsePatternToRegexList(ConfigurationManager.AppSettings["exclude-services"]);
             includedServices = ParsePatternToRegexList(ConfigurationManager.AppSettings["include-services"]);
-            shouldSendSuccessHttpLogs = Boolean.Parse(ConfigurationManager.AppSettings["include-http-success-logs"] ?? "false");
+            shouldSendSuccessHttpLogs = bool.Parse(ConfigurationManager.AppSettings["include-http-success-logs"] ?? "false");
+
+            logStashUseSsl = bool.Parse(ConfigurationManager.AppSettings["logstash:usessl"] ?? "false");
+            logStashCertThumb = ConfigurationManager.AppSettings["logstash:certthumb"];
         }
 
         static Uri ExtractUrlFromAppSettings(string key)
@@ -65,7 +70,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
         {
             var res = new List<Regex>();
             if (pattern != null) {
-                foreach (var str in pattern.Split(new [] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+                foreach (var str in pattern.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
                     res.Add(new Regex(str, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline));
                 }
             }
@@ -95,6 +100,16 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
         public static string CheckUpdateCron
         {
             get { return checkUpdateCron; }
+        }
+
+        public static bool LogStashUseSsl
+        {
+            get { return logStashUseSsl; }
+        }
+
+        public static string LogStashCertThumb
+        {
+            get { return logStashCertThumb; }
         }
 
         public static bool ShouldSendSuccessHttpLogs
