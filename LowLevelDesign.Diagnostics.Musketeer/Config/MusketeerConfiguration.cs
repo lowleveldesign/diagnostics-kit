@@ -33,24 +33,22 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
 
         private readonly static Uri diagnosticsUrl;
         private readonly static Uri logstashUrl;
-        private readonly static bool logStashUseSsl;
         private readonly static string logStashCertThumb;
 
         static MusketeerConfiguration()
         {
             diagnosticsUrl = ExtractUrlFromAppSettings("lowleveldesign.diagnostics.url");
-            logstashUrl = ExtractUrlFromAppSettings("lowleveldesign.logstash.url");
+            logstashUrl = ExtractUrlFromAppSettings("logstash:url");
 
             if (diagnosticsUrl == null && logstashUrl == null) {
                 throw new ConfigurationErrorsException("Missing URL to the Diagnostics Castle or LogStash. Please add 'lowleveldesign.diagnostics.url' or " +
-                    "'lowleveldesign.logstash.url' key to the appsettings section of the Musketeer configuration - please check project wiki for more details.");
+                    "'logstash:url' key to the appsettings section of the Musketeer configuration - please check project wiki for more details.");
             }
 
             excludedServices = ParsePatternToRegexList(ConfigurationManager.AppSettings["exclude-services"]);
             includedServices = ParsePatternToRegexList(ConfigurationManager.AppSettings["include-services"]);
             shouldSendSuccessHttpLogs = bool.Parse(ConfigurationManager.AppSettings["include-http-success-logs"] ?? "false");
 
-            logStashUseSsl = bool.Parse(ConfigurationManager.AppSettings["logstash:usessl"] ?? "false");
             logStashCertThumb = ConfigurationManager.AppSettings["logstash:certthumb"];
         }
 
@@ -104,7 +102,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
 
         public static bool LogStashUseSsl
         {
-            get { return logStashUseSsl; }
+            get { return string.Equals(logstashUrl.Scheme, "ssl", StringComparison.OrdinalIgnoreCase); }
         }
 
         public static string LogStashCertThumb
