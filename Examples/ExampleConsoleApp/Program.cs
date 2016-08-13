@@ -43,7 +43,7 @@ namespace ExampleConsoleApp
 
         static void Main(string[] args)
         {
-            using (var beats = new Beats("logstash", 5044, true, null)) {
+            using (var beats = new Beats("logstash", 5044, true, "786A70526AFBC407A3DB699BBBE567891689F921")) {
                 for (var i = 0; i < 35; i++) {
                     beats.SendEvent("musketeer", "mprocess", DateTime.UtcNow, new Dictionary<string, object> {
                         { "cpu", 20.0f },

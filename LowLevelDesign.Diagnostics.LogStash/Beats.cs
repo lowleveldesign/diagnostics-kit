@@ -21,6 +21,7 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -39,7 +40,7 @@ namespace LowLevelDesign.Diagnostics.LogStash
         private readonly string logStashServer;
         private readonly int logStashPort;
         private readonly bool useSsl;
-        private readonly string certThumb;
+        private readonly X509Certificate clientCertificate;
 
         private TcpClient logStashTcpClient;
         private Stream currentStream;
@@ -50,9 +51,23 @@ namespace LowLevelDesign.Diagnostics.LogStash
             this.logStashServer = logStashServer;
             this.logStashPort = logStashPort;
             this.useSsl = useSsl;
-            this.certThumb = certThumb;
+
+            clientCertificate = FindCertificateByThumbprint(certThumb);
 
             RenewConnectionStream();
+        }
+
+        private X509Certificate FindCertificateByThumbprint(string thumbprint)
+        {
+            X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+
+            certStore.Open(OpenFlags.ReadOnly);
+            try {
+                return certStore.Certificates.Find(X509FindType.FindByThumbprint, 
+                    thumbprint, true).OfType<X509Certificate>().FirstOrDefault();
+            } finally {
+                certStore.Close();
+            }
         }
 
         private void RenewConnectionStream()
@@ -60,7 +75,7 @@ namespace LowLevelDesign.Diagnostics.LogStash
             logStashTcpClient = new TcpClient(logStashServer, logStashPort);
             if (useSsl) {
                 var sslStream = new SslStream(logStashTcpClient.GetStream(), false, null, 
-                    !string.IsNullOrEmpty(certThumb) ? (LocalCertificateSelectionCallback)SelectLocalCertificate : null, 
+                    clientCertificate != null ? new LocalCertificateSelectionCallback(SelectLocalCertificate) : null, 
                     EncryptionPolicy.RequireEncryption);
                 sslStream.AuthenticateAsClient(logStashServer);
                 currentStream = sslStream;
@@ -69,10 +84,10 @@ namespace LowLevelDesign.Diagnostics.LogStash
             }
         }
 
-        private static X509Certificate SelectLocalCertificate(object sender, string targetHost, 
+        private X509Certificate SelectLocalCertificate(object sender, string targetHost, 
             X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
         {
-            return null;
+            return clientCertificate;
         }
 
         public void SendEvent(string beat, string type, DateTime timestampUtc, Dictionary<string, object> eventData)
@@ -144,8 +159,16 @@ namespace LowLevelDesign.Diagnostics.LogStash
             int ackseq = 0;
             while (seq != ackseq) {
                 byte[] buffer = new byte[6]; // ACK message is: 2 A <4-byte-seq-number> 
-                currentStream.Read(buffer, 0, buffer.Length);
+                ReadTillBufferIsFull(buffer);
                 ackseq = BigEndianBitConverter.ToInt32(buffer, 2);
+            }
+        }
+
+        private void ReadTillBufferIsFull(byte[] buffer)
+        {
+            int readBytes = 0;
+            while (readBytes < buffer.Length) {
+                readBytes += currentStream.Read(buffer, readBytes, buffer.Length - readBytes);
             }
         }
 
