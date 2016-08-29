@@ -20,6 +20,8 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 
 namespace ExampleConsoleApp
 {
@@ -33,24 +35,92 @@ namespace ExampleConsoleApp
         {
             log4net.Config.XmlConfigurator.Configure();
 
-            logger.Info("test");
-            logger.Info("test2");
-            logger.Info("test3");
-            logger2.Info("test-log4net");
-            logger3.TraceEvent(TraceEventType.Information, 0, "test-system.diagnostics-tracesource");
-            Trace.WriteLine("### test-system.diagnostics-trace");
+            try {
+                logger.Info("test");
+                logger.Info("test2");
+                logger.Info("test3");
+                logger2.Info("test-log4net");
+                logger3.TraceEvent(TraceEventType.Information, 0, "test-system.diagnostics-tracesource");
+                Trace.WriteLine("### test-system.diagnostics-trace");
+            } catch (Exception ex) {
+                Console.WriteLine(ex);
+            }
         }
+
+        //static void TestLogStash()
+        //{
+        //    using (var beats = new Beats("logstash", 5044, true, "786A70526AFBC407A3DB699BBBE567891689F921")) {
+        //        for (var i = 0; i < 35; i++) {
+        //            beats.SendEvent("musketeer", "mprocess", DateTime.UtcNow, new Dictionary<string, object> {
+        //                { "cpu", 20.0f },
+        //                { "machine", "mylaptop" }
+        //            });
+        //        }
+        //    }
+        //}
 
         static void Main(string[] args)
         {
-            using (var beats = new Beats("logstash", 5044, true, "786A70526AFBC407A3DB699BBBE567891689F921")) {
-                for (var i = 0; i < 35; i++) {
-                    beats.SendEvent("musketeer", "mprocess", DateTime.UtcNow, new Dictionary<string, object> {
-                        { "cpu", 20.0f },
-                        { "machine", "mylaptop" }
-                    });
+            SendTestLogs();
+
+            Console.ReadKey();
+        }
+
+        /** SharpDevelop
+         * 
+         * 
+            var publish = new Debugger.Core.Wrappers.CorPub.ICorPublish();
+            var process = publish.GetProcess(pid);
+            Debugger.Interop.CorPub.ICorPublishAppDomainEnum appDomainEnum;
+
+            try {
+                process.WrappedObject.EnumAppDomains(out appDomainEnum);
+
+                if (appDomainEnum != null) {
+                    uint count;
+                    Debugger.Interop.CorPub.ICorPublishAppDomain appDomain;
+
+                    try {
+                        while (true) {
+                            appDomainEnum.Next(1, out appDomain, out count);
+
+                            if (count == 0)
+                                break;
+
+                            try {
+                                StringBuilder sb = new StringBuilder(0x100);
+                                uint strCount;
+
+                                appDomain.GetName((uint)sb.Capacity, out strCount, sb);
+                                Console.WriteLine(sb.ToString(0, (int)strCount - 1));
+                            } finally {
+                                System.Runtime.InteropServices.Marshal.ReleaseComObject(appDomain);
+                            }
+                        }
+                    } finally {
+                        System.Runtime.InteropServices.Marshal.ReleaseComObject(appDomainEnum);
+                    }
+                }
+            } finally {
+            }
+         */
+
+    /**
+     *  CLRMD:
+        using (var target = DataTarget.AttachToProcess(pid, 1000, AttachFlag.Passive)) {
+            if (target.ClrVersions.Count > 0) {
+                var clrver = target.ClrVersions[0];
+                var dac = clrver.TryDownloadDac();
+                if (dac == null) {
+                    return;
+                }
+                // managed process
+                var runtime = target.CreateRuntime(dac);
+                foreach (var appdomain in runtime.AppDomains) {
+                    Console.WriteLine("Appdomain name: {0}", appdomain.Name);
                 }
             }
         }
-    }
+     */
+}
 }

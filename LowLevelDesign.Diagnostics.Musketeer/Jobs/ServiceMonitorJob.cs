@@ -46,6 +46,17 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             { new Tuple<string, string>(".NET CLR Memory", "% Time in GC"), "DotNetCpuTimeInGc" },
             { new Tuple<string, string>(".NET CLR Exceptions", "# of Exceps Thrown"), "DotNetExceptionsThrown" },
             { new Tuple<string, string>(".NET CLR Exceptions", "# of Exceps Thrown / sec"), "DotNetExceptionsThrownPerSec" },
+            { new Tuple<string, string>("ASP.NET Applications", "Errors Total"), "AspNetErrorsTotal" },
+            { new Tuple<string, string>("ASP.NET Applications", "Requests Executing"), "AspNetErrorsTotal" },
+            { new Tuple<string, string>("ASP.NET Applications", "Requests Failed"), "AspNetRequestsFailed" },
+            { new Tuple<string, string>("ASP.NET Applications", "Requests Not Found"), "AspNetRequestsNotFound" },
+            { new Tuple<string, string>("ASP.NET Applications", "Requests Not Authorized"), "AspNetRequestsNotAuthorized" },
+            { new Tuple<string, string>("ASP.NET Applications", "Requests In Application Queue"), "AspNetRequestsInApplicationQueue" },
+            { new Tuple<string, string>("ASP.NET Applications", "Requests Timed Out"), "AspNetRequestsTimedOut" },
+            { new Tuple<string, string>("ASP.NET Applications", "Requests Total"), "AspNetRequestsTotal" },
+            { new Tuple<string, string>("ASP.NET Applications", "Requests/Sec"), "AspNetRequestsPerSec" },
+            { new Tuple<string, string>("ASP.NET Applications", "Request Execution Time"), "AspNetRequestExecutionTime" },
+            { new Tuple<string, string>("ASP.NET Applications", "Request Wait Time"), "AspNetRequestWaitTime" }
         };
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
@@ -59,7 +70,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         public ServiceMonitorJob(ISharedInfoAboutApps sharedAppsInfo, IMusketeerConnectorFactory connectorFactory)
         {
             this.sharedAppsInfo = sharedAppsInfo;
-            connector= connectorFactory.CreateConnector();
+            connector = connectorFactory.CreateConnector();
         }
 
         public void Execute(IJobExecutionContext context)
@@ -118,6 +129,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             // the corresponding perf counters
             var pids = MatchProcessPidsWithCounterInstances("Process", "ID Process");
             var managedPids = MatchProcessPidsWithCounterInstances(".NET CLR Memory", "Process ID");
+            var aspNetPerfCounterInstances = new PerformanceCounterCategory("ASP.NET Applications").GetInstanceNames();
 
             var processIds = sharedAppsInfo.GetProcessIds();
             foreach (var pid in processIds) {
@@ -136,9 +148,23 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                     }
                 }
 
+                var apps = sharedAppsInfo.FindAppsByProcessId(pid);
+                foreach (var app in apps) {
+                    foreach (var appDomain in app.AppDomains) {
+                        foreach (var aspNetPerfCounterInstance in aspNetPerfCounterInstances) {
+                            if (appDomain.Name.Replace('/', '_').StartsWith(aspNetPerfCounterInstance)) {
+                                foreach (var counter in perfCountersWithFriendlyNames.Keys.Where(k => k.Item1.Equals("ASP.NET Applications",
+                                    StringComparison.Ordinal))) {
+                                    perfCounters.Add(new PerformanceCounter(counter.Item1, counter.Item2, aspNetPerfCounterInstance, true));
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (perfCounters.Count > 0) {
                     counters.Add(new Tuple<int, PerformanceCounter[], IEnumerable<AppInfo>>(pid, 
-                        perfCounters.ToArray(), sharedAppsInfo.FindAppsByProcessId(pid)));
+                        perfCounters.ToArray(), apps));
                 }
             }
             // close previous counters
@@ -147,6 +173,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                     foreach (var c in sc.Item2) { c.Close(); }
                 }
             }
+
             // new counters now become valid
             serviceCounters = counters;
         }

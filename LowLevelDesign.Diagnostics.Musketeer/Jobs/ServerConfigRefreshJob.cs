@@ -15,6 +15,7 @@
  */
 
 using LowLevelDesign.Diagnostics.Commons.Models;
+using LowLevelDesign.Diagnostics.Musketeer.CLR;
 using LowLevelDesign.Diagnostics.Musketeer.Config;
 using LowLevelDesign.Diagnostics.Musketeer.Connectors;
 using LowLevelDesign.Diagnostics.Musketeer.Models;
@@ -76,6 +77,8 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             LoadIISAppConfigs(configs, appinfo);
             // load Win services configuration items
             LoadWinServicesConfigs(configs, appinfo);
+            // load AppDomain info for managed processes
+            LoadAppDomainsInfo(appinfo);
 
             var activeApps = connector.SupportsApplicationConfigs ?
                 connector.SendApplicationConfigs(configs) : configs.Select(c => c.AppPath).ToArray();
@@ -96,7 +99,9 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             sharedAppsInfo.UpdateAppWorkerProcessesMap(map);
         }
 
+#pragma warning disable S100 // Methods and properties should be named in camel case
         private void LoadIISAppConfigs(IList<ApplicationServerConfig> configs, IDictionary<string, AppInfo> appinfo)
+#pragma warning restore S100 // Methods and properties should be named in camel case
         {
             Debug.Assert(appinfo != null);
             Debug.Assert(configs != null);
@@ -195,7 +200,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         {
             using (var c = new ManagementClass("Win32_Service")) {
                 var alreadyProcessedPaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                foreach (ManagementObject o in c.GetInstances()) {
+                foreach (ManagementObject o in c.GetInstances().OfType<ManagementObject>()) {
                     try {
                         var name = (string)o["Name"];
                         var path = (string)o["PathName"];
@@ -241,6 +246,34 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                     }
                 }
             }
+        }
+
+        private void LoadAppDomainsInfo(IDictionary<string, AppInfo> appinfoMap)
+        {
+            using (var clrDac = new ClrDac()) {
+                clrDac.CollectAppDomainInfo();
+
+                foreach (var pid in clrDac.GetManagedProcessIds()) {
+                    var appDomains = clrDac.GetAppDomainsForProcess(pid);
+                    if (appDomains.Length > 0) {
+                        var appinfos = FindAppInfosByProcessId(appinfoMap, pid);
+                        foreach (var appinfo in appinfos) {
+                            appinfo.AppDomains = appDomains;
+                        }
+                    }
+                }
+            }
+        }
+
+        private AppInfo[] FindAppInfosByProcessId(IDictionary<string, AppInfo> appinfoMap, int processId)
+        {
+            var result = new List<AppInfo>(5);
+            foreach (var appinfo in appinfoMap.Values) {
+                if (appinfo.ProcessIds.Contains(processId)) {
+                    result.Add(appinfo);
+                }
+            }
+            return result.ToArray();
         }
     }
 }

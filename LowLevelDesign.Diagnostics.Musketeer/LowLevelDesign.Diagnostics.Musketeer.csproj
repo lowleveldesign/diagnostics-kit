@@ -118,6 +118,10 @@
       <HintPath>..\packages\LowLevelDesign.Diagnostics.Commons.1.0.0.1\lib\net40\LowLevelDesign.Diagnostics.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Diagnostics.Tracing.TraceEvent, Version=1.0.41.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Diagnostics.Tracing.TraceEvent.1.0.41\lib\net40\Microsoft.Diagnostics.Tracing.TraceEvent.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Administration.7.0.0.0\lib\net20\Microsoft.Web.Administration.dll</HintPath>
       <Private>True</Private>
@@ -170,6 +174,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CLR\ClrDac.cs" />
     <Compile Include="Config\SimpleInjectorJobFactory.cs" />
     <Compile Include="Connectors\HttpCastleConnector.cs" />
     <Compile Include="IIS\W3CLogStream.cs" />
@@ -205,6 +210,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="_TraceEventProgrammersGuide.docx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LowLevelDesign.Diagnostics.LogStash\LowLevelDesign.Diagnostics.LogStash.csproj">
@@ -212,10 +218,21 @@
       <Name>LowLevelDesign.Diagnostics.LogStash</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="TraceEvent.ReadMe.txt" />
+    <Content Include="TraceEvent.ReleaseNotes.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>powershell -NoProfile -ExecutionPolicy ByPass -File "$(SolutionDir)Tools\UpdatePackageCreator.ps1" "$(TargetDir)\." musketeer</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Microsoft.Diagnostics.Tracing.TraceEvent.1.0.41\build\Microsoft.Diagnostics.Tracing.TraceEvent.targets" Condition="Exists('..\packages\Microsoft.Diagnostics.Tracing.TraceEvent.1.0.41\build\Microsoft.Diagnostics.Tracing.TraceEvent.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Diagnostics.Tracing.TraceEvent.1.0.41\build\Microsoft.Diagnostics.Tracing.TraceEvent.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Diagnostics.Tracing.TraceEvent.1.0.41\build\Microsoft.Diagnostics.Tracing.TraceEvent.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

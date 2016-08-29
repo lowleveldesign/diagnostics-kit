@@ -21,6 +21,13 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Models
         W3SVC,
         TextFile
     }
+    public struct AppDomainInfo
+    {
+        public long Id;
+
+        public string Name;
+    }
+
 
     public class AppInfo
     {
@@ -35,5 +42,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Models
         public string LogsPath { get; set; }
 
         public string LogFilter { get; set; }
+
+        public AppDomainInfo[] AppDomains { get; set; }
     }
 }
