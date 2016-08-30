@@ -47,7 +47,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             { new Tuple<string, string>(".NET CLR Exceptions", "# of Exceps Thrown"), "DotNetExceptionsThrown" },
             { new Tuple<string, string>(".NET CLR Exceptions", "# of Exceps Thrown / sec"), "DotNetExceptionsThrownPerSec" },
             { new Tuple<string, string>("ASP.NET Applications", "Errors Total"), "AspNetErrorsTotal" },
-            { new Tuple<string, string>("ASP.NET Applications", "Requests Executing"), "AspNetErrorsTotal" },
+            { new Tuple<string, string>("ASP.NET Applications", "Requests Executing"), "AspNetRequestExecuting" },
             { new Tuple<string, string>("ASP.NET Applications", "Requests Failed"), "AspNetRequestsFailed" },
             { new Tuple<string, string>("ASP.NET Applications", "Requests Not Found"), "AspNetRequestsNotFound" },
             { new Tuple<string, string>("ASP.NET Applications", "Requests Not Authorized"), "AspNetRequestsNotAuthorized" },
@@ -106,7 +106,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                     var snapshot = new LogRecord {
                         TimeUtc = DateTime.UtcNow,
                         ApplicationPath = app.Path,
-                        LoggerName = "PerfCounter",
+                        LoggerName = GetLoggerName(app),
                         LogLevel = LogRecord.ELogLevel.Trace,
                         ProcessId = svccnt.Item1,
                         Server = SharedInfoAboutApps.MachineName,
@@ -119,6 +119,14 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             if (snapshots.Count > 0) {
                 connector.SendLogRecords(snapshots);
             }
+        }
+
+        private string GetLoggerName(AppInfo app)
+        {
+            if (app.ApplicationType == EAppType.WebApplication) {
+                return "PerfCounter.WebApp";
+            }
+            return "PerfCounter.WinSvc";
         }
 
         private void Reinitialize()
@@ -150,12 +158,14 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 
                 var apps = sharedAppsInfo.FindAppsByProcessId(pid);
                 foreach (var app in apps) {
-                    foreach (var appDomain in app.AppDomains) {
-                        foreach (var aspNetPerfCounterInstance in aspNetPerfCounterInstances) {
-                            if (appDomain.Name.Replace('/', '_').StartsWith(aspNetPerfCounterInstance)) {
-                                foreach (var counter in perfCountersWithFriendlyNames.Keys.Where(k => k.Item1.Equals("ASP.NET Applications",
-                                    StringComparison.Ordinal))) {
-                                    perfCounters.Add(new PerformanceCounter(counter.Item1, counter.Item2, aspNetPerfCounterInstance, true));
+                    if (app.AppDomains != null) {
+                        foreach (var appDomain in app.AppDomains) {
+                            foreach (var aspNetPerfCounterInstance in aspNetPerfCounterInstances) {
+                                if (appDomain.Name.Replace('/', '_').StartsWith(aspNetPerfCounterInstance)) {
+                                    foreach (var counter in perfCountersWithFriendlyNames.Keys.Where(k => k.Item1.Equals("ASP.NET Applications",
+                                        StringComparison.Ordinal))) {
+                                        perfCounters.Add(new PerformanceCounter(counter.Item1, counter.Item2, aspNetPerfCounterInstance, true));
+                                    }
                                 }
                             }
                         }

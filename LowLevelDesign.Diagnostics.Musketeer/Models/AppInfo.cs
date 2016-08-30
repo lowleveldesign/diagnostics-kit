@@ -16,10 +16,10 @@
 
 namespace LowLevelDesign.Diagnostics.Musketeer.Models
 {
-    public enum ELogType
+    public enum EAppType
     {
-        W3SVC,
-        TextFile
+        WebApplication,
+        WindowsService
     }
     public struct AppDomainInfo
     {
@@ -35,9 +35,9 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Models
 
         public int[] ProcessIds { get; set; }
 
-        public bool LogEnabled { get; set; }
+        public EAppType ApplicationType { get; set; }
 
-        public ELogType LogType { get; set; }
+        public bool LogEnabled { get; set; }
 
         public string LogsPath { get; set; }
 

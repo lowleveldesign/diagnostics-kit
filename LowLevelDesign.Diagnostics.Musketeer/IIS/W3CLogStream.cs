@@ -39,7 +39,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.IIS
             public OpenedLogFile(string filePath)
             {
                 this.filePath = filePath;
-                binaryStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                binaryStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
                 // and start the reader
                 reader = new StreamReader(binaryStream);
             }

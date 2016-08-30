@@ -23,6 +23,7 @@ using Quartz.Impl;
 using SimpleInjector;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using Topshelf;
 
 namespace LowLevelDesign.Diagnostics.Musketeer
@@ -44,6 +45,9 @@ namespace LowLevelDesign.Diagnostics.Musketeer
             // shared class registration
             container.Register<ISharedInfoAboutApps, SharedInfoAboutApps>(Lifestyle.Singleton);
             container.Register<IMusketeerConnectorFactory, MusketeerConnectorFactory>(Lifestyle.Singleton);
+            foreach (var jobType in typeof(MusketeerService).Assembly.GetTypes().Where(t => t.GetInterfaces().Contains(typeof(IJob)))) {
+                container.Register(jobType, jobType, Lifestyle.Singleton);
+            }
 
             container.Verify();
 
@@ -105,7 +109,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer
         }
     }
 
-    class Program
+    static class Program
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 

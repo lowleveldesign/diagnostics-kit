@@ -98,8 +98,6 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
             }
         }
 
-        public MusketeerConnectorFactory() { }
-
         public IMusketeerConnector CreateConnector()
         {
             var castleConnector = new MusketeerHttpCastleConnector();

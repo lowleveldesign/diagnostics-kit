@@ -173,7 +173,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                                         };
                                         Tuple<string, string> li;
                                         if (applogs.TryGetValue(path, out li)) {
-                                            ai.LogType = ELogType.W3SVC;
+                                            ai.ApplicationType = EAppType.WebApplication;
                                             ai.LogEnabled = true;
                                             ai.LogsPath = li.Item1;
                                             ai.LogFilter = li.Item2;
@@ -236,7 +236,8 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                                 logger.Info("Service '{0}' running with PID: {1} seems interesting", name, pid);
                                 appinfo.Add(path, new AppInfo {
                                     Path = path,
-                                    ProcessIds = new[] { pid }
+                                    ProcessIds = new[] { pid },
+                                    ApplicationType = EAppType.WindowsService
                                 });
                             }
                             alreadyProcessedPaths.Add(path, name);

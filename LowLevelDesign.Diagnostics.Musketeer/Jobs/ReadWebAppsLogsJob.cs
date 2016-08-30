@@ -32,8 +32,6 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
     public sealed class ReadWebAppsLogsJob : IJob
     {
         private const int NumberOfLogsPerApplicationToTriggerWarning = 50;
-
-        private static readonly TimeSpan LogReloadInterval = TimeSpan.FromSeconds(Int32.Parse(ConfigurationManager.AppSettings["log-reload-interval-in-seconds"] ?? "60"));
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private static readonly Dictionary<string, W3CLogStream> logPathToAppLogStreamInfo = new Dictionary<string, W3CLogStream>(StringComparer.Ordinal);
 

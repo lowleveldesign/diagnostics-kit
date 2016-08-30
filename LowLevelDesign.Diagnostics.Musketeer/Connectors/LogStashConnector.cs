@@ -26,7 +26,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
 {
     public sealed class LogStashConnector : IMusketeerConnector
     {
-        private Beats beatsClient;
+        private readonly Beats beatsClient;
 
         public LogStashConnector()
         {
@@ -64,16 +64,8 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Connectors
             if (!string.IsNullOrEmpty(logrec.Message)) {
                 data.Add("Message", logrec.Message);
             }
-            try {
-                beatsClient.SendEvent("musketeer", string.Format("Musketeer.{0}", logrec.LoggerName),
-                    logrec.TimeUtc, data);
-            } catch (IOException) {
-                // reload the client
-                beatsClient.Dispose();
-                beatsClient = new Beats(MusketeerConfiguration.LogStashUrl.Host, MusketeerConfiguration.LogStashUrl.Port,
-                    MusketeerConfiguration.LogStashUseSsl, MusketeerConfiguration.LogStashCertThumb);
-                throw;
-            }
+
+            beatsClient.SendEvent("musketeer", string.Format("Musketeer.{0}", logrec.LoggerName), logrec.TimeUtc, data);
         }
 
         public void SendLogRecords(IEnumerable<LogRecord> logrecs)

@@ -32,7 +32,7 @@ namespace LowLevelDesign.Diagnostics.LogStash
     public class Beats : IDisposable
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private static readonly TimeSpan MaxDelayInSendingLogs = TimeSpan.FromMinutes(3);
+        private static readonly TimeSpan MaxDelayInSendingLogs = TimeSpan.FromSeconds(60);
 
         private const int WindowSize = 10;
 
@@ -52,9 +52,9 @@ namespace LowLevelDesign.Diagnostics.LogStash
             this.logStashPort = logStashPort;
             this.useSsl = useSsl;
 
-            clientCertificate = FindCertificateByThumbprint(certThumb);
-
-            RenewConnectionStream();
+            if (certThumb != null) {
+                clientCertificate = FindCertificateByThumbprint(certThumb);
+            }
         }
 
         private X509Certificate FindCertificateByThumbprint(string thumbprint)
@@ -70,17 +70,23 @@ namespace LowLevelDesign.Diagnostics.LogStash
             }
         }
 
-        private void RenewConnectionStream()
+        private void RenewConnectionStreamIfNeeded()
         {
-            logStashTcpClient = new TcpClient(logStashServer, logStashPort);
-            if (useSsl) {
-                var sslStream = new SslStream(logStashTcpClient.GetStream(), false, null, 
-                    clientCertificate != null ? new LocalCertificateSelectionCallback(SelectLocalCertificate) : null, 
-                    EncryptionPolicy.RequireEncryption);
-                sslStream.AuthenticateAsClient(logStashServer);
-                currentStream = sslStream;
-            } else {
-                currentStream = logStashTcpClient.GetStream();
+            if (logStashTcpClient != null && !logStashTcpClient.Connected) {
+                logger.Warn("TCP client got disconnected. If this happens frequently check the connectivity between the hosts.");
+            }
+
+            if (logStashTcpClient == null || !logStashTcpClient.Connected) {
+                logStashTcpClient = new TcpClient(logStashServer, logStashPort);
+                if (useSsl) {
+                    var sslStream = new SslStream(logStashTcpClient.GetStream(), false, null,
+                        clientCertificate != null ? new LocalCertificateSelectionCallback(SelectLocalCertificate) : null,
+                        EncryptionPolicy.RequireEncryption);
+                    sslStream.AuthenticateAsClient(logStashServer);
+                    currentStream = sslStream;
+                } else {
+                    currentStream = logStashTcpClient.GetStream();
+                }
             }
         }
 
@@ -107,8 +113,8 @@ namespace LowLevelDesign.Diagnostics.LogStash
             serializedEventsQueue.Enqueue(serializedEventData);
             if (serializedEventsQueue.Count == WindowSize || 
                 DateTime.UtcNow.Subtract(lastTimeEventsWereSentUtc) > MaxDelayInSendingLogs) {
-                ProcessCollectedEventsQueue();
                 lastTimeEventsWereSentUtc = DateTime.UtcNow;
+                ProcessCollectedEventsQueue();
             }
         }
 
@@ -120,9 +126,7 @@ namespace LowLevelDesign.Diagnostics.LogStash
             }
             serializedEventsQueue.Clear();
 
-            if (!logStashTcpClient.Connected) {
-                logStashTcpClient = new TcpClient(logStashServer, logStashPort);
-            }
+            RenewConnectionStreamIfNeeded();
 
             var outputStream = new MemoryStream();
             outputStream.WriteAllBytes(Encoding.ASCII.GetBytes("2W"));
