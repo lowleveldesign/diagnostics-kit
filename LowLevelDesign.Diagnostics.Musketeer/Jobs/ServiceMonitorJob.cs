@@ -62,7 +62,8 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private static int reloadCount = TheNumberOfExecutionsBeforeReload;
-        private static IList<Tuple<int, PerformanceCounter[], IEnumerable<AppInfo>>> serviceCounters;
+        private static Dictionary<int, PerformanceCounter[]> processCounters;
+        private static Dictionary<string, PerformanceCounter[]> applicationCounters;
 
         private readonly ISharedInfoAboutApps sharedAppsInfo;
         private readonly IMusketeerConnector connector;
@@ -77,40 +78,32 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
         {
             if (reloadCount++ >= TheNumberOfExecutionsBeforeReload) {
                 reloadCount = 0;
-                Reinitialize();
+                ReinitializeProcessCounters();
+                ReinitializeApplicationCounters();
             }
-            var snapshots = new List<LogRecord>(serviceCounters.Count);
+            var snapshots = new List<LogRecord>(processCounters.Count);
 
             // collect snapshots
-            foreach (var svccnt in serviceCounters) {
+            foreach (var proccnt in processCounters) {
                 var perfData = new Dictionary<string, float>();
-                foreach (var perfCounter in svccnt.Item2) {
-                    try {
-                        // for CPU counter we need to divide the value by the number of cores
-                        string friendlyName;
-                        if (perfCountersWithFriendlyNames.TryGetValue(new Tuple<string, string>(perfCounter.CategoryName, 
-                            perfCounter.CounterName), out friendlyName)) {
-                            if (friendlyName.Equals("CPU", StringComparison.Ordinal)) {
-                                perfData.Add(friendlyName, perfCounter.NextValue() / Environment.ProcessorCount);
-                                continue;
-                            }
-                            perfData.Add(friendlyName, perfCounter.NextValue());
-                        }
-                    } catch (InvalidOperationException ex) {
-                        // this unfortunately happens quite frequently
-                        logger.Info("Performance counter " + GetPerfCounterPath(perfCounter) + " didn't send any value.", ex);
-                    }
-                }
+                CollectPerformanceCountersValue(proccnt.Item2, perfData);
 
-                foreach (var app in svccnt.Item3) {
+                foreach (var app in proccnt.Item3) {
+                    var appPerfData = perfData;
+                    // collect application performance counters
+                    if (applicationCounters.ContainsKey(app.Path)) {
+                        appPerfData = new Dictionary<string, float>(perfData);
+                        CollectPerformanceCountersValue(applicationCounters[app.Path], appPerfData);
+                    }
+
                     var snapshot = new LogRecord {
                         TimeUtc = DateTime.UtcNow,
                         ApplicationPath = app.Path,
                         LoggerName = GetLoggerName(app),
                         LogLevel = LogRecord.ELogLevel.Trace,
-                        ProcessId = svccnt.Item1,
+                        ProcessId = proccnt.Item1,
                         Server = SharedInfoAboutApps.MachineName,
-                        PerformanceData = perfData
+                        PerformanceData = appPerfData
                     };
                     snapshots.Add(snapshot);
                 }
@@ -118,6 +111,27 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 
             if (snapshots.Count > 0) {
                 connector.SendLogRecords(snapshots);
+            }
+        }
+
+        private void CollectPerformanceCountersValue(PerformanceCounter[] perfCounters, Dictionary<string, float> perfData)
+        {
+            foreach (var perfCounter in perfCounters) {
+                try {
+                    string friendlyName;
+                    if (perfCountersWithFriendlyNames.TryGetValue(new Tuple<string, string>(perfCounter.CategoryName,
+                        perfCounter.CounterName), out friendlyName)) {
+                        // for CPU counter we need to divide the value by the number of cores
+                        if (friendlyName.Equals("CPU", StringComparison.Ordinal)) {
+                            perfData.Add(friendlyName, perfCounter.NextValue() / Environment.ProcessorCount);
+                            continue;
+                        }
+                        perfData.Add(friendlyName, perfCounter.NextValue());
+                    }
+                } catch (InvalidOperationException ex) {
+                    // this unfortunately happens quite frequently
+                    logger.Info("Performance counter " + GetPerfCounterPath(perfCounter) + " didn't send any value.", ex);
+                }
             }
         }
 
@@ -129,9 +143,9 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
             return "PerfCounter.WinSvc";
         }
 
-        private void Reinitialize()
+        private void ReinitializeProcessCounters()
         {
-            var counters = new List<Tuple<int, PerformanceCounter[], IEnumerable<AppInfo>>>();
+            var counters = new Dictionary<int, PerformanceCounter[]>();
 
             // load the list of PIDs from the shared info about apps and get
             // the corresponding perf counters
@@ -157,35 +171,57 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
                 }
 
                 var apps = sharedAppsInfo.FindAppsByProcessId(pid);
-                foreach (var app in apps) {
-                    if (app.AppDomains != null) {
-                        foreach (var appDomain in app.AppDomains) {
-                            foreach (var aspNetPerfCounterInstance in aspNetPerfCounterInstances) {
-                                if (appDomain.Name.Replace('/', '_').StartsWith(aspNetPerfCounterInstance)) {
-                                    foreach (var counter in perfCountersWithFriendlyNames.Keys.Where(k => k.Item1.Equals("ASP.NET Applications",
-                                        StringComparison.Ordinal))) {
-                                        perfCounters.Add(new PerformanceCounter(counter.Item1, counter.Item2, aspNetPerfCounterInstance, true));
-                                    }
-                                }
+
+                if (perfCounters.Count > 0) {
+                    counters.Add(pid, perfCounters.ToArray());
+                }
+            }
+
+            // close previous counters
+            if (processCounters != null) {
+                foreach (var sc in processCounters.Values) {
+                    foreach (var c in sc) {
+                        c.Close();
+                    }
+                }
+            }
+            processCounters = counters;
+        }
+
+        private void ReinitializeApplicationCounters()
+        {
+            var appCounters = new Dictionary<string, PerformanceCounter[]>();
+
+            // now application counters
+            GetAspNetPerformanceCounters(apps, aspNetPerfCounterInstances, appCounters);
+            if (app.AppDomains != null) {
+                foreach (var appDomain in app.AppDomains) {
+                    foreach (var aspNetPerfCounterInstance in aspNetPerfCounterInstances) {
+                        if (appDomain.Name.Replace('/', '_').StartsWith(aspNetPerfCounterInstance, StringComparison.Ordinal) &&
+                            // it is possible that the appdomain shortcut gets duplicated (when two sites share the same path and apppool)
+                            !perfCounters.Any(p => p.InstanceName.Equals(aspNetPerfCounterInstance, StringComparison.Ordinal))) {
+                            logger.Debug("Adding ASP.NET performance counters for appdomain: {0}", appDomain.Name);
+                            foreach (var counter in perfCountersWithFriendlyNames.Keys.Where(k => k.Item1.Equals("ASP.NET Applications",
+                                StringComparison.Ordinal))) {
+                                perfCounters.Add(new PerformanceCounter(counter.Item1, counter.Item2, aspNetPerfCounterInstance, true));
                             }
                         }
                     }
                 }
-
-                if (perfCounters.Count > 0) {
-                    counters.Add(new Tuple<int, PerformanceCounter[], IEnumerable<AppInfo>>(pid, 
-                        perfCounters.ToArray(), apps));
-                }
-            }
-            // close previous counters
-            if (serviceCounters != null) {
-                foreach (var sc in serviceCounters) {
-                    foreach (var c in sc.Item2) { c.Close(); }
-                }
             }
 
-            // new counters now become valid
-            serviceCounters = counters;
+
+
+            if (applicationCounters != null) {
+                foreach (var sc in applicationCounters.Values) {
+                    foreach (var c in sc) {
+                        c.Close();
+                    }
+                }
+            }
+
+            applicationCounters = appCounters;
+
         }
 
         private static Dictionary<uint, string> MatchProcessPidsWithCounterInstances(string categoryName, string counterName)
