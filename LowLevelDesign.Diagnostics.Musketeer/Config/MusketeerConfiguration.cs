@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 
 namespace LowLevelDesign.Diagnostics.Musketeer.Config
@@ -30,6 +31,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
         private readonly static bool shouldSendSuccessHttpLogs;
         private readonly static List<Regex> excludedServices;
         private readonly static List<Regex> includedServices;
+        private readonly static string serverFqdnOrIp;
 
         private readonly static Uri diagnosticsUrl;
         private readonly static Uri logstashUrl;
@@ -50,6 +52,18 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
             shouldSendSuccessHttpLogs = bool.Parse(ConfigurationManager.AppSettings["include-http-success-logs"] ?? "false");
 
             logStashCertThumb = ConfigurationManager.AppSettings["logstash:certthumb"];
+
+            try {
+                var hostNetworkConfiguration = Dns.GetHostEntry(Dns.GetHostName());
+                if (string.IsNullOrEmpty(hostNetworkConfiguration.HostName)) {
+                    serverFqdnOrIp = hostNetworkConfiguration.AddressList.Length > 0 ?
+                       hostNetworkConfiguration.AddressList[0].ToString() : string.Empty;
+                } else {
+                    serverFqdnOrIp = hostNetworkConfiguration.HostName;
+                }
+            } catch {
+                serverFqdnOrIp = string.Empty;
+            }
         }
 
         static Uri ExtractUrlFromAppSettings(string key)
@@ -58,8 +72,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
             if (v != null) {
                 try {
                     return new Uri(v);
-                } catch (UriFormatException) {
-                }
+                } catch (UriFormatException) {}
             }
             return null;
         }
@@ -73,6 +86,11 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
                 }
             }
             return res;
+        }
+
+        public static string ServerFqdnOrIp
+        {
+            get { return serverFqdnOrIp; }
         }
 
         public static Uri DiagnosticsCastleUrl

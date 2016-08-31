@@ -177,6 +177,9 @@
     <Compile Include="CLR\ClrDac.cs" />
     <Compile Include="Config\SimpleInjectorJobFactory.cs" />
     <Compile Include="Connectors\HttpCastleConnector.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="IComponentConfiguration.cs" />
+    <Compile Include="IIS\IISConfiguration.cs" />
     <Compile Include="IIS\W3CLogStream.cs" />
     <Compile Include="IIS\W3CEvent.cs" />
     <Compile Include="Jobs\MusketeerUpdateJob.cs" />
@@ -192,6 +195,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Config\SharedInfoAboutApps.cs" />
     <Compile Include="FileUtils.cs" />
+    <Compile Include="WinSvc\WindowsServiceConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

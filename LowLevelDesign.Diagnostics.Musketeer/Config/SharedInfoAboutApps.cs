@@ -23,7 +23,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
 {
     public interface ISharedInfoAboutApps
     {
-        IEnumerable<AppInfo> GetApps();
+        ICollection<AppInfo> GetApps();
 
         IEnumerable<int> GetProcessIds();
 
@@ -48,7 +48,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Config
         // maps log paths to apps
         private Dictionary<string, IEnumerable<AppInfo>> logsPathToAppInfoMap = new Dictionary<string, IEnumerable<AppInfo>>();
 
-        public IEnumerable<AppInfo> GetApps()
+        public ICollection<AppInfo> GetApps()
         {
             lck.EnterReadLock();
             try {
