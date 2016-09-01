@@ -140,6 +140,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer.IIS
                                 StringComparison.Ordinal)).Select(c => c.AppPath)) {
                                 if (appAppDomainsMap.ContainsKey(path)) {
                                     logger.Warn("Skipping application '{0}' - duplicate and AppDomains were already added.", path);
+                                    continue;
                                 }
                                 var appDomains = new List<AppDomainInfo>(2);
                                 string appDomainGuessedName;

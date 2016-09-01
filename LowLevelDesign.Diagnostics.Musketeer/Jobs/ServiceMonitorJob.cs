@@ -223,23 +223,31 @@ namespace LowLevelDesign.Diagnostics.Musketeer.Jobs
 
             foreach (var app in sharedAppsInfo.GetApps()) {
                 if (app.AppDomains != null) {
-                    var perfCounters = new List<PerformanceCounter>();
+                    var perfCounters = new Dictionary<string, PerformanceCounter>();
                     foreach (var appDomain in app.AppDomains) {
                         foreach (var aspNetPerfCounterInstance in aspNetPerfCounterInstances) {
-                            if (appDomain.Name.Replace('/', '_').StartsWith(aspNetPerfCounterInstance, StringComparison.Ordinal) &&
-                                // it is possible that the appdomain shortcut gets duplicated (when two sites share the same path and apppool)
-                                !perfCounters.Any(p => p.InstanceName.Equals(aspNetPerfCounterInstance, StringComparison.Ordinal))) {
-                                logger.Debug("Adding ASP.NET performance counters for appdomain: {0}", appDomain.Name);
+                            if (appDomain.Name.Replace('/', '_').StartsWith(aspNetPerfCounterInstance, StringComparison.Ordinal)) {
+                                logger.Debug("Adding ASP.NET performance counters for appdomain: {0}, path: '{1}'", appDomain.Name, app.Path);
                                 foreach (var counter in perfCountersWithFriendlyNames.Keys.Where(k => k.Item1.Equals("ASP.NET Applications",
                                     StringComparison.Ordinal))) {
-                                    perfCounters.Add(new PerformanceCounter(counter.Item1, counter.Item2, aspNetPerfCounterInstance, true));
+                                    PerformanceCounter prevCounter;
+                                    if (perfCounters.TryGetValue(counter.Item2, out prevCounter) 
+                                        && prevCounter.InstanceName.Length < aspNetPerfCounterInstance.Length) {
+                                        prevCounter.Close();
+                                        perfCounters.Remove(counter.Item2);
+                                        logger.Debug("Found better ASP.NET performance counter ({0}) for '{1}', instance: '{2}'", counter.Item2,
+                                            app.Path, aspNetPerfCounterInstance);
+                                    }
+                                    logger.Debug("Adding ASP.NET performance counter ({0}) for  '{1}', instance: '{2}'", counter.Item2,
+                                        app.Path, aspNetPerfCounterInstance);
+                                    perfCounters.Add(counter.Item2, new PerformanceCounter(counter.Item1, counter.Item2, aspNetPerfCounterInstance, true));
                                 }
                             }
                         }
                     }
 
                     if (perfCounters.Count > 0) {
-                        counters.Add(app.Path, perfCounters.ToArray());
+                        counters.Add(app.Path, perfCounters.Values.ToArray());
                     }
                 }
             }
