@@ -204,6 +204,7 @@
     <None Include="install.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="musketeer-mperfstash-template.json" />
     <None Include="MusketeerDeploy.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
