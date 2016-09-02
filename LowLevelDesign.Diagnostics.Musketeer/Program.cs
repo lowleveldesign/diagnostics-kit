@@ -57,7 +57,7 @@ namespace LowLevelDesign.Diagnostics.Musketeer
             /* schedule all the jobs */
             // the configuration should be loaded just after the service is started
             ScheduleJob<ServerConfigRefreshJob>(TriggerBuilder.Create().StartNow().WithSimpleSchedule(
-                x => x.WithIntervalInMinutes(30).RepeatForever()).Build());
+                x => x.WithIntervalInMinutes(7).RepeatForever()).Build());
 
             ScheduleJob<ServiceMonitorJob>(TriggerBuilder.Create().WithCronSchedule(
                 MusketeerConfiguration.PerformanceMonitorJobCron).Build());
