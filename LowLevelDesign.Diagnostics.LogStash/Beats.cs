@@ -172,7 +172,12 @@ namespace LowLevelDesign.Diagnostics.LogStash
         {
             int readBytes = 0;
             while (readBytes < buffer.Length) {
-                readBytes += currentStream.Read(buffer, readBytes, buffer.Length - readBytes);
+                int delta = currentStream.Read(buffer, readBytes, buffer.Length - readBytes);
+                if (delta == 0) {
+                    logger.Warn("No bytes read from logstash - seems that we haven't received the full ACK message.");
+                    return;
+                }
+                readBytes += delta;
             }
         }
 
