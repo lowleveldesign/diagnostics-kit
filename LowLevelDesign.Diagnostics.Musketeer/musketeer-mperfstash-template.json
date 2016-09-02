@@ -1,0 +1,74 @@
+{
+    "template": "mperfstash-*",
+    "settings": {
+        "number_of_shards": 1
+    },
+    "mappings" : {
+        "_default_" : {
+            "properties" : {
+                "@timestamp" : {
+                    "type" : "date",
+                    "store" : true
+                },
+                "@version" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "Server" : {
+                    "type" : "string",
+                    "index" : "not_analyzed",
+                    "store" : true
+                },
+                "ProcessId" : {
+                    "type" : "integer"
+                },
+                "ThreadId" : {
+                    "type" : "integer"
+                },
+                "Path" : {
+                    "type" : "string",
+                    "index" : "not_analyzed",
+                    "store" : true
+                },
+                "LogLevel" : {
+                    "type" : "string",
+                    "index" : "not_analyzed",
+                    "store" : true
+                },
+                "Logger" : {
+                    "type" : "string",
+                    "index" : "not_analyzed",
+                    "store" : true
+                },
+                "PerfData" : {
+                    "properties" : {
+                        "CPU" : { "type" : "float" },
+                        "Memory" : { "type" : "float" },
+                        "IOReadBytesPerSec" : { "type" : "float" },
+                        "IOWriteBytesPerSec" : { "type" : "float" },
+                        "DotNetGen0Collections" : { "type" : "float" },
+                        "DotNetGen1Collections" : { "type" : "float" },
+                        "DotNetGen2Collections" : { "type" : "float" },
+                        "DotNetGen0HeapSize" : { "type" : "float" },
+                        "DotNetGen1HeapSize" : { "type" : "float" },
+                        "DotNetGen2HeapSize" : { "type" : "float" },
+                        "DotNetCpuTimeInGc" : { "type" : "float" },
+                        "DotNetExceptionsThrown" : { "type" : "float" },
+                        "DotNetExceptionsThrownPerSec" : { "type" : "float" },
+                        "AspNetErrorsTotal" : { "type" : "float" },
+                        "AspNetRequestExecuting" : { "type" : "float" },
+                        "AspNetRequestsFailed" : { "type" : "float" },
+                        "AspNetRequestsNotFound" : { "type" : "float" },
+                        "AspNetRequestsNotAuthorized" : { "type" : "float" },
+                        "AspNetRequestsInApplicationQueue" : { "type" : "float" },
+                        "AspNetRequestsTimedOut" : { "type" : "float" },
+                        "AspNetRequestsTotal" : { "type" : "float" },
+                        "AspNetRequestsPerSec" : { "type" : "float" },
+                        "AspNetRequestExecutionTime" : { "type" : "float" },
+                        "AspNetRequestWaitTime" : { "type" : "float" }
+                    }
+                }
+            }
+        }
+    }
+}
