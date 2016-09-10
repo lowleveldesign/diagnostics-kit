@@ -1,10 +1,11 @@
 
 param([Parameter(Mandatory=$True)][string]$ReleaseFolder,
-      [Parameter(Mandatory=$True)][string]$ProductName)
+      [Parameter(Mandatory=$True)][string]$ProductName,
+      [Parameter(Mandatory=$True)][string]$OutputFolder)
 
 $cmdpath = Split-Path $MyInvocation.MyCommand.Path
 $version = $(Get-ChildItem -Path "$ReleaseFolder" -Filter *.exe | Sort-Object -Property Name | Select-Object -First 1).VersionInfo.FileVersion
-$outputZipPath = "$ReleaseFolder\$ProductName`_$version.zip"
+$outputZipPath = "$OutputFolder\$ProductName`_$version.zip"
 
 Write-Host $ProductName
 Write-Host $outputZipPath
