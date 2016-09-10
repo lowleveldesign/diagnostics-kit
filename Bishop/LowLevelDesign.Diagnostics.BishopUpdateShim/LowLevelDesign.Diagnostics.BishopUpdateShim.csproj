@@ -108,17 +108,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LowLevelDesign.Diagnostics.Bishop\LowLevelDesign.Diagnostics.Bishop.csproj">
-      <Project>{171e4da3-2d4f-4a0b-a775-25a657437b35}</Project>
-      <Name>LowLevelDesign.Diagnostics.Bishop</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)\*Bishop*" "%25USERPROFILE%25\Documents\Fiddler2\Scripts"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
