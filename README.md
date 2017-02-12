@@ -5,10 +5,6 @@ Diagnostics Kit is a set of tools created to help you monitor .NET applications.
 
 ---------------------------
 
-The main project site is: **<http://www.lowleveldesign.org/diagnosticskit>** (you will find a quick tutorial there)
-
----------------------------
-
 The detailed documentation can be found on wiki: **<https://github.com/lowleveldesign/diagnostics-kit/wiki>**
 
 ---------------------------
