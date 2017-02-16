@@ -53,11 +53,14 @@ namespace LowLevelDesign.Diagnostics.Castle
             });
             StatelessAuthentication.Enable(pipelines, authconf);
 
-            // Diagnostics
 #if !DEBUG
-            StaticConfiguration.DisableErrorTraces = true;
+            // disable diagnostics in release version
             DiagnosticsHook.Disable(pipelines);
+            container.Register<IDiagnostics, DisabledDiagnostics>();
+
+            StaticConfiguration.DisableErrorTraces = true;
 #endif
+
             pipelines.OnError += (ctx, err) => {
                 logger.TraceEvent(TraceEventType.Error, 0, "Global application error occurred when serving request: {0}, ex: {1}", ctx.Request.Url, err);
                 return null;
