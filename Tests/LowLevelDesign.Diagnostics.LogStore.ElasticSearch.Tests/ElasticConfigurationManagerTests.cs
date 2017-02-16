@@ -29,11 +29,9 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
     {
         private const string confkey = "test:test:1234";
         private const string path = @"c:\TEMP\test\blablabla";
-        private readonly ElasticClient client;
 
         public ElasticConfigurationManagerTests()
         {
-            client = ElasticSearchClientConfiguration.CreateClient(null);
         }
 
         [Fact]
@@ -85,7 +83,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
             Assert.Equal(expectedApp.Name, app.Name);
 
             app.IsExcluded = true;
-            await conf.UpdateAppPropertiesAsync(app, new [] { "IsExcluded" });
+            await conf.UpdateAppPropertiesAsync(app, new[] { "IsExcluded" });
             // give it 1s to swallow
             await Task.Delay(1000);
 
@@ -96,7 +94,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
                 AppPath = app.Path,
                 Server = "TEST2",
                 ServerFqdnOrIp = "test2.ad.com",
-                Bindings = new [] { "*:80:", "127.0.0.1:80:", ":80:www.test.com" },
+                Bindings = new[] { "*:80:", "127.0.0.1:80:", ":80:www.test.com" },
                 AppType = ApplicationServerConfig.WinSvcType,
                 ServiceName = "Test.Service",
                 DisplayName = "Test Service Display"
@@ -143,9 +141,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
 
         public void Dispose()
         {
-            client.DeleteByQuery<ElasticApplicationConfig>(Indices.Index("lldconf"), Types.Type<ElasticApplicationConfig>(), 
+            var client = ElasticSearchClientConfiguration.CreateClient("lldconf");
+            client.DeleteByQuery<ElasticApplicationConfig>(
                 d => d.Query(q => q.Term(t => t.Field(conf => conf.Path).Value(path))));
-            client.DeleteByQuery<ElasticApplication>(Indices.Index("lldconf"), Types.Type<ElasticApplication>(), 
+            client.DeleteByQuery<ElasticApplication>(
                 d => d.Query(q => q.Term(t => t.Field(conf => conf.Path).Value(path))));
         }
     }

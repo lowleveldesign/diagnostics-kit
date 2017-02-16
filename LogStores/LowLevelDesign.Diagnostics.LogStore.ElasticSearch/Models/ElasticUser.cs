@@ -25,10 +25,10 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models
     {
         public string Id { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string UserName { get; set; }
 
-        [String(Index = FieldIndexOption.No, Store = true)]
+        [Keyword(Index = false, Store = true)]
         public string PasswordHash { get; set; }
 
         [Date(Store = true)]

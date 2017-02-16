@@ -128,9 +128,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
 
         public async Task<Indices> GetQueryIndicesOrAliasAsync(DateTime fromUtc, DateTime endUtc, int maxIndicesCount)
         {
-            var existingIndicesCopy = existingIndices;
             if (existingIndices == null) {
-                existingIndicesCopy = existingIndices = new HashSet<string>(
+                existingIndices = new HashSet<string>(
                     await esclient.GetIndicesPointingToAliasAsync(AliasName), StringComparer.Ordinal);
             }
             var indices = new List<string>(maxIndicesCount);
@@ -140,7 +139,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch
                     indices.Add(indname);
                 }
                 if (indices.Count == maxIndicesCount) {
-                    return Indices.Index(AliasName);
+                    return Indices.Index(new [] { AliasName });
                 }
             }
             return Indices.Parse(string.Join(",", indices)); // FIXME: to optimize - it should be possible to generate the indices collection directly

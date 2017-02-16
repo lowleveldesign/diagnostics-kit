@@ -24,13 +24,13 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models
     {
         public string Id { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string ApplicationPath { get; set; }
 
-        [Number(Index = NonStringIndexOption.No, Store = true)]
+        [Number(Index = false, Store = true)]
         public float Cpu { get; set; }
 
-        [Number(Index = NonStringIndexOption.No, Store = true)]
+        [Number(Index = false, Store = true)]
         public float Memory { get; set; }
 
         [Date(Store = true)]
@@ -40,13 +40,13 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models
         [Date(Store = true)]
         public DateTime? LastErrorTimeUtc { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string LastErrorType { get; set; }
 
         [Date(Store = true)]
         public DateTime LastUpdateTimeUtc { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string Server { get; set; }
     }
 }

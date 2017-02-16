@@ -23,28 +23,28 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models
     {
         public string Id { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string Path { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string Server { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string ServerFqdnOrIp { get; set; }
 
-        [String(Index = FieldIndexOption.No, Store = true)]
+        [Keyword(Index = false, Store = true)]
         public string Binding { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string AppPoolName { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string ServiceName { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string DisplayName { get; set; }
 
-        [String(Index = FieldIndexOption.NotAnalyzed, Store = true)]
+        [Keyword(Index = true, Store = true)]
         public string AppType { get; set; }
     }
 

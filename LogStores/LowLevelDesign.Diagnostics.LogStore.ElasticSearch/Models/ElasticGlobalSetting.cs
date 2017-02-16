@@ -24,7 +24,7 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Models
     {
         public string Id { get; set; }
 
-        [String(Index = FieldIndexOption.No, Store = true)]
+        [Keyword(Index = false, Store = true)]
         public string ConfValue { get; set; }
     }
 }

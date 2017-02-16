@@ -44,7 +44,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
             var utcnow = DateTime.UtcNow.Date;
             var elasticLogStore = new ElasticSearchLogStore(() => utcnow);
             const string appPath = "c:\\###rather_not_existing_application_path###";
-            var hash = BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(appPath))).Replace("-", string.Empty);
 
             var logrec = new LogRecord {
                 LoggerName = "TestLogger",
@@ -93,7 +92,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
             // give it 2s to index
             await Task.Delay(2000);
 
-            var res = await client.SearchAsync<ElasticLogRecord>(s => s.Query(f => f.Term(lr => lr.ProcessId, -1))); 
+            var res = await client.SearchAsync<ElasticLogRecord>(s => s.Index(
+                Indices.Index(new [] { lim.GetCurrentIndexName() })).Query(f => f.Term(lr => lr.ProcessId, -1))); 
             Assert.Equal(1L, res.Total);
             var dbLogRec = res.Hits.First().Source;
 
@@ -134,7 +134,8 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
             Assert.Equal(r, logrec.PerformanceData["Memory"]);
 
 
-            res = await client.SearchAsync<ElasticLogRecord>(s => s.Query(f => f.Term(lr => lr.ExceptionType, "test"))); 
+            res = await client.SearchAsync<ElasticLogRecord>(s => s.Index(
+                Indices.Index(new [] { lim.GetCurrentIndexName() })).Query(f => f.Term(lr => lr.ExceptionType, "test"))); 
             Assert.Equal(1L, res.Total);
             dbLogRec = res.Hits.First().Source;
 
@@ -148,7 +149,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
             var utcnow = DateTime.UtcNow.Date;
             var elasticLogStore = new ElasticSearchLogStore(() => utcnow);
             const string appPath = "c:\\###rather_not_existing_application_path###";
-            var hash = BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(appPath))).Replace("-", string.Empty);
 
             var startDate = DateTime.UtcNow.AddMinutes(-1);
 
@@ -207,7 +207,6 @@ namespace LowLevelDesign.Diagnostics.LogStore.ElasticSearch.Tests
             var utcnow = DateTime.UtcNow.Date;
             var elasticLogStore = new ElasticSearchLogStore(() => utcnow);
             const string appPath = "c:\\###rather_not_existing_application_path###";
-            var hash = BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(appPath))).Replace("-", string.Empty);
 
             var startDate = DateTime.UtcNow.AddMinutes(-1);
 
