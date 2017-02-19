@@ -20,11 +20,11 @@ The detailed documentation can be found in wiki: **<https://github.com/lowleveld
 
 ## The intended audience
 
-There are many monitoring services available on the market, thus you might be wondering why I wrote another one. My point was to create a monitoring solution for small and midsize .NET projects (mainly web, but performance monitoring of Windows services is supported), which is fast to setup and easily cusomizable by project developers. I tried to keep the source code consise and easy to read. The requirements list is also short: a web server (preferably IIS), storage for logs (works with: Elastic Search, MySql or SQL Server). You should have them already deployed in your infrastructure.
+There are many monitoring services available on the market, thus you might be wondering why I wrote another one. My point was to create a monitoring solution for small and midsize .NET projects (mainly web, but performance monitoring of Windows services is supported), which is fast to setup and easily cusomizable by project developers. I tried to keep the source code concise and easy to read. The requirements list is also short: a web server (preferably IIS), storage for logs (works with: Elastic Search, MySql or SQL Server) - you should have them already available in your infrastructure.
 
 ## How to get started?
 
-Download the components you need from [the release page](https://github.com/lowleveldesign/diagnostics-kit/releases) and read [the installation guide on wiki](https://github.com/lowleveldesign/diagnostics-kit/wiki/1.2.installation). Then, depending on your application type, read one of the logs collection guides:
+Download the components you need from [the release page](https://github.com/lowleveldesign/diagnostics-kit/releases) and read [the installation guide on wiki](https://github.com/lowleveldesign/diagnostics-kit/wiki/1.2.installation). Then, depending on your application type, read the log collection guide:
 
 - [ASP.NET applications](https://github.com/lowleveldesign/diagnostics-kit/wiki/2.3.log-collection-aspnet)
 - [ASP.NET MVC applications](https://github.com/lowleveldesign/diagnostics-kit/wiki/2.4.log-collection-aspnet-mvc)
@@ -34,14 +34,16 @@ Download the components you need from [the release page](https://github.com/lowl
 
 ## How to contribute?
 
-If you like the project and would like to help, feel free to create a pull request. The features I currently consider most required include:
+If you like the project and would like to help, you are more than welcome. The features I currently consider most required include:
 
 - ASP.NET Core Harvester
 - Serilog sink for Diagnostics Kit
 - .NET Core CLR support
 - support for PostgreSql as a Log Store
 
-## Links
+But if you have a different idea/requirement, the *Pull requests* tab is awaiting you :)
+
+## External links
 
 You may also have a look at the following articles, which provide overview of the features available in the kit:
 
