@@ -26,7 +26,7 @@ There are many monitoring services available on the market, thus you might be wo
 
 ## How to get started?
 
-Please read the [installation guide on wiki](https://github.com/lowleveldesign/diagnostics-kit/wiki/1.2.installation). Then, depending on your application type, read one of the logs collection guides:
+Download the components you need from [the release page](https://github.com/lowleveldesign/diagnostics-kit/releases) and read [the installation guide on wiki](https://github.com/lowleveldesign/diagnostics-kit/wiki/1.2.installation). Then, depending on your application type, read one of the logs collection guides:
 
 - [ASP.NET applications](https://github.com/lowleveldesign/diagnostics-kit/wiki/2.3.log-collection-aspnet)
 - [ASP.NET MVC applications](https://github.com/lowleveldesign/diagnostics-kit/wiki/2.4.log-collection-aspnet-mvc)
