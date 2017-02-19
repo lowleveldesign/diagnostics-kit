@@ -1,13 +1,11 @@
 Diagnostics Kit
 ===============
 
-## General information
-
 Diagnostics Kit is a set of tools created to help you monitor .NET applications. I tried to make the installation easy, with only minimal changes required in the configuration files. Diagnostics Kit is composed of few layers, but its architecture is really simple: **Musketeer** instances (Windows services) and **Harvesters** (assemblies from Nuget packages) installed in your apps deliver logs to the central point, called the **Diagnostics Castle** (an Owin-Nancy web application). Two most important parts of the Castle are the monitoring grid and the log viewer. I paste sample screenshots below:
 
-![Monitoring grid](https://raw.githubusercontent.com/lowleveldesign/diagnostics-kit/master/docs/diaggrid.PNG)
+![Monitoring grid](https://raw.githubusercontent.com/lowleveldesign/diagnostics-kit/master/docs/diaggrid.png)
 
-![Log viewer](https://raw.githubusercontent.com/lowleveldesign/diagnostics-kit/master/docs/diaglog.PNG)
+![Log viewer](https://raw.githubusercontent.com/lowleveldesign/diagnostics-kit/master/docs/diaglog.png)
 
 To make configuration simpler, **applications are identified by their paths** so logs from applications installed under the same paths on various servers will be treated as logs from one application. I know it is quite restrictive, but believe me: it makes things much easier to maintain.
 
